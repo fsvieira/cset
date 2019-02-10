@@ -1,20 +1,20 @@
-== CSet
+# CSet
 
 CSet is a javascript lazzy Set library with support for cartesian product and predicate filtering, that is loosely based on 
 tuple relation calculus).
 
 Currently CSet support most normal set operation, including cartesian product.
 
-== Install
+# Install
 
 ```
     npm install cset
 ```
 
-== Use (API)
+# Use (API)
 
 
-=== CSet
+## CSet
 
 Create a set, from Array of values.
 After set creation all operations on set are chainable, and they are not destructive and a new set is returned.
@@ -26,7 +26,7 @@ After set creation all operations on set are chainable, and they are not destruc
     const A = new CSet([1, 2, 3]);
 ```
 
-=== Intersection
+## Intersection
 
 Creates a set with the intersection of two sets.
 
@@ -37,7 +37,7 @@ Creates a set with the intersection of two sets.
 ```
 
 
-=== Union
+## Union
 
 Creates a set with the union of two sets.
 
@@ -47,7 +47,7 @@ Creates a set with the union of two sets.
     );
 ```
 
-=== Difference
+## Difference
 
 Creates a set with the difference of two sets.
 
@@ -57,8 +57,7 @@ Creates a set with the difference of two sets.
         new CSet([1, 2])
     );
 ```
-
-=== SymetricDifference
+## SymetricDifference
 
 Creates a set with the symetric difference of two sets.
 
@@ -68,7 +67,7 @@ Creates a set with the symetric difference of two sets.
     );
 ```
 
-=== CartesianProduct
+## CartesianProduct
 
 Creates a set with the cartesian product of two sets.
 
@@ -78,7 +77,7 @@ Creates a set with the cartesian product of two sets.
     );
 ```
 
-=== Has
+## Has
 
 It checks if an element is in the provided set.
 
@@ -89,7 +88,7 @@ It checks if an element is in the provided set.
     A.has(4); // False
 ```
 
-=== Values
+## Values
 
 Iterates all values of a set.
 
@@ -101,7 +100,7 @@ Iterates all values of a set.
     }
 ```
 
-=== As
+## As
 
 It bind an alias to a set. The "as" operation is normally usefull to use with "constrains".
 
@@ -114,7 +113,7 @@ It bind an alias to a set. The "as" operation is normally usefull to use with "c
     const AC = A.union(C).as("AC"); // add alias to A and C union. 
 ```
 
-=== Header
+## Header
 An array of alias names for each column of the set. 
 Sets normally have only one alias, but cartesian products have on alias for each column. 
 
@@ -132,7 +131,7 @@ Alias are set with "as", but if none is provided then a generated name is used.
 
 ```
 
-=== Constrain
+## Constrain
 
 A constrain works as a filter on set elements, as other operators it creates a new set
 where all set elements must comply with provided constrains.
@@ -158,12 +157,12 @@ where all set elements must comply with provided constrains.
 
 ```
 
-== Examples
+# Examples
 
 In this section I just want to show a few examples on how CSet can be used, but some of examples may not be the best use 
 case for the lib (See Motivation section).
 
-=== Puzzle: Send+More=Money
+## Puzzle: Send+More=Money
 
 Solve expression:
 
@@ -296,7 +295,7 @@ Now a more ugly version but that will run in less than ~20s.
 
 ```
 
-== Motivation
+# Motivation
 
 I created CSet to try to find a way to handle domain combinatorial explosion.
 The main design concept of CSet is to be lazzy, do as little as possible and only do it on demand,
@@ -307,7 +306,7 @@ suited for CSet, CSet is meant to be used as a domain/set representation library
 for example as a Constrain Solving Problem library. 
 
 
-== Future Work
+# Future Work
 
 I think I would like to grow CSet features, manly set theory stuff, and optimize the engine with a 
 planner, cache and some other database techniques.
