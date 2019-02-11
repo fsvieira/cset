@@ -1,12 +1,13 @@
 {
   "name": "cset",
   "version": "1.0.1",
-  "description": "",
+  "description": "Combinatorial/Cartesian Lazzy Set",
+  "homepage": "https://github.com/fsvieira/cset",
   "main": "src/cset.js",
   "scripts": {
     "test": "jest"
   },
-  "author": "",
+  "author": "Filipe Vieira",
   "license": "MIT",
   "devDependencies": {
     "jest": "^24.1.0"

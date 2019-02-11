@@ -100,6 +100,85 @@ Iterates all values of a set.
     }
 ```
 
+## isEmpty
+
+Checks if set is empty.
+
+```javascript
+  const empty = new CSet([]);
+  const intersectEmpty = new CSet([1, 2]).intersect(new CSet([3, 4]));
+  const notEmpty = new CSet([1, 2]).intersect(new CSet([2, 3, 4]));
+
+  console.log(empty.isEmpty()); // True
+  console.log(intersectEmpty.isEmpty()); // True
+  console.log(notEmpty.isEmpty()); // False
+```
+## isSubset
+
+Check if set is a subset of other set.
+
+```javascript
+  const a = new CSet([0, 1, 2]);
+  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  
+  console.log(a.isSubset(b)); // True 
+  console.log(b.isSubset(b)); // True
+  console.log(b.isSubset(a)); // False
+```
+
+## isProperSubset
+
+Check if set is a proper subset of other set.
+
+```javascript
+  const a = new CSet([0, 1, 2]);
+  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  
+  console.log(a.isProperSubset(a)); // False, all elements of a are in a, so its not proper subset.
+  console.log(a.isProperSubset(b)); // True, all lements of a are in b, 
+```
+
+## isSuperset
+
+Check if set is a superset of other set.
+
+```javascript
+  const a = new CSet([0, 1, 2]);
+  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  
+  console.log(a.isSuperset(b)); // False
+  console.log(b.isSuperset(b)); // True
+  console.log(b.isSuperset(a)); // True
+
+```
+
+## isProperSuperset
+
+Check if set is a proper superset of other set.
+
+```javascript
+  const a = new CSet([0, 1, 2]);
+  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  
+  console.log(a.isProperSuperset(a)); // False 
+  console.log(a.isProperSuperset(b)); // False
+  console.log(b.isProperSuperset(a)); // True
+```
+
+## isEqual
+
+Check if two sets are equal.
+
+```javascript
+  const a = new CSet([0, 1, 2]);
+  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  
+  console.log(a.intersect(b).isEqual(a)); // True
+  console.log(a.isEqual(b)); // False
+  console.log(a.isEqual(a)); // True
+  console.log(b.isEqual(a)); // False
+```
+
 ## As
 
 It bind an alias to a set. The "as" operation is normally usefull to use with "constrains".
