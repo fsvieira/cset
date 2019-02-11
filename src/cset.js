@@ -38,6 +38,32 @@ class Op {
         );
     }
 
+    // test methods,
+    isEmpty () {
+        return this.values().next().done;
+    }
+
+    isSubset (x) {
+        return this.difference(x).isEmpty() && 
+            !this.intersect(x).isEmpty();
+    }
+
+    isProperSubset (x) {
+        return this.isSubset(x) && !x.isSubset(this);
+    }
+
+    isSuperset (x) {
+        return x.isSubset(this);
+    }
+
+    isProperSuperset (x) {
+        return x.isProperSubset(this);
+    }
+
+    isEqual (x) {
+        return this.isSubset(x) && x.isSubset(this);
+    }
+
     get header () {
         if (this.a && this.b) {
             return this.a.header.concat(this.b.header);
@@ -302,7 +328,7 @@ class ArraySet extends Op {
     }
 
     values () {
-        return new Set([...this._values]);
+        return new Set([...this._values]).values();
     }
 }
 

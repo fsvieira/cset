@@ -125,6 +125,7 @@ test('Set cartasian no repeat product', () => {
 
 });
 
+/*
 test('Set cartasian SEND MORE MONEY', () => {
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const d = new CSet(digits);
@@ -233,4 +234,53 @@ test('Set cartasian SEND MORE MONEY (Optimize)', () => {
       expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
         .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
     }
+});
+*/
+
+test('Set isEmpty ?', () => {
+  const empty = new CSet([]);
+  const intersectEmpty = new CSet([1, 2]).intersect(new CSet([3, 4]));
+  const notEmpty = new CSet([1, 2]).intersect(new CSet([2, 3, 4]));
+
+  expect(empty.isEmpty()).toBeTruthy();
+  expect(intersectEmpty.isEmpty()).toBeTruthy();
+  expect(notEmpty.isEmpty()).toBeFalsy();
+
+});
+
+test("Subsets and Proper Subsets", () => {
+  const a = new CSet([0, 1, 2]);
+  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  
+  expect(a.isSubset(b)).toBeTruthy();
+  expect(b.isSubset(b)).toBeTruthy();
+  expect(b.isSubset(a)).toBeFalsy();
+
+  expect(a.isProperSubset(a)).toBeFalsy();
+  expect(a.isProperSubset(b)).toBeTruthy();
+
+});
+
+test("Supersets and Proper Supersets", () => {
+  const a = new CSet([0, 1, 2]);
+  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  
+  expect(a.isSuperset(b)).toBeFalsy();
+  expect(b.isSuperset(b)).toBeTruthy();
+  expect(b.isSuperset(a)).toBeTruthy();
+
+  expect(a.isProperSuperset(a)).toBeFalsy();
+  expect(a.isProperSuperset(b)).toBeFalsy();
+  expect(b.isProperSuperset(a)).toBeTruthy();
+});
+
+test("Equal and Proper Supersets", () => {
+  const a = new CSet([0, 1, 2]);
+  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  
+  expect(a.intersect(b).isEqual(a)).toBeTruthy();
+  expect(a.isEqual(b)).toBeFalsy();
+  expect(a.isEqual(a)).toBeTruthy();
+  expect(b.isEqual(a)).toBeFalsy();
+
 });
