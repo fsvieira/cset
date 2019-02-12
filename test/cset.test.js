@@ -175,7 +175,7 @@ test('Set cartasian SEND MORE MONEY', () => {
       expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
         .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
     }
-});
+});*/
 
 test('Set cartasian SEND MORE MONEY (Optimize)', () => {
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -235,7 +235,6 @@ test('Set cartasian SEND MORE MONEY (Optimize)', () => {
         .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
     }
 });
-*/
 
 test('Set isEmpty ?', () => {
   const empty = new CSet([]);
@@ -282,5 +281,35 @@ test("Equal and Proper Supersets", () => {
   expect(a.isEqual(b)).toBeFalsy();
   expect(a.isEqual(a)).toBeTruthy();
   expect(b.isEqual(a)).toBeFalsy();
+
+});
+
+
+test("header of intersection", () => {
+
+  const a = new CSet([1, 2]).as("A");
+  const b = new CSet([1, 2]).as("B");
+
+  expect(a.intersect(b).header).toEqual("A_B");
+
+});
+
+test("header of cartesian products", () => {
+
+  const a = new CSet([1, 2]).as("A");
+  const b = new CSet([1, 2, 3, 4]).as("B");
+
+  expect(a.cartesianProduct(b).header).toEqual(["A", "B"]);
+  expect(a.cartesianProduct(b.as("A")).header).toEqual(["A", "A"]);
+
+  expect(a.union(b).cartesianProduct(a).cartesianProduct(b).header).toEqual(["A_B","A","B"]);
+
+  expect(a.union(b).as("C").cartesianProduct(a).cartesianProduct(b).header).toEqual(["C","A","B"]);
+
+  expect(() => a.cartesianProduct(b.as("A"))
+    .constrain(
+      ["A"], 
+      {name: "exception", predicate: () => true})
+    ).toThrowError('Alias A is repeated in header, please use "as" to make different alias on header A, A');
 
 });

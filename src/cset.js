@@ -65,12 +65,37 @@ class Op {
     }
 
     get header () {
-        if (this.a && this.b) {
-            return this.a.header.concat(this.b.header);
+        const ah = this.a.header;
+
+        if (this.b) {
+            const bh = this.b.header;
+            /*
+            const t = ah.length + bh.length;
+
+            if (this._length === t) {
+                return ah.concat(bh);
+            }
+            else {
+                return [this.name];
+            }*/
+
+            if (ah === bh) {
+                return ah;
+            }
+            else if (ah instanceof Array && bh instanceof Array) {
+                return ah.concat(bh);
+            }
+            else if (ah instanceof Array) {
+                return ah.concat([bh]);
+            }
+            else if (ah instanceof Array) {
+                return [ah].concat(bh);
+            }
+
+            return `${ah}_${bh}`;
         }
-        else {
-            return this.a.header;
-        }
+
+        return ah;
     }
 
     get _length () {
@@ -164,6 +189,15 @@ class CartesianSet extends Op {
         );
     }
 
+    get header () {
+        const ah = this.a.header;
+        const bh = this.b.header; 
+
+        return (ah instanceof Array?ah:[ah]).concat(
+            bh instanceof Array?bh:[bh]
+        );
+    }
+
     *values () {
         for (let x of this.a.values()) {
             const a = (x instanceof Array)?x:[x];
@@ -254,7 +288,7 @@ class Alias extends Op {
     }
 
     get header () {
-        return [this.name];
+        return this.name;
     }
 
     has (x) {
@@ -276,8 +310,12 @@ class Constrain extends Op {
 
         for (let i=0; i<alias.length; i++) {
             const a = alias[i];
-            if (!header.includes(a)) {
-                throw `Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`;
+            const counter = header.filter(x => x === a).length;
+            if (counter === 0) {
+                throw new Error(`Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`);
+            }
+            else if (counter > 1) {
+                throw new Error(`Alias ${a} is repeated in header, please use "as" to make different alias on header ${header.join(", ")}`);
             }
         }
 
@@ -324,7 +362,7 @@ class ArraySet extends Op {
     }
 
     get header () {
-        return [this.name];
+        return this.name;
     }
 
     values () {

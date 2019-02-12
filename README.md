@@ -181,7 +181,7 @@ Check if two sets are equal.
 
 ## As
 
-It bind an alias to a set. The "as" operation is normally usefull to use with "constrains".
+It binds an alias to a set. The "as" operation is normally usefull to use with "constrains".
 
 ```javascript
     const A = new CSet([1, 2, 3]).as("A");
@@ -193,10 +193,9 @@ It bind an alias to a set. The "as" operation is normally usefull to use with "c
 ```
 
 ## Header
-An array of alias names for each column of the set. 
-Sets normally have only one alias, but cartesian products have on alias for each column. 
 
-Alias are set with "as", but if none is provided then a generated name is used.
+In case of cartesian product it will return an array of alias (string), 
+for normal sets it will return one alias (string).
 
 ```javascript
 
