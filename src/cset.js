@@ -112,6 +112,14 @@ class CartesianSet extends Op {
         super();
         this.a = a;
         this.b = b;
+
+        const h = this.header;
+        const s = new Set(h);
+
+        if (h.length !== s.size) {
+            throw `Repeated headers are not allowed ${h.join(", ")}`;
+        }
+
     }
     
     get _length () {
@@ -261,7 +269,7 @@ class DistinctCartesianSet extends CartesianSet {
             }
         }
     }
-} 
+}
 
 class Difference extends Op {
     constructor (a, b) {
@@ -385,9 +393,6 @@ class Constrain extends Op {
             const counter = header.filter(x => x === a).length;
             if (counter === 0) {
                 throw new Error(`Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`);
-            }
-            else if (counter > 1) {
-                throw new Error(`Alias ${a} is repeated in header, please use "as" to make different alias on header ${header.join(", ")}`);
             }
         }
 
