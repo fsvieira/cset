@@ -79,7 +79,9 @@ Creates a set with the cartesian product of two sets.
 
 ## DistinctCartesianProduct
 
-Creates a set with the cartesian product but it doesn't repeate values from each set.
+This is not defined on set theory, but I find it useful.
+
+Its the same as cartesian product but it doesn't repeat elements of the two provided sets. 
 
 ```javascript
     const A = new CSet([1, 2, 3]).distinctCartesianProduct(
@@ -87,6 +89,21 @@ Creates a set with the cartesian product but it doesn't repeate values from each
     );
 
     // Values: [ [ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ] ]
+```
+
+In the following example, the right part (A) and left part (B) will not contain any repeated elements 
+from each other, but they may contain repeated elements from itself.
+
+```javascript
+    const a = new CSet([1, 2]);
+    const A = a.cartesianProduct(a);
+    const B = a.cartesianProduct(a);
+
+
+    const C = A.distinctCartesianProduct(B);
+
+    // Values: [[ 1, 1, 2, 2 ], [ 2, 2, 1, 1 ]]
+    //          [ A, A, B, B ], [A , A, B, B]
 ```
 
 ## Has
@@ -193,7 +210,7 @@ Check if two sets are equal.
 
 ## As
 
-It binds an alias to a set. The "as" operation is normally usefull to use with "constrains".
+It binds an alias to a set. The "as" operation is normally useful to use with "constrains".
 
 ```javascript
     const A = new CSet([1, 2, 3]).as("A");
@@ -203,6 +220,19 @@ It binds an alias to a set. The "as" operation is normally usefull to use with "
     const C = new CSet([4, 5]);
     const AC = A.union(C).as("AC"); // add alias to A and C union. 
 ```
+
+### Alias on cartesian products
+
+In case of cartesian products an alias work as prefix, or table name, so that each individual 
+element on resulting tuples can still be referenced.
+
+```javascript
+  const ab = new CSet([1, 2]).as("a").cartesianProduct(new CSet([1, 2, 3]).as("b"));
+  const AB = ab.as("A").cartesianProduct(ab.as("B"));
+
+  console.log(AB.header); // "A.a", "A.b", "B.a", "B.b";
+```
+
 
 ## Header
 
@@ -244,8 +274,19 @@ where all set elements must comply with provided constrains.
                 predicate: ({a}) => a % 2 === 0
             } 
         );
-
 ```
+
+## Count
+
+It counts the elements on a set.
+
+```javascript
+  const a = new CSet([1, 3, 2]);
+  const b = a.union(new CSet([5, 3, 4]));
+
+  console.log(a.count()); // 3
+```
+
 
 # Examples
 

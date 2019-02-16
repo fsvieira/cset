@@ -1,8 +1,5 @@
 let aliasCounter = 1;
 
-
-
-
 class Op {
     constructor () {
         this.name = `set_${aliasCounter++}`;
@@ -84,15 +81,6 @@ class Op {
 
         if (this.b) {
             const bh = this.b.header;
-            /*
-            const t = ah.length + bh.length;
-
-            if (this._length === t) {
-                return ah.concat(bh);
-            }
-            else {
-                return [this.name];
-            }*/
 
             if (ah === bh) {
                 return ah;
@@ -469,6 +457,5 @@ class ArraySet extends Op {
 }
 
 const emptySet = new ArraySet([]);
-
 
 module.exports = ArraySet;
