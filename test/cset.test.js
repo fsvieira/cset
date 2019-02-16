@@ -125,117 +125,6 @@ test('Set cartasian no repeat product', () => {
 
 });
 
-/*
-test('Set cartasian SEND MORE MONEY', () => {
-  const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const d = new CSet(digits);
-
-  // S E N D M O R Y
-  const sendMoreMoney = d.as("S")
-    .cartesianProduct(d.as("E"))
-    .cartesianProduct(d.as("N"))
-    .cartesianProduct(d.as("D"))
-    .cartesianProduct(d.as("M"))
-    .cartesianProduct(d.as("O"))
-    .cartesianProduct(d.as("R"))
-    .cartesianProduct(d.as("Y"))
-    .constrain(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      {
-        name : "<>",
-        predicate: x => {
-          // Make sure that all values are diferent,
-          const vs = new Set();
-          for (let a in x) {
-            const v = x[a];
-            if (vs.has(v)) {
-              return false;
-            }
-
-            vs.add(v);
-          }
-
-          return true;
-        }
-      }
-    )
-    .constrain(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      {
-        name: "add",
-        predicate: ({S, E, N, D, M, O, R, Y}) => 
-            S * 1000 + E * 100 + N * 10 + D 
-          + M * 1000 + O * 100 + R * 10  + E  
-            === 
-            M * 10000 + O * 1000 + N * 100 + E * 10 + Y
-      }
-    );
-
-    for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
-      expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
-        .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
-    }
-});*/
-
-test('Set cartasian SEND MORE MONEY (Optimize)', () => {
-  const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const d = new CSet(digits);
-
-  const notEqual = {
-    name: "<>",
-    predicate: x => {
-      // Make sure that all values are diferent,
-      const vs = new Set();
-      for (let a in x) {
-        const v = x[a];
-        if (vs.has(v)) {
-          return false;
-        }
-
-         vs.add(v);
-      }
-
-      return true;
-    }
-  };
-
-  // S E N D M O R Y
-  const sendMoreMoney = d.as("S")
-    .cartesianProduct(d.as("E"))
-      .constrain(["S", "E"], notEqual)
-    .cartesianProduct(d.as("N"))
-      .constrain(["S", "E", "N"], notEqual)
-    .cartesianProduct(d.as("D"))
-      .constrain(["S", "E", "N", "D"], notEqual)
-    .cartesianProduct(d.as("M"))
-      .constrain(["S", "E", "N", "D", "M"], notEqual)
-    .cartesianProduct(d.as("O"))
-      .constrain(["S", "E", "N", "D", "M", "O"], notEqual)
-    .cartesianProduct(d.as("R"))
-      .constrain(["S", "E", "N", "D", "M", "O", "R"], notEqual)
-    .cartesianProduct(d.as("Y"))
-    .constrain(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      notEqual
-    )
-    .constrain(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      {
-        name: "add",
-        predicate: ({S, E, N, D, M, O, R, Y}) => 
-            S * 1000 + E * 100 + N * 10 + D 
-          + M * 1000 + O * 100 + R * 10  + E  
-            === 
-            M * 10000 + O * 1000 + N * 100 + E * 10 + Y
-      }
-    );
-
-    for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
-      expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
-        .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
-    }
-});
-
 test('Set isEmpty ?', () => {
   const empty = new CSet([]);
   const intersectEmpty = new CSet([1, 2]).intersect(new CSet([3, 4]));
@@ -296,20 +185,125 @@ test("header of intersection", () => {
 
 test("header of cartesian products", () => {
 
-  const a = new CSet([1, 2]).as("A");
-  const b = new CSet([1, 2, 3, 4]).as("B");
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([1, 2, 3, 4]).as("B");
 
-  expect(a.cartesianProduct(b).header).toEqual(["A", "B"]);
-  expect(a.cartesianProduct(b.as("A")).header).toEqual(["A", "A"]);
+    expect(a.cartesianProduct(b).header).toEqual(["A", "B"]);
+    expect(a.cartesianProduct(b.as("A")).header).toEqual(["A", "A"]);
 
-  expect(a.union(b).cartesianProduct(a).cartesianProduct(b).header).toEqual(["A_B","A","B"]);
+    expect(a.union(b).cartesianProduct(a).cartesianProduct(b).header).toEqual(["A_B","A","B"]);
 
-  expect(a.union(b).as("C").cartesianProduct(a).cartesianProduct(b).header).toEqual(["C","A","B"]);
+    expect(a.union(b).as("C").cartesianProduct(a).cartesianProduct(b).header).toEqual(["C","A","B"]);
 
-  expect(() => a.cartesianProduct(b.as("A"))
+    expect(() => a.cartesianProduct(b.as("A"))
+      .constrain(
+        ["A"], 
+        {name: "exception", predicate: () => true})
+      ).toThrowError('Alias A is repeated in header, please use "as" to make different alias on header A, A');
+});
+
+test("cartesian products alias", () => {
+
+  const ab = new CSet([1, 2]).as("a").cartesianProduct(new CSet([1, 2, 3]).as("b"));
+
+  const AB = ab.as("A").cartesianProduct(ab.as("B"));
+
+  expect(AB.header).toEqual(["A.a", "A.b", "B.a", "B.b"]);
+
+});
+
+test("Count", () => {
+
+  const a = new CSet([1, 3, 2]);
+  const b = a.union(new CSet([5, 3, 4]));
+
+  expect(a.count()).toBe(3);
+  expect(b.count()).toBe(5);
+
+  const ab = a.cartesianProduct(b); 
+  expect(ab.count()).toBe(15);
+
+  const oddSum = a.as("A").cartesianProduct(b.as("B")).constrain(
+    ["A", "B"],
+    {
+      name: "odd-sum",
+      predicate: ({A, B}) => (A + B) % 2 === 1
+    }
+  ); 
+
+  expect(oddSum.count()).toBe(7);
+
+});
+
+test("distinct cartesian product (SEND MORE MONEY)", () => {
+
+  const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const d = new CSet(digits);
+
+  // S E N D M O R Y
+  const sendMoreMoney = d.as("S")
+    .distinctCartesianProduct(d.as("E"))
+    .distinctCartesianProduct(d.as("N"))
+    .distinctCartesianProduct(d.as("D"))
+    .distinctCartesianProduct(d.as("M"))
+    .distinctCartesianProduct(d.as("O"))
+    .distinctCartesianProduct(d.as("R"))
+    .distinctCartesianProduct(d.as("Y"))
     .constrain(
-      ["A"], 
-      {name: "exception", predicate: () => true})
-    ).toThrowError('Alias A is repeated in header, please use "as" to make different alias on header A, A');
+      ["S", "E", "N", "D", "M", "O", "R", "Y"],
+      {
+        name: "add",
+        predicate: ({S, E, N, D, M, O, R, Y}) => 
+            S * 1000 + E * 100 + N * 10 + D 
+          + M * 1000 + O * 100 + R * 10  + E  
+            === 
+            M * 10000 + O * 1000 + N * 100 + E * 10 + Y
+      }
+    );
+
+    for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
+      expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
+        .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
+    }
+
+});
+
+test("distinct cartesian product", () => {
+
+    {
+      const A = new CSet([1, 2, 3]).distinctCartesianProduct(
+        new CSet([1, 2])
+      );
+
+      expect([...A.values()]).toEqual([[ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ]]);
+    }
+
+    {
+      const A = new CSet([1, 2]);
+
+      const B = A.cartesianProduct(A).distinctCartesianProduct(
+        A.cartesianProduct(A)
+      );
+
+      expect([...B.values()]).toEqual([[ 1, 1, 2, 2 ], [ 2, 2, 1, 1 ]]);
+    }
+
+    {
+      const A = new CSet([1, 2, 3]);
+
+      const B = A.cartesianProduct(A).distinctCartesianProduct(
+        A.cartesianProduct(A)
+      );
+
+      expect([...B.values()]).toEqual(
+        [
+          [1,1,2,2],[1,1,2,3],[1,1,3,2],[1,1,3,3],
+          [1,2,3,3],[1,3,2,2],[2,1,3,3],[2,2,1,1],
+          [2,2,1,3],[2,2,3,1],[2,2,3,3],[2,3,1,1],
+          [3,1,2,2],[3,2,1,1],[3,3,1,1],[3,3,1,2],
+          [3,3,2,1],[3,3,2,2]
+        ]
+      );
+    }
 
 });

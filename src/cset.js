@@ -1,5 +1,8 @@
 let aliasCounter = 1;
 
+
+
+
 class Op {
     constructor () {
         this.name = `set_${aliasCounter++}`;
@@ -38,6 +41,10 @@ class Op {
         );
     }
 
+    distinctCartesianProduct (x) {
+        return new DistinctCartesianSet(this, x);
+    }
+
     // test methods,
     isEmpty () {
         return this.values().next().done;
@@ -62,6 +69,14 @@ class Op {
 
     isEqual (x) {
         return this.isSubset(x) && x.isSubset(this);
+    }
+
+    count () {
+        return this.a.count();
+    }
+
+    permutation (x) {
+        return new Permutation(this, x);
     }
 
     get header () {
@@ -189,6 +204,10 @@ class CartesianSet extends Op {
         );
     }
 
+    count () {
+        return this.a.count() * this.b.count();
+    }
+
     get header () {
         const ah = this.a.header;
         const bh = this.b.header; 
@@ -213,6 +232,48 @@ class CartesianSet extends Op {
     }
 }
 
+class DistinctCartesianSet extends CartesianSet {
+
+    has (x) {
+        const al = this.a._length;
+
+        const as = x.slice(0, al);
+
+        for (let i=al; i<x.length; i++) {
+            const e = x[i];
+
+            if (as.includes(e)) {
+                return false;
+            }
+        }
+
+        return super.has(x);
+    }
+
+    count () {
+        let total = 0;
+        for (let e of this.values()) {
+            total++;
+        }
+
+        return total;
+    }
+
+    *values () {
+        for (let x of this.a.values()) {
+            const a = x instanceof Array?x:[x];
+
+            for (let y of this.b.values()) {
+                const b = y instanceof Array?y:[y];
+                const s = a.filter(x => b.includes(x));
+
+                if (s.length === 0) {
+                    yield a.concat(b);
+                }
+            }
+        }
+    }
+} 
 
 class Difference extends Op {
     constructor (a, b) {
@@ -223,6 +284,10 @@ class Difference extends Op {
 
     has (x) {
         return this.a.has(x) && !this.b.has(x);
+    }
+
+    count () {
+        return this.a.count() - this.a.intersect(this.b).count();
     }
 
     *values () {
@@ -245,6 +310,15 @@ class Intersect extends Op {
         return this.a.has(x) && this.b.has(x);
     }
 
+    count () {
+        let counter = 0;
+        for (let e of this.values()) {
+            counter++;
+        }
+
+        return counter;
+    }
+
     *values () {
         for (let x of this.a.values()) {
             if (this.b.has(x)) {
@@ -264,6 +338,10 @@ class Union extends Op {
 
     has (x) {
         return this.a.has(x) || this.b.has(x);
+    }
+
+    count () {
+        return this.a.count() + this.b.count() - this.a.intersect(this.b).count();
     }
 
     *values () {
@@ -288,6 +366,12 @@ class Alias extends Op {
     }
 
     get header () {
+        const header = this.a.header;
+
+        if (header instanceof Array) {
+            return header.map(h => `${this.name}.${h}`);
+        }
+
         return this.name;
     }
 
@@ -338,6 +422,15 @@ class Constrain extends Op {
         return this.predicate(arg);
     }
 
+    count () {
+        let counter = 0;
+        for (let e of this.values()) {
+            counter++;
+        }
+
+        return counter;
+    }
+
     has (x) {
         return this.test(x) && this.a.has(x);
     }
@@ -361,6 +454,10 @@ class ArraySet extends Op {
         return this._values.has(x);
     }
 
+    count () {
+        return this._values.size;
+    }
+
     get header () {
         return this.name;
     }
@@ -368,6 +465,7 @@ class ArraySet extends Op {
     values () {
         return new Set([...this._values]).values();
     }
+
 }
 
 const emptySet = new ArraySet([]);

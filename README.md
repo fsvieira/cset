@@ -77,6 +77,18 @@ Creates a set with the cartesian product of two sets.
     );
 ```
 
+## DistinctCartesianProduct
+
+Creates a set with the cartesian product but it doesn't repeate values from each set.
+
+```javascript
+    const A = new CSet([1, 2, 3]).distinctCartesianProduct(
+        new CSet([1, 2])
+    );
+
+    // Values: [ [ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ] ]
+```
+
 ## Has
 
 It checks if an element is in the provided set.
@@ -253,10 +265,7 @@ Solve expression:
 Where each letter on the expression is a digit (0..9) and all letters must have different values.
 Some people discard M=0 solutions, but in this case I will consider all solutions including M=0.
 
-
-First I will show a simpler but not optimized version, this version will take more than one minute to complete.
-Maybe in the future CSet will be optimized to run both versions at same spead :D...
-
+The presented solution takes from 5 to 8 seconds to complete.
 ```javascript
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -264,96 +273,13 @@ Maybe in the future CSet will be optimized to run both versions at same spead :D
 
   // S E N D M O R Y
   const sendMoreMoney = d.as("S")
-    .cartesianProduct(d.as("E"))
-    .cartesianProduct(d.as("N"))
-    .cartesianProduct(d.as("D"))
-    .cartesianProduct(d.as("M"))
-    .cartesianProduct(d.as("O"))
-    .cartesianProduct(d.as("R"))
-    .cartesianProduct(d.as("Y"))
-    .constrain(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      {
-        name : "<>",
-        predicate: x => {
-          // Make sure that all values are diferent,
-          const vs = new Set();
-          for (let a in x) {
-            const v = x[a];
-            if (vs.has(v)) {
-              return false;
-            }
-
-            vs.add(v);
-          }
-
-          return true;
-        }
-      }
-    )
-    .constrain(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      {
-        name: "add",
-        predicate: ({S, E, N, D, M, O, R, Y}) => 
-            S * 1000 + E * 100 + N * 10 + D 
-          + M * 1000 + O * 100 + R * 10  + E  
-            === 
-            M * 10000 + O * 1000 + N * 100 + E * 10 + Y
-      }
-    );
-
-    for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
-      expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
-        .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
-    }
-
-```
-
-Now a more ugly version but that will run in less than ~20s.
-
-```javascript
-
-  const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const d = new CSet(digits);
-
-  const notEqual = {
-    name: "<>",
-    predicate: x => {
-      // Make sure that all values are diferent,
-      const vs = new Set();
-      for (let a in x) {
-        const v = x[a];
-        if (vs.has(v)) {
-          return false;
-        }
-
-         vs.add(v);
-      }
-
-      return true;
-    }
-  };
-
-  // S E N D M O R Y
-  const sendMoreMoney = d.as("S")
-    .cartesianProduct(d.as("E"))
-      .constrain(["S", "E"], notEqual)
-    .cartesianProduct(d.as("N"))
-      .constrain(["S", "E", "N"], notEqual)
-    .cartesianProduct(d.as("D"))
-      .constrain(["S", "E", "N", "D"], notEqual)
-    .cartesianProduct(d.as("M"))
-      .constrain(["S", "E", "N", "D", "M"], notEqual)
-    .cartesianProduct(d.as("O"))
-      .constrain(["S", "E", "N", "D", "M", "O"], notEqual)
-    .cartesianProduct(d.as("R"))
-      .constrain(["S", "E", "N", "D", "M", "O", "R"], notEqual)
-    .cartesianProduct(d.as("Y"))
-    .constrain(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      notEqual
-    )
+    .distinctCartesianProduct(d.as("E"))
+    .distinctCartesianProduct(d.as("N"))
+    .distinctCartesianProduct(d.as("D"))
+    .distinctCartesianProduct(d.as("M"))
+    .distinctCartesianProduct(d.as("O"))
+    .distinctCartesianProduct(d.as("R"))
+    .distinctCartesianProduct(d.as("Y"))
     .constrain(
       ["S", "E", "N", "D", "M", "O", "R", "Y"],
       {
