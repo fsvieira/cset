@@ -54,7 +54,7 @@ test('Set cartasian product', () => {
       [ 2, 3, 6 ],
       [ 2, 4, 5 ],
       [ 2, 4, 6 ] 
-    ]);
+  ]);
 
 });
 
@@ -71,6 +71,8 @@ test('Set cartasian product intersection', () => {
   expect(cd.header).toEqual(["C", "D"]);
 
   const abcd = ab.intersect(cd);
+
+  expect(abcd.header).toEqual(["A", "B"]);
 
   expect([...abcd.values()]).toEqual([[1, 4]]);
   expect(abcd.has([1, 4])).toBeTruthy();
@@ -173,13 +175,12 @@ test("Equal and Proper Supersets", () => {
 
 });
 
-
 test("header of intersection", () => {
 
   const a = new CSet([1, 2]).as("A");
   const b = new CSet([1, 2]).as("B");
 
-  expect(a.intersect(b).header).toEqual("A_B");
+  expect(a.intersect(b).header).toEqual("A");
 
 });
 
@@ -193,8 +194,6 @@ test("header of cartesian products", () => {
     expect(() => a.cartesianProduct(b.as("A")))
         .toThrowError('Repeated headers are not allowed A, A');
 
-
-    expect(a.union(b).cartesianProduct(a).cartesianProduct(b).header).toEqual(["A_B","A","B"]);
     expect(a.union(b).as("C").cartesianProduct(a).cartesianProduct(b).header).toEqual(["C","A","B"]);
 });
 
@@ -211,7 +210,7 @@ test("cartesian products alias", () => {
 test("Count", () => {
 
   const a = new CSet([1, 3, 2]);
-  const b = a.union(new CSet([5, 3, 4]));
+  const b = a.union(new CSet([5, 3, 4])).as("AB");
 
   expect(a.count()).toBe(3);
   expect(b.count()).toBe(5);
@@ -303,3 +302,4 @@ test("distinct cartesian product", () => {
     }
 
 });
+

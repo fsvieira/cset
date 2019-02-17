@@ -77,34 +77,12 @@ class Op {
     }
 
     get header () {
-        const ah = this.a.header;
-
-        if (this.b) {
-            const bh = this.b.header;
-
-            if (ah === bh) {
-                return ah;
-            }
-            else if (ah instanceof Array && bh instanceof Array) {
-                return ah.concat(bh);
-            }
-            else if (ah instanceof Array) {
-                return ah.concat([bh]);
-            }
-            else if (ah instanceof Array) {
-                return [ah].concat(bh);
-            }
-
-            return `${ah}_${bh}`;
-        }
-
-        return ah;
+        return this.a.header;
     }
 
     get _length () {
         return 1;
     }
-    
 }
 
 class CartesianSet extends Op {
