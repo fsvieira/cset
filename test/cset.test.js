@@ -302,3 +302,57 @@ test("distinct cartesian product", () => {
 
 });
 
+test("Order of cartasian set operations", () => {
+  {
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([3, 4]).as("B");
+
+    const c = new CSet([5, 6]).as("A");
+    const d = new CSet([7, 8]).as("B");
+
+    const ab = a.cartesianProduct(b);
+    const dc = d.cartesianProduct(c);
+
+    const ab_UNION_dc = ab.union(dc);
+
+    expect([...ab_UNION_dc.values()]).toEqual([[1,3],[1,4],[2,3],[2,4],[5,7],[6,7],[5,8],[6,8]]);
+
+  }
+
+  {
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([3, 4]).as("B");
+
+    const c = new CSet([1, 2]).as("A");
+    const d = new CSet([3, 5]).as("B");
+
+    const ab = a.cartesianProduct(b);
+    const dc = d.cartesianProduct(c);
+
+    expect(dc.header).toEqual(["B", "A"]);
+
+    const ab_INTERSECT_dc = ab.intersect(dc);
+
+    expect([...ab_INTERSECT_dc.values()]).toEqual([[1,3],[2,3]]);
+  }
+
+  {
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([3, 4]).as("B");
+
+    const c = new CSet([1, 2]).as("A");
+    const d = new CSet([3, 5]).as("B");
+
+    const ab = a.cartesianProduct(b);
+    const dc = d.cartesianProduct(c);
+
+    const ab_DIFFERENCE_dc = ab.difference(dc);
+
+    expect([...ab_DIFFERENCE_dc.values()]).toEqual([[1,4],[2,4]]);
+  }
+
+});
+
+// TODO: test cartesian for duplicated values (for self, union, ...)
+
+

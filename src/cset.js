@@ -85,6 +85,21 @@ class Op {
     }
 }
 
+function reorder (aHeader, bHeader, values) {
+    if (aHeader instanceof Array && bHeader instanceof Array) {
+        const r = [];
+        for (let i=0; i<bHeader.length; i++) {
+            const label = bHeader[i];
+            r[aHeader.indexOf(label)] = values[i];
+        }
+
+        return r;
+    }
+    else {
+        return values;
+    }
+}
+
 class CartesianSet extends Op {
     constructor (a, b) {
         super();
@@ -131,10 +146,7 @@ class CartesianSet extends Op {
             const h = new Set([...a, ...b]);
 
             if (h.size === b.length) {
-                // (A x B) /\ (C x D) = (A x C) /\ (B x D)
-                return this.a.intersect(s.a).cartesianProduct(
-                    this.b.intersect(s.b)
-                );
+                return new Intersect(this, s);
             }
         }
 
@@ -154,13 +166,7 @@ class CartesianSet extends Op {
             const h = new Set([...a, ...b]);
 
             if (h.size === b.length) {
-                // (A x C) \ (B x D) = [A x (C \ D)] \/ [(A \ B) x C]
-                return new Union(
-                    this.a.cartesianProduct(
-                    this.b.difference(s.b)
-                    ), 
-                    this.a.difference(s.a).cartesianProduct(this.b)
-                );
+                return new Difference(this, s);
             }
         }
 
@@ -179,15 +185,7 @@ class CartesianSet extends Op {
             const h = new Set([...a, ...b]);
 
             if (h.size === b.length) {
-                return new Union(
-                    this.a.difference(s.a).cartesianProduct(this.b),
-                    new Union(
-                        this.a.intersect(s.a)
-                        .cartesianProduct(this.b.union(s.b)),
-                        s.a.difference(this.a)
-                        .cartesianProduct(s.b)
-                    )
-                );
+                return new Union(this, s);
             }
         }
 
@@ -277,7 +275,9 @@ class Difference extends Op {
     }
 
     has (x) {
-        return this.a.has(x) && !this.b.has(x);
+        return this.a.has(x) && !this.b.has(
+            reorder(this.b.header, this.a.header, x)
+        );
     }
 
     count () {
@@ -285,8 +285,11 @@ class Difference extends Op {
     }
 
     *values () {
+        const a = this.a.header;
+        const b = this.b.header;
+
         for (let x of this.a.values()) {
-            if (!this.b.has(x)) {
+            if (!this.b.has(reorder(b, a, x))) {
                 yield x; 
             }
         }
@@ -301,7 +304,9 @@ class Intersect extends Op {
     }
 
     has (x) {
-        return this.a.has(x) && this.b.has(x);
+        return this.a.has(x) && this.b.has(
+            reorder(this.b.header, this.a.header, x)
+        );
     }
 
     count () {
@@ -314,8 +319,11 @@ class Intersect extends Op {
     }
 
     *values () {
+        const a = this.a.header;
+        const b = this.b.header;
+
         for (let x of this.a.values()) {
-            if (this.b.has(x)) {
+            if (this.b.has(reorder(b, a, x))) {
                 yield x;
             }
         }
@@ -331,7 +339,9 @@ class Union extends Op {
     }
 
     has (x) {
-        return this.a.has(x) || this.b.has(x);
+        return this.a.has(x) || this.b.has(
+            reorder(this.b.header, this.a.header, x)
+        );
     }
 
     count () {
@@ -343,7 +353,13 @@ class Union extends Op {
             yield x;
         }
 
+        const a = this.a.header;
+        const b = this.b.header;
+
+        // map values to headers,
         for (let x of this.b.values()) {
+            x = reorder(a, b, x);
+
             if (!this.a.has(x)) {
                 yield x;
             }
@@ -458,7 +474,5 @@ class ArraySet extends Op {
     }
 
 }
-
-const emptySet = new ArraySet([]);
 
 module.exports = ArraySet;
