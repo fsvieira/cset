@@ -36,6 +36,28 @@ Creates a set with the intersection of two sets.
     );
 ```
 
+### Intersection of cartesian product
+
+Both cartesian product must have same headers, headers don't need to be in the same order.
+
+```javascript
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([3, 4]).as("B");
+
+    const c = new CSet([1, 2]).as("A");
+    const d = new CSet([3, 5]).as("B");
+
+    const ab = a.cartesianProduct(b);
+    const dc = d.cartesianProduct(c);
+
+    console.log(dc.header); // ["B", "A"];
+    console.log(ab.header); // ["A", "B"];
+
+    const ab_INTERSECT_dc = ab.intersect(dc);
+
+    consol.log([...ab_INTERSECT_dc.values()]); // [[1,3],[2,3]]
+```
+
 
 ## Union
 
@@ -47,24 +69,83 @@ Creates a set with the union of two sets.
     );
 ```
 
+### Union of cartesian product
+
+Both cartesian product must have same headers, headers don't need to be in the same order.
+
+```javascript
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([3, 4]).as("B");
+
+    const c = new CSet([5, 6]).as("A");
+    const d = new CSet([7, 8]).as("B");
+
+    const ab = a.cartesianProduct(b);
+    const cd = c.cartesianProduct(d);
+
+    const ab_UNION_cd = ab.union(cd);
+
+    console.log([...ab_UNION_cd.values()]); // [[1,3],[1,4],[2,3],[2,4],[5,7],[6,7],[5,8],[6,8]]
+
+```
+
 ## Difference
 
 Creates a set with the difference of two sets.
-
 
 ```javascript
     const A = new CSet([1, 2, 3]).difference(
         new CSet([1, 2])
     );
 ```
-## SymetricDifference
 
-Creates a set with the symetric difference of two sets.
+### Difference of cartesian product
+
+Both cartesian product must have same headers, headers don't need to be in the same order.
 
 ```javascript
-    const A = new CSet([1, 2, 3]).symetricDifference(
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([3, 4]).as("B");
+
+    const c = new CSet([1, 2]).as("A");
+    const d = new CSet([3, 5]).as("B");
+
+    const ab = a.cartesianProduct(b);
+    const dc = d.cartesianProduct(c);
+
+    const ab_DIFFERENCE_dc = ab.difference(dc);
+
+    console.log([...ab_DIFFERENCE_dc.values()]); // [[1,4],[2,4]]
+```
+
+
+## SymmetricDifference
+
+Creates a set with the symmetric difference of two sets.
+
+```javascript
+    const A = new CSet([1, 2, 3]).symmetricDifference(
         new CSet([1, 2])
     );
+```
+
+### SymmetricDifference of cartesian product
+
+Both cartesian product must have same headers, headers don't need to be in the same order.
+
+```javascript
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([3, 4]).as("B");
+
+    const c = new CSet([1, 2]).as("A");
+    const d = new CSet([3, 5]).as("B");
+
+    const ab = a.cartesianProduct(b);
+    const dc = d.cartesianProduct(c);
+
+    const ab_SYMMETRIC_DIFFERENCE_dc = ab.symmetricDifference(dc);
+
+    console.log(JSON.stringify([...ab_SYMMETRIC_DIFFERENCE_dc.values()])); // [[1,4],[2,4],[1,5],[2,5]]
 ```
 
 ## CartesianProduct

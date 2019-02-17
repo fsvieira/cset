@@ -351,6 +351,21 @@ test("Order of cartasian set operations", () => {
     expect([...ab_DIFFERENCE_dc.values()]).toEqual([[1,4],[2,4]]);
   }
 
+  {
+    const a = new CSet([1, 2]).as("A");
+    const b = new CSet([3, 4]).as("B");
+
+    const c = new CSet([1, 2]).as("A");
+    const d = new CSet([3, 5]).as("B");
+
+    const ab = a.cartesianProduct(b);
+    const dc = d.cartesianProduct(c);
+
+    const ab_SYMMETRIC_DIFFERENCE_dc = ab.symmetricDifference(dc);
+
+    expect([...ab_SYMMETRIC_DIFFERENCE_dc.values()]).toEqual([[1,4],[2,4],[1,5],[2,5]]);
+  }
+
 });
 
 // TODO: test cartesian for duplicated values (for self, union, ...)

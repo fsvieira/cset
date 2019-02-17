@@ -21,7 +21,7 @@ class Op {
         return new CartesianSet(this, s);
     }
 
-    symetricDifference (s) {
+    symmetricDifference (s) {
         return this.union(s).difference(this.intersect(s));
     }
 
