@@ -124,58 +124,78 @@ class CartesianSet extends Op {
 
     // https://en.wikipedia.org/wiki/Cartesian_product
     intersect (s) {
-        if (
-            s instanceof CartesianSet &&
-            this.length === s.length
-        ) {
-            // (A x B) /\ (C x D) = (A x C) /\ (B x D)
-            return this.a.intersect(s.a).cartesianProduct(
-                this.b.intersect(s.b)
-            );
+        const a = this.header;
+        const b = s.header;
+
+        if (a instanceof Array && b instanceof Array && a.length === b.length) {
+            const h = new Set([...a, ...b]);
+
+            if (h.size === b.length) {
+                // (A x B) /\ (C x D) = (A x C) /\ (B x D)
+                return this.a.intersect(s.a).cartesianProduct(
+                    this.b.intersect(s.b)
+                );
+            }
         }
-        
-        return emptySet;
+
+        throw `Invalid intersect, headers don't match ${
+            a instanceof Array?a.join(", "):a
+        } <> ${
+            b instanceof Array?b.join(", "):b
+        }`;
+
     }
 
     difference (s) {
-        if (
-            s instanceof CartesianSet &&
-            this._length === s._length
-        ) {
-            // (A x C) \ (B x D) = [A x (C \ D)] \/ [(A \ B) x C]
-            return new Union(
-                this.a.cartesianProduct(
-                this.b.difference(s.b)
-                ), 
-                this.a.difference(s.a).cartesianProduct(this.b)
-            );
+        const a = this.header;
+        const b = s.header;
+
+        if (a instanceof Array && b instanceof Array && a.length === b.length) {
+            const h = new Set([...a, ...b]);
+
+            if (h.size === b.length) {
+                // (A x C) \ (B x D) = [A x (C \ D)] \/ [(A \ B) x C]
+                return new Union(
+                    this.a.cartesianProduct(
+                    this.b.difference(s.b)
+                    ), 
+                    this.a.difference(s.a).cartesianProduct(this.b)
+                );
+            }
         }
 
-        return this;
+        throw `Invalid difference, headers don't match ${
+            a instanceof Array?a.join(", "):a
+        } <> ${
+            b instanceof Array?b.join(", "):b
+        }`;
     }
 
     union (s) {
-        if (
-            s instanceof CartesianSet &&
-            this._length === s._length
-        ) {
-            // (A x C) \/ (B x D) = [(A \ B) x C] \/ [(A /\ B) x (C \/ D)] \/ [(B \ A) x D]
+        const a = this.header;
+        const b = s.header;
 
-            return new Union(
-                this.a.difference(s.a).cartesianProduct(this.b),
-                new Union(
-                    this.a.intersect(s.a)
-                    .cartesianProduct(this.b.union(s.b)),
-                    s.a.difference(this.a)
-                    .cartesianProduct(s.b)
-                )
-            );
+        if (a instanceof Array && b instanceof Array && a.length === b.length) {
+            const h = new Set([...a, ...b]);
+
+            if (h.size === b.length) {
+                return new Union(
+                    this.a.difference(s.a).cartesianProduct(this.b),
+                    new Union(
+                        this.a.intersect(s.a)
+                        .cartesianProduct(this.b.union(s.b)),
+                        s.a.difference(this.a)
+                        .cartesianProduct(s.b)
+                    )
+                );
+            }
         }
-        
-        return new Union(
-            this,
-            s
-        );
+
+        throw `Invalid union, headers don't match ${
+            a instanceof Array?a.join(", "):a
+        } <> ${
+            b instanceof Array?b.join(", "):b
+        }`;
     }
 
     count () {

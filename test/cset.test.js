@@ -63,12 +63,12 @@ test('Set cartasian product intersection', () => {
   const b = new CSet([3, 4]).as("B");
   const ab = a.cartesianProduct(b);
 
-  const c = new CSet([1, 3]).as("C");
-  const d = new CSet([2, 4]).as("D");
+  const c = new CSet([1, 3]).as("A");
+  const d = new CSet([2, 4]).as("B");
 
   const cd = c.cartesianProduct(d);
 
-  expect(cd.header).toEqual(["C", "D"]);
+  expect(cd.header).toEqual(["A", "B"]);
 
   const abcd = ab.intersect(cd);
 
@@ -76,16 +76,15 @@ test('Set cartasian product intersection', () => {
 
   expect([...abcd.values()]).toEqual([[1, 4]]);
   expect(abcd.has([1, 4])).toBeTruthy();
-
 });
 
 test('Set cartasian product difference', () => {
-  const a = new CSet([1, 2]);
-  const b = new CSet([3, 4]);
+  const a = new CSet([1, 2]).as("A");
+  const b = new CSet([3, 4]).as("B");
   const ab = a.cartesianProduct(b);
 
-  const c = new CSet([1, 3]);
-  const d = new CSet([2, 4]);
+  const c = new CSet([1, 3]).as("A");
+  const d = new CSet([2, 4]).as("B");
 
   const cd = c.cartesianProduct(d);
 

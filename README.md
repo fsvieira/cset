@@ -1,7 +1,7 @@
 # CSet
 
 CSet is a javascript lazzy Set library with support for cartesian product and predicate filtering, that is loosely based on 
-tuple relation calculus).
+tuple relation calculus and relation algebra.
 
 Currently CSet support most normal set operation, including cartesian product.
 
