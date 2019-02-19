@@ -72,10 +72,6 @@ class Op {
         return this.a.count();
     }
 
-    permutation (x) {
-        return new Permutation(this, x);
-    }
-
     get header () {
         return this.a.header;
     }
@@ -112,7 +108,6 @@ class CartesianSet extends Op {
         if (h.length !== s.size) {
             throw `Repeated headers are not allowed ${h.join(", ")}`;
         }
-
     }
     
     get _length () {
@@ -209,16 +204,28 @@ class CartesianSet extends Op {
         );
     }
 
-    *values () {
-        for (let x of this.a.values()) {
+    *values (p) {
+
+        let f, pa, pb, header;
+        if (p) {
+            f = p.filter(this);
+            pa = p.filter(this.a);
+            pb = p.filter(this.b);
+
+            header = this.header;
+        }
+
+        for (let x of this.a.values(pa)) {
             const a = (x instanceof Array)?x:[x];
 
-            for (let y of this.b.values()) {
+            for (let y of this.b.values(pb)) {
                 const r = a.concat(
                     y instanceof Array?y:[y]
                 );
 
-                yield r;
+                if (!f || f.test(header, r)) {
+                    yield r;
+                }
             }
         }
     }
@@ -251,16 +258,28 @@ class DistinctCartesianSet extends CartesianSet {
         return total;
     }
 
-    *values () {
-        for (let x of this.a.values()) {
+    *values (p) {
+        let f, pa, pb, header;
+        if (p) {
+            f = p.filter(this);
+            pa = p.filter(this.a);
+            pb = p.filter(this.b);
+
+            header = this.header;
+        }
+
+        for (let x of this.a.values(pa)) {
             const a = x instanceof Array?x:[x];
 
-            for (let y of this.b.values()) {
+            for (let y of this.b.values(pb)) {
                 const b = y instanceof Array?y:[y];
                 const s = a.filter(x => b.includes(x));
 
                 if (s.length === 0) {
-                    yield a.concat(b);
+                    const r = a.concat(b);
+                    if (!f || f.test(header, r)) {
+                        yield r;
+                    }
                 }
             }
         }
@@ -284,11 +303,11 @@ class Difference extends Op {
         return this.a.count() - this.a.intersect(this.b).count();
     }
 
-    *values () {
+    *values (p) {
         const a = this.a.header;
         const b = this.b.header;
 
-        for (let x of this.a.values()) {
+        for (let x of this.a.values(p)) {
             if (!this.b.has(reorder(b, a, x))) {
                 yield x; 
             }
@@ -318,11 +337,11 @@ class Intersect extends Op {
         return counter;
     }
 
-    *values () {
+    *values (p) {
         const a = this.a.header;
         const b = this.b.header;
 
-        for (let x of this.a.values()) {
+        for (let x of this.a.values(p)) {
             if (this.b.has(reorder(b, a, x))) {
                 yield x;
             }
@@ -348,8 +367,8 @@ class Union extends Op {
         return this.a.count() + this.b.count() - this.a.intersect(this.b).count();
     }
 
-    *values () {
-        for (let x of this.a.values()) {
+    *values (p) {
+        for (let x of this.a.values(p)) {
             yield x;
         }
 
@@ -357,7 +376,7 @@ class Union extends Op {
         const b = this.b.header;
 
         // map values to headers,
-        for (let x of this.b.values()) {
+        for (let x of this.b.values(p)) {
             x = reorder(a, b, x);
 
             if (!this.a.has(x)) {
@@ -385,14 +404,80 @@ class Alias extends Op {
         return this.name;
     }
 
+    get renameTable () {
+        if (this._renameTable) {
+            return this._renameTable;
+        }
+        else {
+            const header = this.header;
+            const aHeader = this.a.header;
+
+            const renameTable = new Map();
+            for (let i=0; i<header.length; i++) {
+                renameTable.set(header[i], aHeader[i]);
+            }
+
+            this._renameTable = renameTable;
+            return renameTable;
+        }
+    }
+
     has (x) {
         return this.a.has(x);
     }
 
-    *values () {
-        for (let e of this.a.values()) {
+    *values (p) {
+        // rewrite constrains,
+        if (p) {
+            p = p.rename(this.a, this.renameTable);
+        }
+
+        for (let e of this.a.values(p)) {
             yield e;
         }
+    }
+}
+
+
+class ConstrainsGroup {
+
+    constructor (cs) {
+        this.constrains = cs || [];
+    }
+
+    add (c) {
+        this.constrains.push(c);
+        return this;
+    }
+    
+    filter (a) {
+        const header = a.header;
+
+        const cs = this.constrains.filter(v => v.canApply(header));
+
+        if (cs.length === this.constrains.length) {
+            return this;
+        }
+        else if (cs.length > 0) {
+            return new ConstrainsGroup(cs);
+        }
+    }
+
+    rename (a, renameTable) {
+        return new ConstrainsGroup(
+            this.constrains.map(v => v.rename(a, renameTable))
+        );
+    }
+
+    test (header, x) {
+        for (let i=0; i<this.constrains.length; i++) {
+            const c = this.constrains[i];
+            if (!c.test(header, x)) {
+                return;
+            }
+        }
+
+        return x;
     }
 }
 
@@ -404,8 +489,7 @@ class Constrain extends Op {
 
         for (let i=0; i<alias.length; i++) {
             const a = alias[i];
-            const counter = header.filter(x => x === a).length;
-            if (counter === 0) {
+            if (!header.includes(a)) {
                 throw new Error(`Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`);
             }
         }
@@ -414,14 +498,22 @@ class Constrain extends Op {
         this.name = name;
         this.alias = alias;
         this.predicate = predicate;
-        this._header = header;
     }
 
-    test (x) {
+    rename (a, renameTable) {
+        return new Constrain(
+            a,
+            this.name,
+            alias.map(v => renameTable[v]),
+            this.predicate
+        );
+    }
+
+    test (header, x) {
         const arg = {};
         for (let i=0; i<this.alias.length; i++) {
             const alias = this.alias[i];
-            const index = this._header.indexOf(alias);
+            const index = header.indexOf(alias);
 
             arg[alias] = x[index];
         }
@@ -439,15 +531,26 @@ class Constrain extends Op {
     }
 
     has (x) {
-        return this.test(x) && this.a.has(x);
+        return this.test(this.a.header, x) && this.a.has(x);
     }
 
-    *values () {
-        for (let e of this.a.values()) {
-            if (this.test(e)) {
-                yield e;
+    *values (p) {
+        p = (p || new ConstrainsGroup()).add(this);
+
+        for (let e of this.a.values(p)) {
+            yield e;
+        }
+    }
+
+    canApply (header) {
+        for (let i=0; i<this.alias.length; i++) {
+            const a = this.alias[i];
+            if (!header.includes(a)) {
+                return false;
             }
         }
+
+        return true;
     }
 }
 
@@ -469,8 +572,21 @@ class ArraySet extends Op {
         return this.name;
     }
 
-    values () {
-        return new Set([...this._values]).values();
+    *values (p) {
+        if (p) {
+            const header = [this.header];
+
+            for (let e of this._values) {
+                if (p.test(header, [e])) {
+                    yield e;
+                }
+            } 
+        }
+        else {
+            for (let e of this._values) {
+                yield e;
+            }
+        }
     }
 
 }
