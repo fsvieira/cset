@@ -103,7 +103,7 @@ test('Set cartasian no repeat product', () => {
   const ab = a.cartesianProduct(b)
     .constrain(["a", "b"], {
       name: "<>",
-      predicate: ({a, b}) => a !== b 
+      predicate: (a, b) => a !== b
     });
 
   expect([...ab.values()]).toEqual([[1, 2], [2, 1]]);
@@ -119,7 +119,7 @@ test('Set cartasian no repeat product', () => {
   const abc = ab.cartesianProduct(c).constrain(
     ["a", "b", "c"], {
       name: "<>",
-      predicate: ({a, b, c}) => a !== b && a !== c && b !== c
+      predicate: (a, b, c) => a !== b && a !== c && b !== c
     });
 
   expect([...abc.values()]).toEqual([[1, 2, 3], [2, 1, 3]]);
@@ -221,7 +221,7 @@ test("Count", () => {
     ["A", "B"],
     {
       name: "odd-sum",
-      predicate: ({A, B}) => (A + B) % 2 === 1
+      predicate: (A, B) => (A + B) % 2 === 1
     }
   ); 
 
@@ -247,7 +247,7 @@ test("distinct cartesian product (SEND MORE MONEY)", () => {
       ["S", "E", "N", "D", "M", "O", "R", "Y"],
       {
         name: "add",
-        predicate: ({S, E, N, D, M, O, R, Y}) => 
+        predicate: (S, E, N, D, M, O, R, Y) => 
             S * 1000 + E * 100 + N * 10 + D 
           + M * 1000 + O * 100 + R * 10  + E  
             === 
@@ -368,6 +368,60 @@ test("Order of cartasian set operations", () => {
 
 });
 
+test("domain set extraction", () => {
+
+    const a = new CSet([1, 2]).as("a");
+    const b = new CSet([1, 2]).as("b");
+
+    expect(a.domain("a")).toEqual([1, 2]);
+    expect(a.cartesianProduct(b).domain("a")).toEqual([1, 2]);
+
+    expect(a.cartesianProduct(b).constrain(
+      ["a"], {
+        name: "!2",
+        predicate: x => x !== 2
+      }
+    ).domain("a")).toEqual([1]);
+});
+
+test("is equal", () => {
+  const s = new CSet([0, 1]);
+  const zero = new CSet([0]);
+  const one = new CSet([1]);
+
+
+  // and operation set,
+
+  const a = zero.as("a").cartesianProduct(zero.as("b")).cartesianProduct(zero.as("c"))
+    .union(zero.as("a").cartesianProduct(one.as("b")).cartesianProduct(zero.as("c")))
+    .union(one.as("a").cartesianProduct(zero.as("b")).cartesianProduct(zero.as("c")))
+    .union(one.as("a").cartesianProduct(one.as("b")).cartesianProduct(one.as("c")));
+
+  expect([...a.values()]).toEqual([
+    [0, 0, 0],
+    [0, 1, 0],
+    [1, 0, 0],
+    [1, 1, 1]
+  ]);
+
+  const b = s.as("a").cartesianProduct(s.as("b")).cartesianProduct(s.as("c"))
+    .constrain(["a", "b"], {name: "=", predicate: (a, b) => a === b})
+    .constrain(["a", "c"], {name: "=", predicate: (a, c) => a === c})
+    .constrain(["b", "c"], {name: "=", predicate: (b, c) => b === c})
+    .union(
+        s.as("a").cartesianProduct(s.as("b")).cartesianProduct(zero.as("c"))
+        .constrain(["a", "b"], {name: "<>", predicate: (a, b) => a !== b})
+    );
+
+    expect([...b.values()]).toEqual([
+      [0, 0, 0],
+      [1, 1, 1],
+      [0, 1, 0],
+      [1, 0, 0]
+    ]);
+  
+    expect(a.isEqual(b)).toBe(true);
+
+});
+
 // TODO: test cartesian for duplicated values (for self, union, ...)
-
-

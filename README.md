@@ -368,6 +368,24 @@ It counts the elements on a set.
   console.log(a.count()); // 3
 ```
 
+# Domain
+Get the domain of a variable.
+
+```javascript
+    const a = new CSet([1, 2]).as("a");
+    const b = new CSet([1, 2]).as("b");
+
+    expect(a.domain("a")).toEqual([1, 2]);
+    expect(a.cartesianProduct(b).domain("a")).toEqual([1, 2]);
+
+    expect(a.cartesianProduct(b).constrain(
+      ["a"], {
+        name: "!2",
+        predicate: x => x !== 2
+      }
+    ).domain("a")).toEqual([1]);
+```
+
 
 # Examples
 

@@ -229,6 +229,16 @@ class CartesianSet extends Op {
             }
         }
     }
+
+    domain (v, p) {
+        if (this.a.header.includes(v)) {
+            return this.a.domain(v, p);
+        }
+        else if (this.b.header.includes(v)) {
+            return this.b.domain(v, p);
+        }
+    }
+
 }
 
 class DistinctCartesianSet extends CartesianSet {
@@ -313,6 +323,22 @@ class Difference extends Op {
             }
         }
     }
+
+    domain (v, p) {
+        const header = this.header;
+        if (header === v) {
+            return [...this.values(p)];
+        }
+        else if (header instanceof Array) {
+            if (this.a.header.includes(v)) {
+                return this.a.domain(v, p);
+            }
+            else if (this.b.header.includes(v)) {
+                return this.b.domain(v, p);
+            }
+        }
+    }
+
 }
 
 class Intersect extends Op {
@@ -344,6 +370,21 @@ class Intersect extends Op {
         for (let x of this.a.values(p)) {
             if (this.b.has(reorder(b, a, x))) {
                 yield x;
+            }
+        }
+    }
+
+    domain (v, p) {
+        const header = this.header;
+        if (header === v) {
+            return [...this.values(p)];
+        }
+        else if (header instanceof Array) {
+            if (this.a.header.includes(v)) {
+                return this.a.domain(v, p);
+            }
+            else if (this.b.header.includes(v)) {
+                return this.b.domain(v, p);
             }
         }
     }
@@ -385,6 +426,20 @@ class Union extends Op {
         }
     }
 
+    domain (v, p) {
+        const header = this.header;
+        if (header === v) {
+            return [...this.values(p)];
+        }
+        else if (header instanceof Array) {
+            if (this.a.header.includes(v)) {
+                return this.a.domain(v, p);
+            }
+            else if (this.b.header.includes(v)) {
+                return this.b.domain(v, p);
+            }
+        }
+    }
 }
 
 class Alias extends Op {
@@ -413,8 +468,14 @@ class Alias extends Op {
             const aHeader = this.a.header;
 
             const renameTable = new Map();
-            for (let i=0; i<header.length; i++) {
-                renameTable.set(header[i], aHeader[i]);
+
+            if (header instanceof Array) {
+                for (let i=0; i<header.length; i++) {
+                    renameTable.set(header[i], aHeader[i]);
+                }
+            }
+            else {
+                renameTable.set(header, aHeader);
             }
 
             this._renameTable = renameTable;
@@ -435,6 +496,20 @@ class Alias extends Op {
         for (let e of this.a.values(p)) {
             yield e;
         }
+    }
+
+    domain (v, p) {
+        const header = this.header; 
+        if (header instanceof Array) {
+            if (header.includes(v)) {
+                const rt = this.renameTable;
+                p = p?p.rename(this.a, rt):undefined;
+                return this.a.domain(rt.get(v), p);
+            }
+        }
+        else if (this.header === v) {
+            return [...this.values(p)];
+        } 
     }
 }
 
@@ -487,11 +562,19 @@ class Constrain extends Op {
 
         const header = a.header;
 
-        for (let i=0; i<alias.length; i++) {
-            const a = alias[i];
-            if (!header.includes(a)) {
-                throw new Error(`Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`);
+        if (header instanceof Array) {
+            for (let i=0; i<alias.length; i++) {
+                const a = alias[i];
+                if (!header.includes(a)) {
+                    console.log(typeof header);
+
+                    throw new Error(`Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`);
+                }
             }
+        }
+        else if (alias.length !== 1 || header !== alias[0]) {
+            console.log(JSON.stringify(alias));
+            throw new Error(`Alias ${alias.join(", ")} in constrain ${name} is not found on headers ${header}`);
         }
 
         this.a = a;
@@ -504,21 +587,21 @@ class Constrain extends Op {
         return new Constrain(
             a,
             this.name,
-            alias.map(v => renameTable[v]),
+            this.alias.map(v => renameTable.get(v)),
             this.predicate
         );
     }
 
     test (header, x) {
-        const arg = {};
+        const arg = [];
         for (let i=0; i<this.alias.length; i++) {
             const alias = this.alias[i];
             const index = header.indexOf(alias);
 
-            arg[alias] = x[index];
+            arg.push(x[index]);
         }
 
-        return this.predicate(arg);
+        return this.predicate(...arg);
     }
 
     count () {
@@ -545,12 +628,25 @@ class Constrain extends Op {
     canApply (header) {
         for (let i=0; i<this.alias.length; i++) {
             const a = this.alias[i];
-            if (!header.includes(a)) {
+            if (header instanceof Array) {
+                if (!header.includes(a)) {
+                    return false;
+                }
+            }
+            else if (header !== a) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    domain (v, p) {
+        if (this.header.includes(v)) {
+            p = (p || new ConstrainsGroup()).add(this);
+
+            return this.a.domain(v, p);
+        }
     }
 }
 
@@ -586,6 +682,12 @@ class ArraySet extends Op {
             for (let e of this._values) {
                 yield e;
             }
+        }
+    }
+
+    domain(v, p) {
+        if (this.header === v) {
+            return [...this.values(p)];
         }
     }
 
