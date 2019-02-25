@@ -6,6 +6,13 @@ class Op {
     }
 
     union (s) {
+        if (this.isEmpty()) {
+            return s;
+        }
+        else if (s.isEmpty()) {
+            return this;
+        }
+
         return new Union(this, s);
     }
 
@@ -432,12 +439,16 @@ class Union extends Op {
             return [...this.values(p)];
         }
         else if (header instanceof Array) {
+            let r = new Set();
             if (this.a.header.includes(v)) {
-                return this.a.domain(v, p);
+                r = new Set([...r, ...this.a.domain(v, p)]);
             }
-            else if (this.b.header.includes(v)) {
-                return this.b.domain(v, p);
+            
+            if (this.b.header.includes(v)) {
+                r = new Set([...r, ...this.b.domain(v, p)]);
             }
+
+            return [...r];
         }
     }
 }
@@ -566,14 +577,11 @@ class Constrain extends Op {
             for (let i=0; i<alias.length; i++) {
                 const a = alias[i];
                 if (!header.includes(a)) {
-                    console.log(typeof header);
-
                     throw new Error(`Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`);
                 }
             }
         }
         else if (alias.length !== 1 || header !== alias[0]) {
-            console.log(JSON.stringify(alias));
             throw new Error(`Alias ${alias.join(", ")} in constrain ${name} is not found on headers ${header}`);
         }
 
