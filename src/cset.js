@@ -50,8 +50,8 @@ class Op {
     }
 
     // test methods,
-    isEmpty () {
-        return this.values().next().done;
+    isEmpty (p) {
+        return this.values(p).next().done;
     }
 
     isSubset (x) {
@@ -306,6 +306,25 @@ class DistinctCartesianSet extends CartesianSet {
             }
         }
     }
+
+    domain (a, p) {
+        const d = super.domain(a, p);
+        const r = [];
+
+        for (let i=0; i<d.length; i++) {
+            const v = d[i];
+            const t = this.constrain([a], {
+                name: "const",
+                predicate: a => a === v 
+            });
+
+            if (!t.isEmpty(p)) {
+                r.push(v);
+            }
+        }
+
+        return r;
+    }
 }
 
 class Difference extends Op {
@@ -332,13 +351,13 @@ class Difference extends Op {
         for (let x of this.a.values(p)) {
             const bx = reorder(b, a, x);
 
-            if ((!p || !p.test(b, bx)) && !this.b.has(bx)) {
+            if ((!p || p.test(b, bx)) && !this.b.has(bx)) {
                 yield x;
             }
         }
     }
 
-    domain (v, p) {
+    _domain (v, p) {
         const header = this.header;
         if (header === v) {
             return [...this.values(p)];
@@ -349,6 +368,29 @@ class Difference extends Op {
             }
             // we are only interested on a values,
         }
+    }
+
+    domain (a, p) {
+        const d = this._domain(a, p);
+        const r = [];
+
+        for (let e of this.values()) {
+            console.log(e);
+        }
+
+        for (let i=0; i<d.length; i++) {
+            const v = d[i];
+            const t = this.constrain([a], {
+                name: "const",
+                predicate: a => a === v
+            });
+
+            if (!t.isEmpty(p)) {
+                r.push(v);
+            }
+        }
+
+        return r;
     }
 
 }
@@ -388,7 +430,7 @@ class Intersect extends Op {
         }
     }
 
-    domain (v, p) {
+    _domain (v, p) {
         const header = this.header;
         if (header === v) {
             return [...this.values(p)];
@@ -402,6 +444,26 @@ class Intersect extends Op {
             }
         }
     }
+
+    domain (a, p) {
+        const d = this._domain(a, p);
+        const r = [];
+
+        for (let i=0; i<d.length; i++) {
+            const v = d[i];
+            const t = this.constrain([a], {
+                name: "const",
+                predicate: a => a === v 
+            });
+
+            if (!t.isEmpty(p)) {
+                r.push(v);
+            }
+        }
+
+        return r;
+    }
+
 }
 
 class Union extends Op {
@@ -440,7 +502,7 @@ class Union extends Op {
         }
     }
 
-    domain (v, p) {
+    _domain (v, p) {
         const header = this.header;
         if (header === v) {
             return [...this.values(p)];
@@ -458,6 +520,26 @@ class Union extends Op {
             return [...r];
         }
     }
+
+    domain (a, p) {
+        const d = this._domain(a, p);
+        const r = [];
+
+        for (let i=0; i<d.length; i++) {
+            const v = d[i];
+            const t = this.constrain([a], {
+                name: "const",
+                predicate: a => a === v 
+            });
+
+            if (!t.isEmpty(p)) {
+                r.push(v);
+            }
+        }
+
+        return r;
+    }
+
 }
 
 class Alias extends Op {
@@ -634,7 +716,7 @@ class Constrain extends Op {
     }
 
     has (x) {
-        return this.test(this.a.header, x) && this.a.has(x)
+        return this.test(this.a.header, x) && this.a.has(x);
     }
 
     *values (p) {
