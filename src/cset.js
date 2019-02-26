@@ -84,6 +84,11 @@ class Op {
     }
 
     get _length () {
+        const h = this.header;
+        if (h instanceof Array) {
+            return h.length;
+        }
+
         return 1;
     }
 }
@@ -325,8 +330,10 @@ class Difference extends Op {
         const b = this.b.header;
 
         for (let x of this.a.values(p)) {
-            if (!this.b.has(reorder(b, a, x))) {
-                yield x; 
+            const bx = reorder(b, a, x);
+
+            if ((!p || !p.test(b, bx)) && !this.b.has(bx)) {
+                yield x;
             }
         }
     }
@@ -375,7 +382,9 @@ class Intersect extends Op {
         const b = this.b.header;
 
         for (let x of this.a.values(p)) {
-            if (this.b.has(reorder(b, a, x))) {
+            const bx = reorder(b, a, x);
+
+            if ((!p || p.test(bx)) && this.b.has(bx)) {
                 yield x;
             }
         }
@@ -427,7 +436,7 @@ class Union extends Op {
         for (let x of this.b.values(p)) {
             x = reorder(a, b, x);
 
-            if (!this.a.has(x)) {
+            if ((!p || p.test(a, x)) && !this.a.has(x)) {
                 yield x;
             }
         }
@@ -601,15 +610,20 @@ class Constrain extends Op {
     }
 
     test (header, x) {
-        const arg = [];
-        for (let i=0; i<this.alias.length; i++) {
-            const alias = this.alias[i];
-            const index = header.indexOf(alias);
+        if (this.canApply(header)) {
+            const arg = [];
+            for (let i=0; i<this.alias.length; i++) {
+                const alias = this.alias[i];
+                const index = header.indexOf(alias);
 
-            arg.push(x[index]);
+                arg.push(x[index]);
+            }
+
+            return this.predicate(...arg);
         }
-
-        return this.predicate(...arg);
+        else {
+            return true;
+        }
     }
 
     count () {
@@ -622,7 +636,7 @@ class Constrain extends Op {
     }
 
     has (x) {
-        return this.test(this.a.header, x) && this.a.has(x);
+        return this.test(this.a.header, x) && this.a.has(x)
     }
 
     *values (p) {
