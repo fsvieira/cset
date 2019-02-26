@@ -347,9 +347,7 @@ class Difference extends Op {
             if (this.a.header.includes(v)) {
                 return this.a.domain(v, p);
             }
-            else if (this.b.header.includes(v)) {
-                return this.b.domain(v, p);
-            }
+            // we are only interested on a values,
         }
     }
 
