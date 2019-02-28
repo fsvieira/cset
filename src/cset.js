@@ -243,11 +243,20 @@ class CartesianSet extends Op {
     }
 
     domain (v, p) {
-        if (this.a.header.includes(v)) {
-            return this.a.domain(v, p);
+        let pa, pb;
+        if (p) {
+            pa = p.filter(this.a);
+            pb = p.filter(this.b);
         }
-        else if (this.b.header.includes(v)) {
-            return this.b.domain(v, p);
+
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
+
+        if (aHeader === v || (aHeader instanceof Array && aHeader.includes(v))) {
+            return this.a.domain(v, pa);
+        }
+        else if (bHeader === v || (bHeader instanceof Array && bHeader.includes(v))) {
+            return this.b.domain(v, pb);
         }
     }
 
@@ -374,10 +383,6 @@ class Difference extends Op {
         const d = this._domain(a, p);
         const r = [];
 
-        for (let e of this.values()) {
-            console.log(e);
-        }
-
         for (let i=0; i<d.length; i++) {
             const v = d[i];
             const t = this.constrain([a], {
@@ -424,7 +429,7 @@ class Intersect extends Op {
         for (let x of this.a.values(p)) {
             const bx = reorder(b, a, x);
 
-            if ((!p || p.test(bx)) && this.b.has(bx)) {
+            if ((!p || p.test(b, bx)) && this.b.has(bx)) {
                 yield x;
             }
         }
@@ -599,11 +604,14 @@ class Alias extends Op {
     }
 
     domain (v, p) {
+        if (p) {
+            p = p.rename(this.a, this.renameTable);
+        }
+
         const header = this.header; 
         if (header instanceof Array) {
             if (header.includes(v)) {
                 const rt = this.renameTable;
-                p = p?p.rename(this.a, rt):undefined;
                 return this.a.domain(rt.get(v), p);
             }
         }
@@ -652,7 +660,7 @@ class ConstrainsGroup {
             }
         }
 
-        return x;
+        return true;
     }
 }
 
