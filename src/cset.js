@@ -604,13 +604,13 @@ class Alias extends Op {
     }
 
     domain (v, p) {
-        if (p) {
-            p = p.rename(this.a, this.renameTable);
-        }
-
         const header = this.header; 
         if (header instanceof Array) {
             if (header.includes(v)) {
+                if (p) {
+                    p = p.rename(this.a, this.renameTable);
+                }
+        
                 const rt = this.renameTable;
                 return this.a.domain(rt.get(v), p);
             }
