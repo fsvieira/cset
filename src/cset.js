@@ -702,7 +702,7 @@ class Constrain extends Op {
             const arg = [];
             for (let i=0; i<this.alias.length; i++) {
                 const alias = this.alias[i];
-                const index = header.indexOf(alias);
+                const index = header instanceof Array?header.indexOf(alias):0;
 
                 arg.push(x[index]);
             }
