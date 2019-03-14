@@ -339,22 +339,38 @@ where all set elements must comply with provided constrains.
 
 
 ```javascript
+  const a = new CSet([1, 3, 2]);
+  const b = a.union(new CSet([5, 3, 4])).as("AB");
 
-    const A = new CSet([1, 2, 3, 4, 5, 6, 7, 8, 9])
-        .as("a")
-        .constrain(
-            // the constrain will operate on alias:
-            ["a"],
+  expect(a.count()).toBe(3);
+  expect(b.count()).toBe(5);
 
-            // The predicate,
-            {
-                // name of operator,
-                name: "even",
+  const ab = a.cartesianProduct(b); 
+  expect(ab.count()).toBe(15);
 
-                // predicate,
-                predicate: ({a}) => a % 2 === 0
-            } 
-        );
+  const oddSum = a.as("A").cartesianProduct(b.as("B")).constrain(
+    ["A", "B"],
+    {
+      name: "odd-sum",
+      predicate: (A, B) => (A + B) % 2 === 1
+    }
+  );
+
+  for (let e of oddSum.values()) {
+    console.log(e);
+  }
+
+  /*
+    Output:
+      [ 1, 2 ]
+      [ 1, 4 ]
+      [ 3, 2 ]
+      [ 3, 4 ]
+      [ 2, 1 ]
+      [ 2, 3 ]
+      [ 2, 5 ]
+  */
+
 ```
 
 ## Count
