@@ -1,15 +1,15 @@
-const CSet = require('../src/cset');
+const {CSetArray, CSet} = require('../src/cset');
 
 test('Create a set of 3 elements', () => {
-  const a = new CSet([1, 2, 3]);
+  const a = new CSetArray([1, 2, 3]);
   expect([...a.values()]).toEqual([1, 2, 3]);
   expect(a.has(1)).toBeTruthy();
   expect(a.has(4)).toBeFalsy();
 });
 
 test('Set intersection', () => {
-  const a = new CSet([1, 2, 3]);
-  const b = new CSet([2, 3, 4]);
+  const a = new CSetArray([1, 2, 3]);
+  const b = new CSetArray([2, 3, 4]);
   const ab = a.intersect(b);
   expect([...ab.values()]).toEqual([2, 3]);
 
@@ -19,8 +19,8 @@ test('Set intersection', () => {
 });
 
 test('Set Union', () => {
-  const a = new CSet([1, 2, 3]);
-  const b = new CSet([2, 3, 4]);
+  const a = new CSetArray([1, 2, 3]);
+  const b = new CSetArray([2, 3, 4]);
   const ab = a.union(b);
   expect([...ab.values()]).toEqual([1, 2, 3, 4]);
 
@@ -30,8 +30,8 @@ test('Set Union', () => {
 });
 
 test('Set cartasian product', () => {
-  const a = new CSet([1, 2]);
-  const b = new CSet([3, 4]);
+  const a = new CSetArray([1, 2]);
+  const b = new CSetArray([3, 4]);
   const ab = a.cartesianProduct(b);
   expect([...ab.values()]).toEqual([[1, 3], [1, 4], [2, 3], [2, 4]]);
 
@@ -41,7 +41,7 @@ test('Set cartasian product', () => {
   expect(ab.has([1, 3, 4])).toBeFalsy();
 
   // with 3 elements,
-  const c = new CSet([5, 6]);
+  const c = new CSetArray([5, 6]);
 
   const abc = ab.cartesianProduct(c);
 
@@ -59,12 +59,12 @@ test('Set cartasian product', () => {
 });
 
 test('Set cartasian product intersection', () => {
-  const a = new CSet([1, 2]).as("A");
-  const b = new CSet([3, 4]).as("B");
+  const a = new CSetArray([1, 2]).as("A");
+  const b = new CSetArray([3, 4]).as("B");
   const ab = a.cartesianProduct(b);
 
-  const c = new CSet([1, 3]).as("A");
-  const d = new CSet([2, 4]).as("B");
+  const c = new CSetArray([1, 3]).as("A");
+  const d = new CSetArray([2, 4]).as("B");
 
   const cd = c.cartesianProduct(d);
 
@@ -79,12 +79,12 @@ test('Set cartasian product intersection', () => {
 });
 
 test('Set cartasian product difference', () => {
-  const a = new CSet([1, 2]).as("A");
-  const b = new CSet([3, 4]).as("B");
+  const a = new CSetArray([1, 2]).as("A");
+  const b = new CSetArray([3, 4]).as("B");
   const ab = a.cartesianProduct(b);
 
-  const c = new CSet([1, 3]).as("A");
-  const d = new CSet([2, 4]).as("B");
+  const c = new CSetArray([1, 3]).as("A");
+  const d = new CSetArray([2, 4]).as("B");
 
   const cd = c.cartesianProduct(d);
 
@@ -97,8 +97,8 @@ test('Set cartasian product difference', () => {
 });
 
 test('Set cartasian no repeat product', () => {
-  const a = new CSet([1, 2]).as("a");
-  const b = new CSet([1, 2]).as("b");
+  const a = new CSetArray([1, 2]).as("a");
+  const b = new CSetArray([1, 2]).as("b");
 
   const ab = a.cartesianProduct(b)
     .constrain(["a", "b"], {
@@ -114,7 +114,7 @@ test('Set cartasian no repeat product', () => {
   expect(ab.has([1, 3, 4])).toBeFalsy();
 
   // with 3 elements,
-  const c = new CSet([1, 2, 3]).as("c");
+  const c = new CSetArray([1, 2, 3]).as("c");
 
   const abc = ab.cartesianProduct(c).constrain(
     ["a", "b", "c"], {
@@ -127,9 +127,9 @@ test('Set cartasian no repeat product', () => {
 });
 
 test('Set isEmpty ?', () => {
-  const empty = new CSet([]);
-  const intersectEmpty = new CSet([1, 2]).intersect(new CSet([3, 4]));
-  const notEmpty = new CSet([1, 2]).intersect(new CSet([2, 3, 4]));
+  const empty = new CSetArray([]);
+  const intersectEmpty = new CSetArray([1, 2]).intersect(new CSetArray([3, 4]));
+  const notEmpty = new CSetArray([1, 2]).intersect(new CSetArray([2, 3, 4]));
 
   expect(empty.isEmpty()).toBeTruthy();
   expect(intersectEmpty.isEmpty()).toBeTruthy();
@@ -138,8 +138,8 @@ test('Set isEmpty ?', () => {
 });
 
 test("Subsets and Proper Subsets", () => {
-  const a = new CSet([0, 1, 2]);
-  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  const a = new CSetArray([0, 1, 2]);
+  const b = new CSetArray([0, 1, 2, 3, 4, 5]);
   
   expect(a.isSubset(b)).toBeTruthy();
   expect(b.isSubset(b)).toBeTruthy();
@@ -151,8 +151,8 @@ test("Subsets and Proper Subsets", () => {
 });
 
 test("Supersets and Proper Supersets", () => {
-  const a = new CSet([0, 1, 2]);
-  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  const a = new CSetArray([0, 1, 2]);
+  const b = new CSetArray([0, 1, 2, 3, 4, 5]);
   
   expect(a.isSuperset(b)).toBeFalsy();
   expect(b.isSuperset(b)).toBeTruthy();
@@ -164,8 +164,8 @@ test("Supersets and Proper Supersets", () => {
 });
 
 test("Equal and Proper Supersets", () => {
-  const a = new CSet([0, 1, 2]);
-  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  const a = new CSetArray([0, 1, 2]);
+  const b = new CSetArray([0, 1, 2, 3, 4, 5]);
   
   expect(a.intersect(b).isEqual(a)).toBeTruthy();
   expect(a.isEqual(b)).toBeFalsy();
@@ -176,8 +176,8 @@ test("Equal and Proper Supersets", () => {
 
 test("header of intersection", () => {
 
-  const a = new CSet([1, 2]).as("A");
-  const b = new CSet([1, 2]).as("B");
+  const a = new CSetArray([1, 2]).as("A");
+  const b = new CSetArray([1, 2]).as("B");
 
   expect(a.intersect(b).header).toEqual("A");
 
@@ -185,8 +185,8 @@ test("header of intersection", () => {
 
 test("header of cartesian products", () => {
 
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([1, 2, 3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([1, 2, 3, 4]).as("B");
 
     expect(a.cartesianProduct(b).header).toEqual(["A", "B"]);
 
@@ -198,7 +198,7 @@ test("header of cartesian products", () => {
 
 test("cartesian products alias", () => {
 
-  const ab = new CSet([1, 2]).as("a").cartesianProduct(new CSet([1, 2, 3]).as("b"));
+  const ab = new CSetArray([1, 2]).as("a").cartesianProduct(new CSetArray([1, 2, 3]).as("b"));
 
   const AB = ab.as("A").cartesianProduct(ab.as("B"));
 
@@ -208,8 +208,8 @@ test("cartesian products alias", () => {
 
 test("Count", () => {
 
-  const a = new CSet([1, 3, 2]);
-  const b = a.union(new CSet([5, 3, 4])).as("AB");
+  const a = new CSetArray([1, 3, 2]);
+  const b = a.union(new CSetArray([5, 3, 4])).as("AB");
 
   expect(a.count()).toBe(3);
   expect(b.count()).toBe(5);
@@ -232,62 +232,87 @@ test("Count", () => {
 test("distinct cartesian product (SEND MORE MONEY)", () => {
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const d = new CSet(digits);
+  const d = new CSetArray(digits);
+  const letters = ["S", "E", "N", "D", "M", "O", "R", "Y"];
+  const notEqualPred = {
+    name: "<>",
+    predicate: (a, b) => a !== b
+  };
+
+  let s = d.as(letters[0]);
+  for (let i=1; i<letters.length; i++) {
+    const letter=letters[i];
+
+    s = s.cartesianProduct(d.as(letter));
+    
+    // make constrains to all variables be different.
+    for (let j=i-1; j>=0; j--) {
+      const a = letters[j];
+      s = s.constrain([a, letter], notEqualPred);
+    }
+  }
 
   // S E N D M O R Y
-  const sendMoreMoney = d.as("S")
-    .distinctCartesianProduct(d.as("E"))
-    .distinctCartesianProduct(d.as("N"))
-    .distinctCartesianProduct(d.as("D"))
-    .distinctCartesianProduct(d.as("M"))
-    .distinctCartesianProduct(d.as("O"))
-    .distinctCartesianProduct(d.as("R"))
-    .distinctCartesianProduct(d.as("Y"))
-    .constrain(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      {
-        name: "add",
-        predicate: (S, E, N, D, M, O, R, Y) => 
-            S * 1000 + E * 100 + N * 10 + D 
-          + M * 1000 + O * 100 + R * 10  + E  
-            === 
-            M * 10000 + O * 1000 + N * 100 + E * 10 + Y
-      }
-    );
-
-    for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
-      expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
-        .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
+  const sendMoreMoney = s.constrain(
+    ["S", "E", "N", "D", "M", "O", "R", "Y"],
+    {
+      name: "add",
+      predicate: (S, E, N, D, M, O, R, Y) => 
+          S * 1000 + E * 100 + N * 10 + D 
+        + M * 1000 + O * 100 + R * 10  + E  
+          === 
+          M * 10000 + O * 1000 + N * 100 + E * 10 + Y
     }
+  );
 
+  for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
+    expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
+      .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
+  }
 });
 
 test("distinct cartesian product", () => {
 
+    const notEqualPred = {
+      name: "<>",
+      predicate: (a, b) => a !== b
+    };
+
     {
-      const A = new CSet([1, 2, 3]).distinctCartesianProduct(
-        new CSet([1, 2])
-      );
+      const A = new CSetArray([1, 2, 3]).as("a").cartesianProduct(
+        new CSetArray([1, 2]).as("b")
+      ).constrain(["a", "b"], notEqualPred);
 
       expect([...A.values()]).toEqual([[ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ]]);
     }
 
     {
-      const A = new CSet([1, 2]);
+      const A = new CSetArray([1, 2]);
 
-      const B = A.as("a").cartesianProduct(A.as("b")).distinctCartesianProduct(
+      const B = A.as("a").cartesianProduct(A.as("b")).cartesianProduct(
         A.as("c").cartesianProduct(A.as("d"))
-      );
+      )
+        .constrain(["a", "c"], notEqualPred)
+        .constrain(["a", "d"], notEqualPred)
+        .constrain(["b", "c"], notEqualPred)
+        .constrain(["b", "d"], notEqualPred)
+      ;
 
       expect([...B.values()]).toEqual([[ 1, 1, 2, 2 ], [ 2, 2, 1, 1 ]]);
     }
 
     {
-      const A = new CSet([1, 2, 3]);
+      const A = new CSetArray([1, 2, 3]);
 
-      const B = A.as("a").cartesianProduct(A.as("b")).distinctCartesianProduct(
+      const B = A.as("a").cartesianProduct(A.as("b")).cartesianProduct(
         A.as("c").cartesianProduct(A.as("d"))
-      );
+        
+      )
+        .constrain(["a", "c"], notEqualPred)
+        .constrain(["a", "d"], notEqualPred)
+        .constrain(["b", "c"], notEqualPred)
+        .constrain(["b", "d"], notEqualPred)
+      ;
 
       expect([...B.values()]).toEqual(
         [
@@ -304,11 +329,11 @@ test("distinct cartesian product", () => {
 
 test("Order of cartasian set operations", () => {
   {
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([3, 4]).as("B");
 
-    const c = new CSet([5, 6]).as("A");
-    const d = new CSet([7, 8]).as("B");
+    const c = new CSetArray([5, 6]).as("A");
+    const d = new CSetArray([7, 8]).as("B");
 
     const ab = a.cartesianProduct(b);
     const dc = d.cartesianProduct(c);
@@ -320,11 +345,11 @@ test("Order of cartasian set operations", () => {
   }
 
   {
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([3, 4]).as("B");
 
-    const c = new CSet([1, 2]).as("A");
-    const d = new CSet([3, 5]).as("B");
+    const c = new CSetArray([1, 2]).as("A");
+    const d = new CSetArray([3, 5]).as("B");
 
     const ab = a.cartesianProduct(b);
     const dc = d.cartesianProduct(c);
@@ -337,11 +362,11 @@ test("Order of cartasian set operations", () => {
   }
 
   {
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([3, 4]).as("B");
 
-    const c = new CSet([1, 2]).as("A");
-    const d = new CSet([3, 5]).as("B");
+    const c = new CSetArray([1, 2]).as("A");
+    const d = new CSetArray([3, 5]).as("B");
 
     const ab = a.cartesianProduct(b);
     const dc = d.cartesianProduct(c);
@@ -352,11 +377,11 @@ test("Order of cartasian set operations", () => {
   }
 
   {
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([3, 4]).as("B");
 
-    const c = new CSet([1, 2]).as("A");
-    const d = new CSet([3, 5]).as("B");
+    const c = new CSetArray([1, 2]).as("A");
+    const d = new CSetArray([3, 5]).as("B");
 
     const ab = a.cartesianProduct(b);
     const dc = d.cartesianProduct(c);
@@ -370,8 +395,8 @@ test("Order of cartasian set operations", () => {
 
 test("domain set extraction", () => {
 
-    const a = new CSet([1, 2]).as("a");
-    const b = new CSet([1, 2]).as("b");
+    const a = new CSetArray([1, 2]).as("a");
+    const b = new CSetArray([1, 2]).as("b");
 
     expect(a.domain("a")).toEqual([1, 2]);
     expect(a.cartesianProduct(b).domain("a")).toEqual([1, 2]);
@@ -385,9 +410,9 @@ test("domain set extraction", () => {
 });
 
 test("is equal", () => {
-  const s = new CSet([0, 1]);
-  const zero = new CSet([0]);
-  const one = new CSet([1]);
+  const s = new CSetArray([0, 1]);
+  const zero = new CSetArray([0]);
+  const one = new CSetArray([1]);
 
 
   // and operation set,
@@ -421,6 +446,35 @@ test("is equal", () => {
     ]);
   
     expect(a.isEqual(b)).toBe(true);
+
+});
+
+test("Extend CSet", () => {
+  class Even extends CSet {
+    *values (p) {
+      for (let i=2; ; i+=2) {
+        if (!p || p.test(i)) {
+          yield i;
+        }
+      }
+    }
+
+    count () {
+      return Infinity;
+    }
+
+    has (x) {
+      return x % 2 === 0;
+    }
+  };
+
+  const values = new CSetArray([1, 2, 3, 4, 5, 6]);
+  const even = new Even();
+
+  const ve = values.intersect(even);
+
+  expect([...ve.values()]).toEqual([2, 4, 6]);
+  expect(ve.count()).toEqual(3);
 
 });
 

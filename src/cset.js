@@ -1,6 +1,6 @@
 let aliasCounter = 1;
 
-class Op {
+class CSet {
     constructor () {
         this.name = `set_${aliasCounter++}`;
     }
@@ -45,10 +45,6 @@ class Op {
         );
     }
 
-    distinctCartesianProduct (x) {
-        return new DistinctCartesianSet(this, x);
-    }
-
     // test methods,
     isEmpty (p) {
         return this.values(p).next().done;
@@ -80,7 +76,11 @@ class Op {
     }
 
     get header () {
-        return this.a.header;
+        if (this.a) {
+            return this.a.header || this.name;
+        }
+        
+        return this.name;
     }
 
     get _length () {
@@ -108,7 +108,7 @@ function reorder (aHeader, bHeader, values) {
     }
 }
 
-class CartesianSet extends Op {
+class CartesianSet extends CSet {
     constructor (a, b) {
         super();
         this.a = a;
@@ -262,81 +262,7 @@ class CartesianSet extends Op {
 
 }
 
-class DistinctCartesianSet extends CartesianSet {
-
-    has (x) {
-        const al = this.a._length;
-
-        const as = x.slice(0, al);
-
-        for (let i=al; i<x.length; i++) {
-            const e = x[i];
-
-            if (as.includes(e)) {
-                return false;
-            }
-        }
-
-        return super.has(x);
-    }
-
-    count () {
-        let total = 0;
-        for (let e of this.values()) {
-            total++;
-        }
-
-        return total;
-    }
-
-    *values (p) {
-        let f, pa, pb, header;
-        if (p) {
-            f = p.filter(this);
-            pa = p.filter(this.a);
-            pb = p.filter(this.b);
-
-            header = this.header;
-        }
-
-        for (let x of this.a.values(pa)) {
-            const a = x instanceof Array?x:[x];
-
-            for (let y of this.b.values(pb)) {
-                const b = y instanceof Array?y:[y];
-                const s = a.filter(x => b.includes(x));
-
-                if (s.length === 0) {
-                    const r = a.concat(b);
-                    if (!f || f.test(header, r)) {
-                        yield r;
-                    }
-                }
-            }
-        }
-    }
-
-    domain (a, p) {
-        const d = super.domain(a, p);
-        const r = [];
-
-        for (let i=0; i<d.length; i++) {
-            const v = d[i];
-            const t = this.constrain([a], {
-                name: "const",
-                predicate: a => a === v 
-            });
-
-            if (!t.isEmpty(p)) {
-                r.push(v);
-            }
-        }
-
-        return r;
-    }
-}
-
-class Difference extends Op {
+class Difference extends CSet {
     constructor (a, b) {
         super();
         this.a = a;
@@ -400,7 +326,7 @@ class Difference extends Op {
 
 }
 
-class Intersect extends Op {
+class Intersect extends CSet {
     constructor (a, b) {
         super();
         this.a = a;
@@ -471,7 +397,7 @@ class Intersect extends Op {
 
 }
 
-class Union extends Op {
+class Union extends CSet {
 
     constructor (a, b) {
         super();
@@ -547,7 +473,7 @@ class Union extends Op {
 
 }
 
-class Alias extends Op {
+class Alias extends CSet {
     constructor(a, name) {
         super();
         this.a = a;
@@ -664,7 +590,7 @@ class ConstrainsGroup {
     }
 }
 
-class Constrain extends Op {
+class Constrain extends CSet {
     constructor (a, name, alias, predicate) {
         super();
 
@@ -765,7 +691,7 @@ class Constrain extends Op {
     }
 }
 
-class ArraySet extends Op {
+class CSetArray extends CSet {
     constructor (values) {
         super();
         this._values = new Set(values);
@@ -808,4 +734,9 @@ class ArraySet extends Op {
 
 }
 
-module.exports = ArraySet;
+module.exports = {
+    CSetArray,
+    CSet
+};
+
+

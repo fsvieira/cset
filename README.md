@@ -158,35 +158,6 @@ Creates a set with the cartesian product of two sets.
     );
 ```
 
-## DistinctCartesianProduct
-
-This is not defined on set theory, but I find it useful.
-
-Its the same as cartesian product but it doesn't repeat elements of the two provided sets. 
-
-```javascript
-    const A = new CSet([1, 2, 3]).distinctCartesianProduct(
-        new CSet([1, 2])
-    );
-
-    // Values: [ [ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ] ]
-```
-
-In the following example, the right part (A) and left part (B) will not contain any repeated elements 
-from each other, but they may contain repeated elements from itself.
-
-```javascript
-    const a = new CSet([1, 2]);
-    const A = a.cartesianProduct(a);
-    const B = a.cartesianProduct(a);
-
-
-    const C = A.distinctCartesianProduct(B);
-
-    // Values: [[ 1, 1, 2, 2 ], [ 2, 2, 1, 1 ]]
-    //          [ A, A, B, B ], [A , A, B, B]
-```
-
 ## Has
 
 It checks if an element is in the provided set.
@@ -337,7 +308,6 @@ for normal sets it will return one alias (string).
 A constrain works as a filter on set elements, as other operators it creates a new set
 where all set elements must comply with provided constrains.
 
-
 ```javascript
   const a = new CSet([1, 3, 2]);
   const b = a.union(new CSet([5, 3, 4])).as("AB");
@@ -372,6 +342,24 @@ where all set elements must comply with provided constrains.
   */
 
 ```
+
+Making a distinct cartesian product with constrains:
+
+```javascript
+  const notEqualPred = {
+    name: "<>",
+    predicate: (a, b) => a !== b
+  };
+
+  const A = new CSet([1, 2, 3]).as("a").cartesianProduct(
+    new CSet([1, 2]).as("b")
+  ).constrain(["a", "b"], notEqualPred);
+
+  console.log(JSON.stringfy([...A.values()]); // [[ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ]]
+```
+
+Note: Its better to make constrains with less variables, for example one or two variables, 
+because they can be distributed and tested sooner on partial results.
 
 ## Count
 
@@ -426,21 +414,31 @@ The presented solution takes from 5 to 8 seconds to complete.
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const d = new CSet(digits);
+  const letters = ["S", "E", "N", "D", "M", "O", "R", "Y"];
+  const notEqualPred = {
+    name: "<>",
+    predicate: (a, b) => a !== b
+  };
+
+  let s = d.as(letters[0]);
+  for (let i=1; i<letters.length; i++) {
+    const letter=letters[i];
+
+    s = s.cartesianProduct(d.as(letter));
+    
+    // make constrains to all variables be different.
+    for (let j=i-1; j>=0; j--) {
+      const a = letters[j];
+      s = s.constrain([a, letter], notEqualPred);
+    }
+  }
 
   // S E N D M O R Y
-  const sendMoreMoney = d.as("S")
-    .distinctCartesianProduct(d.as("E"))
-    .distinctCartesianProduct(d.as("N"))
-    .distinctCartesianProduct(d.as("D"))
-    .distinctCartesianProduct(d.as("M"))
-    .distinctCartesianProduct(d.as("O"))
-    .distinctCartesianProduct(d.as("R"))
-    .distinctCartesianProduct(d.as("Y"))
-    .constrain(
+  const sendMoreMoney = s.constrain(
       ["S", "E", "N", "D", "M", "O", "R", "Y"],
       {
         name: "add",
-        predicate: ({S, E, N, D, M, O, R, Y}) => 
+        predicate: (S, E, N, D, M, O, R, Y) => 
             S * 1000 + E * 100 + N * 10 + D 
           + M * 1000 + O * 100 + R * 10  + E  
             === 
@@ -448,10 +446,9 @@ The presented solution takes from 5 to 8 seconds to complete.
       }
     );
 
-    for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
-      expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
-        .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
-    }
+  for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
+    console.log(`${S * 1000 + E * 100 + N * 10 + D} + ${M * 1000 + O * 100 + R * 10 + E} = ${M * 10000 + O * 1000 + N * 100 + E * 10 + Y}`);
+  }
 
 ```
 
