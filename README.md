@@ -14,16 +14,16 @@ Currently CSet support most normal set operation, including cartesian product.
 # Use (API)
 
 
-## CSet
+## CSetArray
 
 Create a set, from Array of values.
 After set creation all operations on set are chainable, and they are not destructive and a new set is returned.
 
 
 ```javascript
-    const CSet = require("cset");
+    const {CSetArray, CSet} = require("cset");
 
-    const A = new CSet([1, 2, 3]);
+    const A = new CSetArray([1, 2, 3]);
 ```
 
 ## Intersection
@@ -31,8 +31,8 @@ After set creation all operations on set are chainable, and they are not destruc
 Creates a set with the intersection of two sets.
 
 ```javascript
-    const A = new CSet([1, 2, 3]).intersect(
-        new CSet([1, 2])
+    const A = new CSetArray([1, 2, 3]).intersect(
+        new CSetArray([1, 2])
     );
 ```
 
@@ -41,11 +41,11 @@ Creates a set with the intersection of two sets.
 Both cartesian product must have same headers, headers don't need to be in the same order.
 
 ```javascript
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([3, 4]).as("B");
 
-    const c = new CSet([1, 2]).as("A");
-    const d = new CSet([3, 5]).as("B");
+    const c = new CSetArray([1, 2]).as("A");
+    const d = new CSetArray([3, 5]).as("B");
 
     const ab = a.cartesianProduct(b);
     const dc = d.cartesianProduct(c);
@@ -64,8 +64,8 @@ Both cartesian product must have same headers, headers don't need to be in the s
 Creates a set with the union of two sets.
 
 ```javascript
-    const A = new CSet([1, 2, 3]).union(
-        new CSet([1, 2])
+    const A = new CSetArray([1, 2, 3]).union(
+        new CSetArray([1, 2])
     );
 ```
 
@@ -74,11 +74,11 @@ Creates a set with the union of two sets.
 Both cartesian product must have same headers, headers don't need to be in the same order.
 
 ```javascript
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([3, 4]).as("B");
 
-    const c = new CSet([5, 6]).as("A");
-    const d = new CSet([7, 8]).as("B");
+    const c = new CSetArray([5, 6]).as("A");
+    const d = new CSetArray([7, 8]).as("B");
 
     const ab = a.cartesianProduct(b);
     const cd = c.cartesianProduct(d);
@@ -94,8 +94,8 @@ Both cartesian product must have same headers, headers don't need to be in the s
 Creates a set with the difference of two sets.
 
 ```javascript
-    const A = new CSet([1, 2, 3]).difference(
-        new CSet([1, 2])
+    const A = new CSetArray([1, 2, 3]).difference(
+        new CSetArray([1, 2])
     );
 ```
 
@@ -104,11 +104,11 @@ Creates a set with the difference of two sets.
 Both cartesian product must have same headers, headers don't need to be in the same order.
 
 ```javascript
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([3, 4]).as("B");
 
-    const c = new CSet([1, 2]).as("A");
-    const d = new CSet([3, 5]).as("B");
+    const c = new CSetArray([1, 2]).as("A");
+    const d = new CSetArray([3, 5]).as("B");
 
     const ab = a.cartesianProduct(b);
     const dc = d.cartesianProduct(c);
@@ -124,8 +124,8 @@ Both cartesian product must have same headers, headers don't need to be in the s
 Creates a set with the symmetric difference of two sets.
 
 ```javascript
-    const A = new CSet([1, 2, 3]).symmetricDifference(
-        new CSet([1, 2])
+    const A = new CSetArray([1, 2, 3]).symmetricDifference(
+        new CSetArray([1, 2])
     );
 ```
 
@@ -134,11 +134,11 @@ Creates a set with the symmetric difference of two sets.
 Both cartesian product must have same headers, headers don't need to be in the same order.
 
 ```javascript
-    const a = new CSet([1, 2]).as("A");
-    const b = new CSet([3, 4]).as("B");
+    const a = new CSetArray([1, 2]).as("A");
+    const b = new CSetArray([3, 4]).as("B");
 
-    const c = new CSet([1, 2]).as("A");
-    const d = new CSet([3, 5]).as("B");
+    const c = new CSetArray([1, 2]).as("A");
+    const d = new CSetArray([3, 5]).as("B");
 
     const ab = a.cartesianProduct(b);
     const dc = d.cartesianProduct(c);
@@ -153,8 +153,8 @@ Both cartesian product must have same headers, headers don't need to be in the s
 Creates a set with the cartesian product of two sets.
 
 ```javascript
-    const A = new CSet([1, 2, 3]).cartesianProduct(
-        new CSet([1, 2])
+    const A = new CSetArray([1, 2, 3]).cartesianProduct(
+        new CSetArray([1, 2])
     );
 ```
 
@@ -163,7 +163,7 @@ Creates a set with the cartesian product of two sets.
 It checks if an element is in the provided set.
 
 ```javascript
-    const A = new CSet([1, 2, 3]);
+    const A = new CSetArray([1, 2, 3]);
     
     A.has(1); // True
     A.has(4); // False
@@ -174,7 +174,7 @@ It checks if an element is in the provided set.
 Iterates all values of a set.
 
 ```javascript
-    const A = new CSet([1, 2, 3]);
+    const A = new CSetArray([1, 2, 3]);
 
     for (let e of A.values()) {
         console.log(e); // will print all elements on A.
@@ -186,9 +186,9 @@ Iterates all values of a set.
 Checks if set is empty.
 
 ```javascript
-  const empty = new CSet([]);
-  const intersectEmpty = new CSet([1, 2]).intersect(new CSet([3, 4]));
-  const notEmpty = new CSet([1, 2]).intersect(new CSet([2, 3, 4]));
+  const empty = new CSetArray([]);
+  const intersectEmpty = new CSetArray([1, 2]).intersect(new CSetArray([3, 4]));
+  const notEmpty = new CSetArray([1, 2]).intersect(new CSetArray([2, 3, 4]));
 
   console.log(empty.isEmpty()); // True
   console.log(intersectEmpty.isEmpty()); // True
@@ -199,8 +199,8 @@ Checks if set is empty.
 Check if set is a subset of other set.
 
 ```javascript
-  const a = new CSet([0, 1, 2]);
-  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  const a = new CSetArray([0, 1, 2]);
+  const b = new CSetArray([0, 1, 2, 3, 4, 5]);
   
   console.log(a.isSubset(b)); // True 
   console.log(b.isSubset(b)); // True
@@ -212,8 +212,8 @@ Check if set is a subset of other set.
 Check if set is a proper subset of other set.
 
 ```javascript
-  const a = new CSet([0, 1, 2]);
-  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  const a = new CSetArray([0, 1, 2]);
+  const b = new CSetArray([0, 1, 2, 3, 4, 5]);
   
   console.log(a.isProperSubset(a)); // False, all elements of a are in a, so its not proper subset.
   console.log(a.isProperSubset(b)); // True, all lements of a are in b, 
@@ -224,8 +224,8 @@ Check if set is a proper subset of other set.
 Check if set is a superset of other set.
 
 ```javascript
-  const a = new CSet([0, 1, 2]);
-  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  const a = new CSetArray([0, 1, 2]);
+  const b = new CSetArray([0, 1, 2, 3, 4, 5]);
   
   console.log(a.isSuperset(b)); // False
   console.log(b.isSuperset(b)); // True
@@ -238,8 +238,8 @@ Check if set is a superset of other set.
 Check if set is a proper superset of other set.
 
 ```javascript
-  const a = new CSet([0, 1, 2]);
-  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  const a = new CSetArray([0, 1, 2]);
+  const b = new CSetArray([0, 1, 2, 3, 4, 5]);
   
   console.log(a.isProperSuperset(a)); // False 
   console.log(a.isProperSuperset(b)); // False
@@ -251,8 +251,8 @@ Check if set is a proper superset of other set.
 Check if two sets are equal.
 
 ```javascript
-  const a = new CSet([0, 1, 2]);
-  const b = new CSet([0, 1, 2, 3, 4, 5]);
+  const a = new CSetArray([0, 1, 2]);
+  const b = new CSetArray([0, 1, 2, 3, 4, 5]);
   
   console.log(a.intersect(b).isEqual(a)); // True
   console.log(a.isEqual(b)); // False
@@ -265,11 +265,11 @@ Check if two sets are equal.
 It binds an alias to a set. The "as" operation is normally useful to use with "constrains".
 
 ```javascript
-    const A = new CSet([1, 2, 3]).as("A");
+    const A = new CSetArray([1, 2, 3]).as("A");
     const B = A.as("B");
 
     // A and B are same sets with different alias.
-    const C = new CSet([4, 5]);
+    const C = new CSetArray([4, 5]);
     const AC = A.union(C).as("AC"); // add alias to A and C union. 
 ```
 
@@ -279,7 +279,7 @@ In case of cartesian products an alias work as prefix, or table name, so that ea
 element on resulting tuples can still be referenced.
 
 ```javascript
-  const ab = new CSet([1, 2]).as("a").cartesianProduct(new CSet([1, 2, 3]).as("b"));
+  const ab = new CSetArray([1, 2]).as("a").cartesianProduct(new CSetArray([1, 2, 3]).as("b"));
   const AB = ab.as("A").cartesianProduct(ab.as("B"));
 
   console.log(AB.header); // "A.a", "A.b", "B.a", "B.b";
@@ -293,8 +293,8 @@ for normal sets it will return one alias (string).
 
 ```javascript
 
-    const A = new CSet([1, 2, 3]).as("A");
-    const B = new CSet([1, 2, 3]).as("A");
+    const A = new CSetArray([1, 2, 3]).as("A");
+    const B = new CSetArray([1, 2, 3]).as("A");
 
     console.log(A.header); // ["A"]
 
@@ -309,8 +309,8 @@ A constrain works as a filter on set elements, as other operators it creates a n
 where all set elements must comply with provided constrains.
 
 ```javascript
-  const a = new CSet([1, 3, 2]);
-  const b = a.union(new CSet([5, 3, 4])).as("AB");
+  const a = new CSetArray([1, 3, 2]);
+  const b = a.union(new CSetArray([5, 3, 4])).as("AB");
 
   expect(a.count()).toBe(3);
   expect(b.count()).toBe(5);
@@ -351,8 +351,8 @@ Making a distinct cartesian product with constrains:
     predicate: (a, b) => a !== b
   };
 
-  const A = new CSet([1, 2, 3]).as("a").cartesianProduct(
-    new CSet([1, 2]).as("b")
+  const A = new CSetArray([1, 2, 3]).as("a").cartesianProduct(
+    new CSetArray([1, 2]).as("b")
   ).constrain(["a", "b"], notEqualPred);
 
   console.log(JSON.stringfy([...A.values()]); // [[ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ]]
@@ -366,8 +366,8 @@ because they can be distributed and tested sooner on partial results.
 It counts the elements on a set.
 
 ```javascript
-  const a = new CSet([1, 3, 2]);
-  const b = a.union(new CSet([5, 3, 4]));
+  const a = new CSetArray([1, 3, 2]);
+  const b = a.union(new CSetArray([5, 3, 4]));
 
   console.log(a.count()); // 3
 ```
@@ -376,8 +376,8 @@ It counts the elements on a set.
 Get the domain of a variable.
 
 ```javascript
-    const a = new CSet([1, 2]).as("a");
-    const b = new CSet([1, 2]).as("b");
+    const a = new CSetArray([1, 2]).as("a");
+    const b = new CSetArray([1, 2]).as("b");
 
     expect(a.domain("a")).toEqual([1, 2]);
     expect(a.cartesianProduct(b).domain("a")).toEqual([1, 2]);
@@ -389,6 +389,43 @@ Get the domain of a variable.
       }
     ).domain("a")).toEqual([1]);
 ```
+
+# Custom Sets
+
+A custom set is made by extending the CSet class.
+Any method can be overridden but the most important is:
+  * values(p), where p argument is the constrain
+  * count(), that gives the set number of elements, 
+  * has(x), that should test the existence of x on set.
+
+```javascript
+  class Even extends CSet {
+    *values (p) {
+      for (let i=2; ; i+=2) {
+        if (!p || p.test(i)) {
+          yield i;
+        }
+      }
+    }
+
+    count () {
+      return Infinity;
+    }
+
+    has (x) {
+      return x % 2 === 0;
+    }
+  };
+
+  const values = new CSetArray([1, 2, 3, 4, 5, 6]);
+  const even = new Even();
+
+  const ve = values.intersect(even);
+
+  console.log([...ve.values()]); // [2, 4, 6]);
+  console.log(ve.count()); // 3;
+```
+
 
 
 # Examples

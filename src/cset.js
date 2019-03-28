@@ -582,7 +582,7 @@ class ConstrainsGroup {
         for (let i=0; i<this.constrains.length; i++) {
             const c = this.constrains[i];
             if (!c.test(header, x)) {
-                return;
+                return false;
             }
         }
 
@@ -638,7 +638,7 @@ class Constrain extends CSet {
                 }
             }
 
-            return this.predicate(...arg);
+            return !!this.predicate(...arg);
         }
         else {
             return true;

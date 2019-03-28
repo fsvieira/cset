@@ -478,4 +478,19 @@ test("Extend CSet", () => {
 
 });
 
+test("Constrained has(x)", () => {
+  const a = new CSetArray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).as("a");
+  const c = a.constrain(['a'], {
+    name: "x%2",
+    predicate: a => a % 2 === 0
+  });
+
+  expect(a.has(2)).toBeTruthy(); 
+  expect(a.has(3)).toBeTruthy(); 
+
+  expect(c.has(2)).toBeTruthy(); 
+  expect(c.has(3)).toBeFalsy(); 
+
+});
+
 // TODO: test cartesian for duplicated values (for self, union, ...)
