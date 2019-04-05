@@ -394,7 +394,7 @@ Get the domain of a variable.
 
 A custom set is made by extending the CSet class.
 Any method can be overridden but the most important is:
-  * values(p), where p argument is the constrain
+  * values(p), where p argument is the constrain,
   * count(), that gives the set number of elements, 
   * has(x), that should test the existence of x on set.
 
