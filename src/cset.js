@@ -36,7 +36,7 @@ class CSet {
         return new Alias(this, name);
     }
 
-    constrain (alias, {name, predicate}) {
+    select (alias, {name, predicate}) {
         return new Constrain (
             this,
             name,
@@ -91,6 +91,20 @@ class CSet {
 
         return 1;
     }
+
+    projection (...h) {
+        const header = this.header;
+        if (header instanceof Array) {
+            return new Projection(this, h);
+        }
+        else if (
+            h.length === 1 && header === h[0] 
+        ) {
+            return this;
+        }
+
+        throw "Projection headers " + h.join(", ") + " dont match with set header " + header + ".";
+    }
 }
 
 function reorder (aHeader, bHeader, values) {
@@ -105,6 +119,84 @@ function reorder (aHeader, bHeader, values) {
     }
     else {
         return values;
+    }
+}
+
+
+// TODO: if projected set is not header array, then we don't need projection...
+// this also simplifies the process.
+// TODO: should we normalize header to always be an array??
+class Projection extends CSet {
+    constructor (a, h) {
+        super();
+        this.a = a;
+        this._header = h;
+
+        if (new Set(h) === h.length) {
+            throw "Repeated headers are not allowed, " + h.join(", ");
+        }
+
+        const ah = a.header;
+
+        for (let i=0; i<h.length; i++) {
+            const p = h[i];
+            if (!ah.includes(p)) {
+                throw "Missing header on projected set: " + p + ", source header " + ah.join(", "); 
+            }
+        }
+    }
+
+    // TODO: Projection counting.
+
+    has (x) {
+        const s = this.constrain(this._header, {
+            name: "prj",
+            predicate: (...args) => {
+                for (let i=0; i<args.length; i++) {
+                    if (args[i] !== x[i]) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        });
+
+        return !s.isEmpty();
+    }
+
+    get header () {
+        return this._header;
+    }
+
+    *values (p) {
+        const ah = this.a.header;
+        const ar = ah.filter(v => this._header.includes(v));
+        const dups = new Set();
+
+        for (let e of this.a.values(p)) {
+            // remove values from result,
+            const v = [];
+            for (let i=0; i<ah.length; i++) {
+                const h = ah[i];
+                if (this._header.includes(h)) {
+                    v.push(e[i]);
+                }
+            }
+            
+            // reorder,
+            const r = reorder(ar, this._header, v);
+            const d = JSON.stringify(r);
+
+            if (!dups.has(d)) {
+                dups.add(d);
+                yield r;
+            }
+        }
+    }
+
+    couunt () {
+        return [...this.values()].length;
     }
 }
 
@@ -241,25 +333,6 @@ class CartesianSet extends CSet {
             }
         }
     }
-
-    domain (v, p) {
-        let pa, pb;
-        if (p) {
-            pa = p.filter(this.a);
-            pb = p.filter(this.b);
-        }
-
-        const aHeader = this.a.header;
-        const bHeader = this.b.header;
-
-        if (aHeader === v || (aHeader instanceof Array && aHeader.includes(v))) {
-            return this.a.domain(v, pa);
-        }
-        else if (bHeader === v || (bHeader instanceof Array && bHeader.includes(v))) {
-            return this.b.domain(v, pb);
-        }
-    }
-
 }
 
 class Difference extends CSet {
@@ -291,39 +364,6 @@ class Difference extends CSet {
             }
         }
     }
-
-    _domain (v, p) {
-        const header = this.header;
-        if (header === v) {
-            return [...this.values(p)];
-        }
-        else if (header instanceof Array) {
-            if (this.a.header.includes(v)) {
-                return this.a.domain(v, p);
-            }
-            // we are only interested on a values,
-        }
-    }
-
-    domain (a, p) {
-        const d = this._domain(a, p);
-        const r = [];
-
-        for (let i=0; i<d.length; i++) {
-            const v = d[i];
-            const t = this.constrain([a], {
-                name: "const",
-                predicate: a => a === v
-            });
-
-            if (!t.isEmpty(p)) {
-                r.push(v);
-            }
-        }
-
-        return r;
-    }
-
 }
 
 class Intersect extends CSet {
@@ -360,41 +400,6 @@ class Intersect extends CSet {
             }
         }
     }
-
-    _domain (v, p) {
-        const header = this.header;
-        if (header === v) {
-            return [...this.values(p)];
-        }
-        else if (header instanceof Array) {
-            if (this.a.header.includes(v)) {
-                return this.a.domain(v, p);
-            }
-            else if (this.b.header.includes(v)) {
-                return this.b.domain(v, p);
-            }
-        }
-    }
-
-    domain (a, p) {
-        const d = this._domain(a, p);
-        const r = [];
-
-        for (let i=0; i<d.length; i++) {
-            const v = d[i];
-            const t = this.constrain([a], {
-                name: "const",
-                predicate: a => a === v 
-            });
-
-            if (!t.isEmpty(p)) {
-                r.push(v);
-            }
-        }
-
-        return r;
-    }
-
 }
 
 class Union extends CSet {
@@ -432,45 +437,6 @@ class Union extends CSet {
             }
         }
     }
-
-    _domain (v, p) {
-        const header = this.header;
-        if (header === v) {
-            return [...this.values(p)];
-        }
-        else if (header instanceof Array) {
-            let r = new Set();
-            if (this.a.header.includes(v)) {
-                r = new Set([...r, ...this.a.domain(v, p)]);
-            }
-            
-            if (this.b.header.includes(v)) {
-                r = new Set([...r, ...this.b.domain(v, p)]);
-            }
-
-            return [...r];
-        }
-    }
-
-    domain (a, p) {
-        const d = this._domain(a, p);
-        const r = [];
-
-        for (let i=0; i<d.length; i++) {
-            const v = d[i];
-            const t = this.constrain([a], {
-                name: "const",
-                predicate: a => a === v 
-            });
-
-            if (!t.isEmpty(p)) {
-                r.push(v);
-            }
-        }
-
-        return r;
-    }
-
 }
 
 class Alias extends CSet {
@@ -527,23 +493,6 @@ class Alias extends CSet {
         for (let e of this.a.values(p)) {
             yield e;
         }
-    }
-
-    domain (v, p) {
-        const header = this.header; 
-        if (header instanceof Array) {
-            if (header.includes(v)) {
-                if (p) {
-                    p = p.rename(this.a, this.renameTable);
-                }
-        
-                const rt = this.renameTable;
-                return this.a.domain(rt.get(v), p);
-            }
-        }
-        else if (this.header === v) {
-            return [...this.values(p)];
-        } 
     }
 }
 
@@ -681,14 +630,6 @@ class Constrain extends CSet {
 
         return true;
     }
-
-    domain (v, p) {
-        if (this.header.includes(v)) {
-            p = (p || new ConstrainsGroup()).add(this);
-
-            return this.a.domain(v, p);
-        }
-    }
 }
 
 class CSetArray extends CSet {
@@ -725,13 +666,6 @@ class CSetArray extends CSet {
             }
         }
     }
-
-    domain(v, p) {
-        if (this.header === v) {
-            return [...this.values(p)];
-        }
-    }
-
 }
 
 module.exports = {

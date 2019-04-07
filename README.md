@@ -262,7 +262,7 @@ Check if two sets are equal.
 
 ## As
 
-It binds an alias to a set. The "as" operation is normally useful to use with "constrains".
+It binds an alias to a set. The "as" operation is normally useful to use with select.
 
 ```javascript
     const A = new CSetArray([1, 2, 3]).as("A");
@@ -303,9 +303,9 @@ for normal sets it will return one alias (string).
 
 ```
 
-## Constrain
+## Select
 
-A constrain works as a filter on set elements, as other operators it creates a new set
+A select works as a filter on set elements, as other operators it creates a new set
 where all set elements must comply with provided constrains.
 
 ```javascript
@@ -318,7 +318,7 @@ where all set elements must comply with provided constrains.
   const ab = a.cartesianProduct(b); 
   expect(ab.count()).toBe(15);
 
-  const oddSum = a.as("A").cartesianProduct(b.as("B")).constrain(
+  const oddSum = a.as("A").cartesianProduct(b.as("B")).select(
     ["A", "B"],
     {
       name: "odd-sum",
@@ -343,7 +343,7 @@ where all set elements must comply with provided constrains.
 
 ```
 
-Making a distinct cartesian product with constrains:
+Making a distinct cartesian product with selects:
 
 ```javascript
   const notEqualPred = {
@@ -353,12 +353,12 @@ Making a distinct cartesian product with constrains:
 
   const A = new CSetArray([1, 2, 3]).as("a").cartesianProduct(
     new CSetArray([1, 2]).as("b")
-  ).constrain(["a", "b"], notEqualPred);
+  ).select(["a", "b"], notEqualPred);
 
   console.log(JSON.stringfy([...A.values()]); // [[ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ]]
 ```
 
-Note: Its better to make constrains with less variables, for example one or two variables, 
+Note: Its better to make selects with less variables, for example one or two variables, 
 because they can be distributed and tested sooner on partial results.
 
 ## Count
@@ -372,22 +372,22 @@ It counts the elements on a set.
   console.log(a.count()); // 3
 ```
 
-# Domain
-Get the domain of a variable.
+# Projection
+
+Creates a subset from original set with a restricted set of attributes.
 
 ```javascript
-    const a = new CSetArray([1, 2]).as("a");
-    const b = new CSetArray([1, 2]).as("b");
+  const a = new CSetArray([1, 2]).as("a");
+  const b = new CSetArray([3, 4]).as("b");
+  const c = new CSetArray([5, 6]).as("c");
+  const d = new CSetArray([7, 8]).as("d");
 
-    expect(a.domain("a")).toEqual([1, 2]);
-    expect(a.cartesianProduct(b).domain("a")).toEqual([1, 2]);
-
-    expect(a.cartesianProduct(b).constrain(
-      ["a"], {
-        name: "!2",
-        predicate: x => x !== 2
-      }
-    ).domain("a")).toEqual([1]);
+  const s = a.cartesianProduct(b).cartesianProduct(c).cartesianProduct(d);
+  
+  console.log([...s.projection("d", "b").values()]); 
+  /* Output:
+    [[7, 3], [8, 3], [7, 4], [8, 4]]
+  */
 ```
 
 # Custom Sets

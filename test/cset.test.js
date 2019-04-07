@@ -101,7 +101,7 @@ test('Set cartasian no repeat product', () => {
   const b = new CSetArray([1, 2]).as("b");
 
   const ab = a.cartesianProduct(b)
-    .constrain(["a", "b"], {
+    .select(["a", "b"], {
       name: "<>",
       predicate: (a, b) => a !== b
     });
@@ -116,7 +116,7 @@ test('Set cartasian no repeat product', () => {
   // with 3 elements,
   const c = new CSetArray([1, 2, 3]).as("c");
 
-  const abc = ab.cartesianProduct(c).constrain(
+  const abc = ab.cartesianProduct(c).select(
     ["a", "b", "c"], {
       name: "<>",
       predicate: (a, b, c) => a !== b && a !== c && b !== c
@@ -217,7 +217,7 @@ test("Count", () => {
   const ab = a.cartesianProduct(b); 
   expect(ab.count()).toBe(15);
 
-  const oddSum = a.as("A").cartesianProduct(b.as("B")).constrain(
+  const oddSum = a.as("A").cartesianProduct(b.as("B")).select(
     ["A", "B"],
     {
       name: "odd-sum",
@@ -245,15 +245,15 @@ test("distinct cartesian product (SEND MORE MONEY)", () => {
 
     s = s.cartesianProduct(d.as(letter));
     
-    // make constrains to all variables be different.
+    // make selects to all variables be different.
     for (let j=i-1; j>=0; j--) {
       const a = letters[j];
-      s = s.constrain([a, letter], notEqualPred);
+      s = s.select([a, letter], notEqualPred);
     }
   }
 
   // S E N D M O R Y
-  const sendMoreMoney = s.constrain(
+  const sendMoreMoney = s.select(
     ["S", "E", "N", "D", "M", "O", "R", "Y"],
     {
       name: "add",
@@ -281,7 +281,7 @@ test("distinct cartesian product", () => {
     {
       const A = new CSetArray([1, 2, 3]).as("a").cartesianProduct(
         new CSetArray([1, 2]).as("b")
-      ).constrain(["a", "b"], notEqualPred);
+      ).select(["a", "b"], notEqualPred);
 
       expect([...A.values()]).toEqual([[ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ]]);
     }
@@ -292,10 +292,10 @@ test("distinct cartesian product", () => {
       const B = A.as("a").cartesianProduct(A.as("b")).cartesianProduct(
         A.as("c").cartesianProduct(A.as("d"))
       )
-        .constrain(["a", "c"], notEqualPred)
-        .constrain(["a", "d"], notEqualPred)
-        .constrain(["b", "c"], notEqualPred)
-        .constrain(["b", "d"], notEqualPred)
+        .select(["a", "c"], notEqualPred)
+        .select(["a", "d"], notEqualPred)
+        .select(["b", "c"], notEqualPred)
+        .select(["b", "d"], notEqualPred)
       ;
 
       expect([...B.values()]).toEqual([[ 1, 1, 2, 2 ], [ 2, 2, 1, 1 ]]);
@@ -308,10 +308,10 @@ test("distinct cartesian product", () => {
         A.as("c").cartesianProduct(A.as("d"))
         
       )
-        .constrain(["a", "c"], notEqualPred)
-        .constrain(["a", "d"], notEqualPred)
-        .constrain(["b", "c"], notEqualPred)
-        .constrain(["b", "d"], notEqualPred)
+        .select(["a", "c"], notEqualPred)
+        .select(["a", "d"], notEqualPred)
+        .select(["b", "c"], notEqualPred)
+        .select(["b", "d"], notEqualPred)
       ;
 
       expect([...B.values()]).toEqual(
@@ -393,20 +393,35 @@ test("Order of cartasian set operations", () => {
 
 });
 
-test("domain set extraction", () => {
+test("domain set extraction with projection", () => {
 
     const a = new CSetArray([1, 2]).as("a");
     const b = new CSetArray([1, 2]).as("b");
 
-    expect(a.domain("a")).toEqual([1, 2]);
-    expect(a.cartesianProduct(b).domain("a")).toEqual([1, 2]);
+    expect([...a.projection("a").values()]).toEqual([1, 2]);
+    expect([...a.cartesianProduct(b).projection("a").values()]).toEqual([[1], [2]]);
 
-    expect(a.cartesianProduct(b).constrain(
+    expect([...a.cartesianProduct(b).select(
       ["a"], {
         name: "!2",
         predicate: x => x !== 2
       }
-    ).domain("a")).toEqual([1]);
+    ).projection("a").values()]).toEqual([[1]]);
+});
+
+test("project set extraction", () => {
+
+  const a = new CSetArray([1, 2]).as("a");
+  const b = new CSetArray([3, 4]).as("b");
+  const c = new CSetArray([5, 6]).as("c");
+  const d = new CSetArray([7, 8]).as("d");
+
+  const s = a.cartesianProduct(b).cartesianProduct(c).cartesianProduct(d);
+
+  expect([...s.projection("d", "b").values()]).toEqual([
+      [7, 3], [8, 3], [7, 4], [8, 4]
+  ]);
+
 });
 
 test("is equal", () => {
@@ -430,12 +445,12 @@ test("is equal", () => {
   ]);
 
   const b = s.as("a").cartesianProduct(s.as("b")).cartesianProduct(s.as("c"))
-    .constrain(["a", "b"], {name: "=", predicate: (a, b) => a === b})
-    .constrain(["a", "c"], {name: "=", predicate: (a, c) => a === c})
-    .constrain(["b", "c"], {name: "=", predicate: (b, c) => b === c})
+    .select(["a", "b"], {name: "=", predicate: (a, b) => a === b})
+    .select(["a", "c"], {name: "=", predicate: (a, c) => a === c})
+    .select(["b", "c"], {name: "=", predicate: (b, c) => b === c})
     .union(
         s.as("a").cartesianProduct(s.as("b")).cartesianProduct(zero.as("c"))
-        .constrain(["a", "b"], {name: "<>", predicate: (a, b) => a !== b})
+        .select(["a", "b"], {name: "<>", predicate: (a, b) => a !== b})
     );
 
     expect([...b.values()]).toEqual([
@@ -478,9 +493,9 @@ test("Extend CSet", () => {
 
 });
 
-test("Constrained has(x)", () => {
+test("Select has(x)", () => {
   const a = new CSetArray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).as("a");
-  const c = a.constrain(['a'], {
+  const c = a.select(['a'], {
     name: "x%2",
     predicate: a => a % 2 === 0
   });
