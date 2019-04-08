@@ -13,7 +13,11 @@ function reorder (aHeader, bHeader, values) {
     }
 }
 
+function errorHeaderNotFound (header, headers) {
+    throw `Header ${header} is not found on set headers ${headers.join(", ")}`;
+}
 
 module.exports = {
-    reorder
+    reorder,
+    errorHeaderNotFound
 };

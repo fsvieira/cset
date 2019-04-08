@@ -1,4 +1,5 @@
 const CSet = require("./cset");
+const {errorHeaderNotFound} = require("./utils");
 
 class CSetArray extends CSet {
     constructor (values) {
@@ -33,6 +34,15 @@ class CSetArray extends CSet {
                 yield e;
             }
         }
+    }
+
+    projection (h, ...rest) {
+        const header = this.header;
+        if (!rest.length && h === header) {
+            return this;
+        }
+
+        errorHeaderNotFound(header, [h].concat(rest));
     }
 }
 
