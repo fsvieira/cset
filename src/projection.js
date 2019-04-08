@@ -77,6 +77,7 @@ class Projection extends CSet {
 
 CSet.prototype.projection =  function projection (...h) {
     const header = this.header;
+
     if (header instanceof Array) {
         return new Projection(this, h);
     }
