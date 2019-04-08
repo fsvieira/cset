@@ -23,14 +23,14 @@ class Intersect extends CSet {
         return counter;
     }
 
-    *values (p) {
+    *values () {
         const a = this.a.header;
         const b = this.b.header;
 
-        for (let x of this.a.values(p)) {
+        for (let x of this.a.values()) {
             const bx = reorder(b, a, x);
 
-            if ((!p || p.test(b, bx)) && this.b.has(bx)) {
+            if (this.b.has(bx)) {
                 yield x;
             }
         }

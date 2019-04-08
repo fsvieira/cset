@@ -110,28 +110,16 @@ class CrossProduct extends CSet {
         );
     }
 
-    *values (p) {
-
-        let f, pa, pb, header;
-        if (p) {
-            f = p.filter(this);
-            pa = p.filter(this.a);
-            pb = p.filter(this.b);
-
-            header = this.header;
-        }
-
-        for (let x of this.a.values(pa)) {
+    *values () {
+        for (let x of this.a.values()) {
             const a = (x instanceof Array)?x:[x];
 
-            for (let y of this.b.values(pb)) {
+            for (let y of this.b.values()) {
                 const r = a.concat(
                     y instanceof Array?y:[y]
                 );
 
-                if (!f || f.test(header, r)) {
-                    yield r;
-                }
+                yield r;
             }
         }
     }

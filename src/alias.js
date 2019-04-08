@@ -45,13 +45,14 @@ class Alias extends CSet {
         return this.a.has(x);
     }
 
-    *values (p) {
+    *values () {
         // rewrite constrains,
+        /*
         if (p) {
             p = p.rename(this.a, this.renameTable);
-        }
+        }*/
 
-        for (let e of this.a.values(p)) {
+        for (let e of this.a.values()) {
             yield e;
         }
     }

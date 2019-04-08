@@ -19,8 +19,8 @@ class Union extends CSet {
         return this.a.count() + this.b.count() - this.a.intersect(this.b).count();
     }
 
-    *values (p) {
-        for (let x of this.a.values(p)) {
+    *values () {
+        for (let x of this.a.values()) {
             yield x;
         }
 
@@ -28,10 +28,10 @@ class Union extends CSet {
         const b = this.b.header;
 
         // map values to headers,
-        for (let x of this.b.values(p)) {
+        for (let x of this.b.values()) {
             x = reorder(a, b, x);
 
-            if ((!p || p.test(a, x)) && !this.a.has(x)) {
+            if (!this.a.has(x)) {
                 yield x;
             }
         }

@@ -19,20 +19,9 @@ class CSetArray extends CSet {
         return this.name;
     }
 
-    *values (p) {
-        if (p) {
-            const header = [this.header];
-
-            for (let e of this._values) {
-                if (p.test(header, [e])) {
-                    yield e;
-                }
-            } 
-        }
-        else {
-            for (let e of this._values) {
-                yield e;
-            }
+    *values () {
+        for (let e of this._values) {
+            yield e;
         }
     }
 

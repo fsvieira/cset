@@ -1,5 +1,6 @@
 const CSet = require("./cset");
 
+/*
 class ConstrainsGroup {
 
     constructor (cs) {
@@ -41,6 +42,7 @@ class ConstrainsGroup {
         return true;
     }
 }
+*/
 
 class Select extends CSet {
     constructor (a, name, alias, predicate) {
@@ -110,11 +112,11 @@ class Select extends CSet {
         return this.test(this.a.header, x) && this.a.has(x);
     }
 
-    *values (p) {
-        p = (p || new ConstrainsGroup()).add(this);
-
-        for (let e of this.a.values(p)) {
-            yield e;
+    *values () {
+        for (let e of this.a.values()) {
+            if (this.test(this.a.header, e)) {
+                yield e;
+            }
         }
     }
 

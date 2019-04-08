@@ -44,12 +44,12 @@ class Projection extends CSet {
         return this._header;
     }
 
-    *values (p) {
+    *values () {
         const ah = this.a.header;
         const ar = ah.filter(v => this._header.includes(v));
         const dups = new Set();
 
-        for (let e of this.a.values(p)) {
+        for (let e of this.a.values()) {
             // remove values from result,
             const v = [];
             for (let i=0; i<ah.length; i++) {
