@@ -1,5 +1,9 @@
 let aliasCounter = 1;
 
+// TODO: should normalize header to always be an array??
+
+const {reorder} = require("./utils");
+
 class CSet {
     constructor () {
         this.name = `set_${aliasCounter++}`;
@@ -24,8 +28,8 @@ class CSet {
         return new Difference(this, s); 
     }
 
-    cartesianProduct (s) {
-        return new CartesianSet(this, s);
+    crossProduct (s) {
+        return new CrossProduct(this, s);
     }
 
     symmetricDifference (s) {
@@ -107,25 +111,6 @@ class CSet {
     }
 }
 
-function reorder (aHeader, bHeader, values) {
-    if (aHeader instanceof Array && bHeader instanceof Array) {
-        const r = [];
-        for (let i=0; i<bHeader.length; i++) {
-            const label = bHeader[i];
-            r[aHeader.indexOf(label)] = values[i];
-        }
-
-        return r;
-    }
-    else {
-        return values;
-    }
-}
-
-
-// TODO: if projected set is not header array, then we don't need projection...
-// this also simplifies the process.
-// TODO: should we normalize header to always be an array??
 class Projection extends CSet {
     constructor (a, h) {
         super();
@@ -200,7 +185,7 @@ class Projection extends CSet {
     }
 }
 
-class CartesianSet extends CSet {
+class CrossProduct extends CSet {
     constructor (a, b) {
         super();
         this.a = a;
@@ -236,7 +221,6 @@ class CartesianSet extends CSet {
         return false;
     }
 
-    // https://en.wikipedia.org/wiki/Cartesian_product
     intersect (s) {
         const a = this.header;
         const b = s.header;
