@@ -123,6 +123,42 @@ class CrossProduct extends CSet {
             }
         }
     }
+
+    select (alias, {name, predicate}) {
+        const ah = this.a.header;
+
+        let isInA = true;
+        for (let i=0; i<alias.length; i++) {
+            const a = alias[i];
+            if (!ah.includes(a)) {
+                isInA = false;
+                break;
+            }
+        }
+
+        if (isInA) {
+            // a header contains select.
+            return new CrossProduct(
+                this.a.select(alias, {name, predicate}),
+                this.b
+            );
+        }
+        else {
+            const bh = this.b.header;
+            for (let i=0; i<alias.length; i++) {
+                const a = alias[i];
+                if (!bh.includes(a)) {
+                    return super.select(alias, {name, predicate});
+                }
+            }
+
+            // b header contains select.
+            return new CrossProduct(
+                this.a,
+                this.b.select(alias, {name, predicate})
+            );
+        }
+    }
 }
 
 CSet.prototype.crossProduct =  function crossProduct (s) {

@@ -1,48 +1,5 @@
 const CSet = require("./cset");
-
-/*
-class ConstrainsGroup {
-
-    constructor (cs) {
-        this.constrains = cs || [];
-    }
-
-    add (c) {
-        this.constrains.push(c);
-        return this;
-    }
-    
-    filter (a) {
-        const header = a.header;
-
-        const cs = this.constrains.filter(v => v.canApply(header));
-
-        if (cs.length === this.constrains.length) {
-            return this;
-        }
-        else if (cs.length > 0) {
-            return new ConstrainsGroup(cs);
-        }
-    }
-
-    rename (a, renameTable) {
-        return new ConstrainsGroup(
-            this.constrains.map(v => v.rename(a, renameTable))
-        );
-    }
-
-    test (header, x) {
-        for (let i=0; i<this.constrains.length; i++) {
-            const c = this.constrains[i];
-            if (!c.test(header, x)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
-*/
+const {reorder} = require("./utils");
 
 class Select extends CSet {
     constructor (a, name, alias, predicate) {
@@ -134,6 +91,39 @@ class Select extends CSet {
         }
 
         return true;
+    }
+
+    select (alias, {name, predicate}) {
+        // if select has same header we can merge both selects into one.
+        const header = this.header;
+
+        for (let i=0; i<alias.length; i++) {
+            const a = alias[i];
+            if (!header.includes(a)) {
+                return super.select(alias, {name, predicate});
+            }
+        }
+
+        if (alias.length === header.length) {
+            // we can join both selections, headers are the same.
+            const tp = this.predicate;
+            const talias = this.alias;
+
+            return new Select(
+                this.a,
+                `${this.name}(${name})`,
+                this.alias,
+                (...args) => tp(args) && predicate(reorder(talias, alias, args))
+            );
+        }
+        else {
+            return new Select(
+                this.a.select(alias, {name, predicate}),
+                this.name,
+                this.alias,
+                this.predicate
+            );
+        }
     }
 }
 

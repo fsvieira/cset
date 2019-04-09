@@ -1,9 +1,6 @@
 let aliasCounter = 1;
 
 // TODO: should normalize header to always be an array??
-
-const {reorder} = require("./utils");
-
 class CSet {
     constructor () {
         this.name = `set_${aliasCounter++}`;
