@@ -56,6 +56,15 @@ class CSet {
 
         return 1;
     }
+
+    toJSON () {
+        return {
+            name: this.constructor.name,
+            a: this.a?this.a.toJSON():undefined,
+            b: this.b?this.b.toJSON():undefined,
+            header: this.header
+        };
+    }
 }
 
 module.exports = CSet;

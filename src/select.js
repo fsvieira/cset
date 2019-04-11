@@ -94,35 +94,55 @@ class Select extends CSet {
     }
 
     select (alias, {name, predicate}) {
-        // if select has same header we can merge both selects into one.
-        const header = this.header;
-
-        for (let i=0; i<alias.length; i++) {
-            const a = alias[i];
-            if (!header.includes(a)) {
-                return super.select(alias, {name, predicate});
-            }
+        if (alias.length > this.alias.length) {
+            return super.select(alias, {name, predicate});
         }
-
-        if (alias.length === header.length) {
-            // we can join both selections, headers are the same.
-            const tp = this.predicate;
-            const talias = this.alias;
-
-            return new Select(
-                this.a,
-                `${this.name}(${name})`,
-                this.alias,
-                (...args) => tp(args) && predicate(reorder(talias, alias, args))
-            );
-        }
-        else {
+        else if (alias.length < this.alias.length) {
             return new Select(
                 this.a.select(alias, {name, predicate}),
                 this.name,
                 this.alias,
                 this.predicate
             );
+        }
+
+        // else alias are same size
+        // check if they are equal,
+        for (let i=0; i<alias.length; i++) {
+            const a = alias[i];
+
+            if (!this.alias.includes(a)) {
+                // they are different, send new select down assuming that 
+                // current select is already on right position. 
+                return new Select(
+                    this.a.select(alias, {name, predicate}),
+                    this.name,
+                    this.alias,
+                    this.predicate
+                );
+            }
+        }
+
+        // alias are equal, select can be merged.
+        return new Select(
+            this.a,
+            `${this.name}(${name})`,
+            this.alias,
+            (...args) => tp(args) && predicate(reorder(talias, alias, args))
+        );
+    }
+
+    projection (...h) {
+        throw "Select Projection method not implemented yet!"
+    }
+
+    toJSON () {
+        return {
+            name: "Select",
+            header: this.header,
+            args: this.alias.slice(),
+            predicate: this.name,
+            a: this.a.toJSON()
         }
     }
 }

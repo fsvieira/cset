@@ -56,6 +56,40 @@ class Alias extends CSet {
             yield e;
         }
     }
+
+    toJSON () {
+        return {
+            name: "Alias",
+            header: this.header,
+            alias: this.name,
+            a: this.a.toJSON()
+        };
+    }
+
+    projection (...h) {
+        const header = this.header;
+        const hs = header instanceof Array?header:[header];
+        const ah = this.a.header;
+        const aHeader = ah instanceof Array?ah:[ah];
+        const aProjection = [];
+
+        for (let i=0; i<h.length; i++) {
+            const a = h[i];
+            const index = hs.indexOf(a);
+            if (index === -1) {
+                errorHeaderNotFound(a, hs);
+            }
+            else {
+                aProjection.push(aHeader[index]);
+            }
+        }
+
+        if (h.length === header.length) {
+            return this;
+        }
+
+        return this.a.projection(...aProjection).as(this.name);
+    }
 }
 
 CSet.prototype.as = function (name) {

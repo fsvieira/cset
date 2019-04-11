@@ -1,11 +1,16 @@
 const CSet = require("./cset");
-const {reorder} = require("./utils");
+const {
+    reorder, 
+    errorHeaderNotFound
+} = require("./utils");
+
 
 class Projection extends CSet {
     constructor (a, h) {
         super();
         this.a = a;
-        this._header = h;
+
+        this._header = h.length === 1?h[0]:h;
 
         if (new Set(h) === h.length) {
             throw "Repeated headers are not allowed, " + h.join(", ");
@@ -24,7 +29,9 @@ class Projection extends CSet {
     // TODO: Projection counting.
 
     has (x) {
-        const s = this.constrain(this._header, {
+        x = x instanceof Array?x:[x];
+
+        const s = this.select(this._header, {
             name: "prj",
             predicate: (...args) => {
                 for (let i=0; i<args.length; i++) {
@@ -46,14 +53,16 @@ class Projection extends CSet {
 
     *values () {
         const ah = this.a.header;
-        const ar = ah.filter(v => this._header.includes(v));
+        const aHeader = ah instanceof Array?ah:[ah];
+
+        const ar = aHeader.filter(v => this._header.includes(v));
         const dups = new Set();
 
         for (let e of this.a.values()) {
             // remove values from result,
             const v = [];
-            for (let i=0; i<ah.length; i++) {
-                const h = ah[i];
+            for (let i=0; i<aHeader.length; i++) {
+                const h = aHeader[i];
                 if (this._header.includes(h)) {
                     v.push(e[i]);
                 }
@@ -73,21 +82,30 @@ class Projection extends CSet {
     couunt () {
         return [...this.values()].length;
     }
+
+    projection (...h) {
+        const header = this.header;
+        let hs = header instanceof Array?header:[header];
+
+        for (let i=0; i<h.length; i++) {
+            const a = h[i];
+            if (!hs.includes(a)) {
+                errorHeaderNotFound(a, hs);
+            }
+        }
+
+        return this.a.projection(...h);
+    }
 }
 
 CSet.prototype.projection =  function projection (...h) {
     const header = this.header;
 
-    if (header instanceof Array) {
-        return new Projection(this, h);
-    }
-    else if (
-        h.length === 1 && header === h[0] 
-    ) {
+    if (header === h[0]) {
         return this;
     }
-
-    throw "Projection headers " + h.join(", ") + " dont match with set header " + header + ".";
+    
+    return new Projection(this, h);
 }
 
 module.exports = Projection;

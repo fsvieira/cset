@@ -159,6 +159,48 @@ class CrossProduct extends CSet {
             );
         }
     }
+
+    crossProduct (s) {
+        const r = new CrossProduct(this, s);
+
+        const header = r.header;
+
+        const middle = Math.ceil(header.length/2);
+        const a = header.slice(0, middle);
+        const b = header.slice(middle, header.length);
+
+        return new CrossProduct(
+            r.projection(...a),
+            r.projection(...b)
+        );
+    }
+
+    projection (...h) {
+        const ah = this.a.header;
+        const bh = this.b.header;
+
+        const aHeader = ah instanceof Array?ah:[ah];
+        const bHeader = bh instanceof Array?bh:[bh];
+
+        const ap = h.filter(v => aHeader.includes(v));
+        const bp = h.filter(v => bHeader.includes(v));
+
+        if (ap.length + bp.length !== h.length) {
+            throw `Projection headers ${h.join(", ")} are missing from set headers ${aHeader.concat(bHeader).join(", ")}.`;
+        }
+        
+        if (ap.length > 0 && bp.length > 0) {
+            return new CrossProduct(
+                this.a.projection(...ap),
+                this.b.projection(...bp)
+            );
+        }
+        else if (ap.length > 0) {
+            return this.a.projection(...h);
+        }
+
+        return this.b.projection(...h);
+    }
 }
 
 CSet.prototype.crossProduct =  function crossProduct (s) {

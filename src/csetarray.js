@@ -33,6 +33,14 @@ class CSetArray extends CSet {
 
         errorHeaderNotFound(header, [h].concat(rest));
     }
+
+    toJSON () {
+        return {
+            name: "CSetArray",
+            header: this.header,
+            values: [...this._values],
+        };
+    }
 }
 
 module.exports = CSetArray;
