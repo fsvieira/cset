@@ -100,11 +100,22 @@ class Projection extends CSet {
 
 CSet.prototype.projection =  function projection (...h) {
     const header = this.header;
+    let hs = header instanceof Array?header:[header];
 
-    if (header === h[0]) {
+    for (let i=0; i<h.length; i++) {
+        const a = h[i];
+        if (!hs.includes(a)) {
+            errorHeaderNotFound(a, hs);
+        }
+    }
+
+    if (hs.length === h.length) {
+        // its the same,
         return this;
     }
-    
+
+    // since user will be able to extend CSet, we need to make sure
+    // that this method stops, in case projection is not implemented.
     return new Projection(this, h);
 }
 

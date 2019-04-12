@@ -133,7 +133,37 @@ class Select extends CSet {
     }
 
     projection (...h) {
-        throw "Select Projection method not implemented yet!"
+        const header = this.header;
+        let hs = header instanceof Array?header:[header];
+
+        for (let i=0; i<h.length; i++) {
+            const a = h[i];
+            if (!hs.includes(a)) {
+                errorHeaderNotFound(a, hs);
+            }
+        }
+
+        if (hs.length === h.length) {
+            // its the same,
+            return this;
+        }
+
+        const ah = this.alias.filter(v => hs.includes(v));
+
+        if (ah.length === this.alias.length) {
+            // select alias is a subset of projection alias,
+            // send projection down.
+            return new Select(
+                this.a.projection(...h),
+                this.name,
+                this.alias,
+                this.predicate
+            );
+        }
+        
+        // select alias is not a subset of projection alias,
+        // keep projection up.
+        return new Projection(this, h);
     }
 
     toJSON () {

@@ -1,6 +1,5 @@
 const {CSetArray, CSet} = require('../src/index');
 
-/*
 test('Create a set of 3 elements', () => {
   const a = new CSetArray([1, 2, 3]);
   expect([...a.values()]).toEqual([1, 2, 3]);
@@ -229,7 +228,7 @@ test("Count", () => {
   expect(oddSum.count()).toBe(7);
 
 });
-*/
+
 /*
 test("distinct cross product (SEND MORE MONEY)", () => {
 
@@ -275,7 +274,7 @@ test("distinct cross product (SEND MORE MONEY)", () => {
   }
 });
 */
-/*
+
 test("distinct cross product", () => {
 
     const notEqualPred = {
@@ -397,16 +396,14 @@ test("Order of cartasian set operations", () => {
   }
 
 });
-*/
+
 test("domain set extraction with projection", () => {
 
     const a = new CSetArray([1, 2]).as("a");
     const b = new CSetArray([1, 2]).as("b");
-/*
+
     expect([...a.projection("a").values()]).toEqual([1, 2]);
-    console.log(JSON.stringify([...a.crossProduct(b).projection("a").values()]));
     expect([...a.crossProduct(b).projection("a").values()]).toEqual([1, 2]);
-*/
     expect([...a.crossProduct(b).select(
       ["a"], {
         name: "!2",
@@ -415,7 +412,6 @@ test("domain set extraction with projection", () => {
     ).projection("a").values()]).toEqual([1]);
 });
 
-/*
 test("project set extraction", () => {
 
   const a = new CSetArray([1, 2]).as("a");
@@ -514,5 +510,5 @@ test("Select has(x)", () => {
   expect(c.has(3)).toBeFalsy(); 
 
 });
-*/
+
 // TODO: test cross product for duplicated values (for self, union, ...)
