@@ -20,9 +20,7 @@ class Union extends CSet {
     }
 
     *values () {
-        for (let x of this.a.values()) {
-            yield x;
-        }
+        yield *this.a.values();
 
         const a = this.a.header;
         const b = this.b.header;

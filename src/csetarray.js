@@ -20,9 +20,7 @@ class CSetArray extends CSet {
     }
 
     *values () {
-        for (let e of this._values) {
-            yield e;
-        }
+        yield* this._values;
     }
 
     projection (h, ...rest) {

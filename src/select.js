@@ -25,15 +25,6 @@ class Select extends CSet {
         this.predicate = predicate;
     }
 
-    rename (a, renameTable) {
-        return new Select(
-            a,
-            this.name,
-            this.alias.map(v => renameTable.get(v)),
-            this.predicate
-        );
-    }
-
     test (header, x) {
         if (this.canApply(header)) {
             const arg = [];

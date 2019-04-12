@@ -229,7 +229,6 @@ test("Count", () => {
 
 });
 
-/*
 test("distinct cross product (SEND MORE MONEY)", () => {
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -266,14 +265,13 @@ test("distinct cross product (SEND MORE MONEY)", () => {
     }
   );
 
-  console.log(JSON.stringify(sendMoreMoney.toJSON(), null, '  '));
+  // console.log(JSON.stringify(sendMoreMoney.toJSON(), null, '  '));
 
   for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
     expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
       .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
   }
 });
-*/
 
 test("distinct cross product", () => {
 
@@ -412,7 +410,7 @@ test("domain set extraction with projection", () => {
     ).projection("a").values()]).toEqual([1]);
 });
 
-test("project set extraction", () => {
+test("projection set extraction", () => {
 
   const a = new CSetArray([1, 2]).as("a");
   const b = new CSetArray([3, 4]).as("b");
@@ -420,9 +418,11 @@ test("project set extraction", () => {
   const d = new CSetArray([7, 8]).as("d");
 
   const s = a.crossProduct(b).crossProduct(c).crossProduct(d);
+  const db = s.projection("d", "b");
 
+  expect(db.header).toEqual(["b", "d"]);
   expect([...s.projection("d", "b").values()]).toEqual([
-      [7, 3], [8, 3], [7, 4], [8, 4]
+      [3, 7], [3, 8], [4, 7], [4, 8]
   ]);
 
 });
@@ -469,11 +469,9 @@ test("is equal", () => {
 
 test("Extend CSet", () => {
   class Even extends CSet {
-    *values (p) {
+    *values () {
       for (let i=2; ; i+=2) {
-        if (!p || p.test(i)) {
           yield i;
-        }
       }
     }
 
