@@ -1,5 +1,5 @@
 function reorder (aHeader, bHeader, values) {
-    if (aHeader instanceof Array && bHeader instanceof Array) {
+    if (values instanceof Array) {
         const r = [];
         for (let i=0; i<bHeader.length; i++) {
             const label = bHeader[i];
@@ -11,6 +11,7 @@ function reorder (aHeader, bHeader, values) {
     else {
         return values;
     }
+
 }
 
 function errorHeaderNotFound (header, headers) {

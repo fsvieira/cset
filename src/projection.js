@@ -52,8 +52,7 @@ class Projection extends CSet {
     }
 
     *values () {
-        const ah = this.a.header;
-        const aHeader = ah instanceof Array?ah:[ah];
+        const aHeader = this.a.header;
 
         const ar = aHeader.filter(v => this._header.includes(v));
         const dups = new Set();
@@ -85,12 +84,11 @@ class Projection extends CSet {
 
     projection (...h) {
         const header = this.header;
-        let hs = header instanceof Array?header:[header];
 
         for (let i=0; i<h.length; i++) {
             const a = h[i];
-            if (!hs.includes(a)) {
-                errorHeaderNotFound(a, hs);
+            if (!header.includes(a)) {
+                errorHeaderNotFound(a, header);
             }
         }
 
@@ -100,14 +98,13 @@ class Projection extends CSet {
 
 CSet.prototype.projection =  function projection (...h) {
     const header = this.header;
-    let hs = header instanceof Array?header:[header];
 
-    if (h.length < hs.length) {
+    if (h.length < header.length) {
         return new Projection(this, h);
     }
-    else if (h.length === hs.length) {
+    else if (h.length === header.length) {
         for (let i=0; i<h.length; i++) {
-            if (h[i] !== hs[i]) {
+            if (h[i] !== header[i]) {
                 return new Projection(this, h);
             }
         }

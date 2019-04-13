@@ -41,20 +41,20 @@ class CSet {
     }
 
     get header () {
+        throw `'get header ()' method not implemented at '${this.constructor.name}' class`; 
+    }
+    /*
+    TODO: 
+    get header () {
         if (this.a) {
-            return this.a.header || this.name;
+            return this.a.header;
         }
         
-        return this.name;
-    }
+        return [this.name];
+    }*/
 
     get _length () {
-        const h = this.header;
-        if (h instanceof Array) {
-            return h.length;
-        }
-
-        return 1;
+        return this.header.length;
     }
 
     toJSON () {

@@ -35,6 +35,10 @@ class Intersect extends CSet {
             }
         }
     }
+
+    get header () {
+        return this.a.header;
+    }
 }
 
 CSet.prototype.intersect = function intersect (s) {

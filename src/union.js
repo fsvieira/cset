@@ -34,6 +34,10 @@ class Union extends CSet {
             }
         }
     }
+
+    get header () {
+        return this.a.header;
+    }
 }
 
 CSet.prototype.union = function (s) {

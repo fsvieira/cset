@@ -16,7 +16,7 @@ class CSetArray extends CSet {
     }
 
     get header () {
-        return this.name;
+        return [this.name];
     }
 
     *values () {
@@ -25,7 +25,7 @@ class CSetArray extends CSet {
 
     projection (h, ...rest) {
         const header = this.header;
-        if (!rest.length && h === header) {
+        if (!rest.length && header.includes(h)) {
             return this;
         }
 

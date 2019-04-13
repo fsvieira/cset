@@ -178,7 +178,7 @@ test("header of intersection", () => {
   const a = new CSetArray([1, 2]).as("A");
   const b = new CSetArray([1, 2]).as("B");
 
-  expect(a.intersect(b).header).toEqual("A");
+  expect(a.intersect(b).header).toEqual(["A"]);
 
 });
 
@@ -196,7 +196,7 @@ test("header of cross products", () => {
     expect(s.header).toEqual(["C","A","B"]);
 });
 
-test("cross products alias", () => {
+test("cross product alias", () => {
 
   const ab = new CSetArray([1, 2]).as("a").crossProduct(new CSetArray([1, 2, 3]).as("b"));
 

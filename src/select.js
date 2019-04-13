@@ -7,16 +7,11 @@ class Select extends CSet {
 
         const header = a.header;
 
-        if (header instanceof Array) {
-            for (let i=0; i<alias.length; i++) {
-                const a = alias[i];
-                if (!header.includes(a)) {
-                    throw new Error(`Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`);
-                }
+        for (let i=0; i<alias.length; i++) {
+            const a = alias[i];
+            if (!header.includes(a)) {
+                throw new Error(`Alias ${a} in constrain ${name} is not found on headers ${header.join(", ")}`);
             }
-        }
-        else if (alias.length !== 1 || header !== alias[0]) {
-            throw new Error(`Alias ${alias.join(", ")} in constrain ${name} is not found on headers ${header}`);
         }
 
         this.a = a;
@@ -31,7 +26,7 @@ class Select extends CSet {
             for (let i=0; i<this.alias.length; i++) {
                 const alias = this.alias[i];
 
-                if (header instanceof Array) {
+                if (x instanceof Array) {
                     const index = header.indexOf(alias);
                     arg.push(x[index]);    
                 }
@@ -71,12 +66,8 @@ class Select extends CSet {
     canApply (header) {
         for (let i=0; i<this.alias.length; i++) {
             const a = this.alias[i];
-            if (header instanceof Array) {
-                if (!header.includes(a)) {
-                    return false;
-                }
-            }
-            else if (header !== a) {
+
+            if (!header.includes(a)) {
                 return false;
             }
         }
@@ -125,21 +116,20 @@ class Select extends CSet {
 
     projection (...h) {
         const header = this.header;
-        let hs = header instanceof Array?header:[header];
 
         for (let i=0; i<h.length; i++) {
             const a = h[i];
-            if (!hs.includes(a)) {
+            if (!header.includes(a)) {
                 errorHeaderNotFound(a, hs);
             }
         }
 
-        if (hs.length === h.length) {
+        if (header.length === h.length) {
             // its the same,
             return this;
         }
 
-        const ah = this.alias.filter(v => hs.includes(v));
+        const ah = this.alias.filter(v => header.includes(v));
 
         if (ah.length === this.alias.length) {
             // select alias is a subset of projection alias,
@@ -165,6 +155,10 @@ class Select extends CSet {
             predicate: this.name,
             a: this.a.toJSON()
         }
+    }
+
+    get header () {
+        return this.a.header;
     }
 }
 

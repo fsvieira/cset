@@ -43,7 +43,7 @@ class CrossProduct extends CSet {
         const a = this.header;
         const b = s.header;
 
-        if (a instanceof Array && b instanceof Array && a.length === b.length) {
+        if (a.length === b.length) {
             const h = new Set([...a, ...b]);
 
             if (h.size === b.length) {
@@ -51,11 +51,7 @@ class CrossProduct extends CSet {
             }
         }
 
-        throw `Invalid intersect, headers don't match ${
-            a instanceof Array?a.join(", "):a
-        } <> ${
-            b instanceof Array?b.join(", "):b
-        }`;
+        throw `Invalid intersect, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
 
     }
 
@@ -63,7 +59,7 @@ class CrossProduct extends CSet {
         const a = this.header;
         const b = s.header;
 
-        if (a instanceof Array && b instanceof Array && a.length === b.length) {
+        if (a.length === b.length) {
             const h = new Set([...a, ...b]);
 
             if (h.size === b.length) {
@@ -71,18 +67,14 @@ class CrossProduct extends CSet {
             }
         }
 
-        throw `Invalid difference, headers don't match ${
-            a instanceof Array?a.join(", "):a
-        } <> ${
-            b instanceof Array?b.join(", "):b
-        }`;
+        throw `Invalid difference, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
     }
 
     union (s) {
         const a = this.header;
         const b = s.header;
 
-        if (a instanceof Array && b instanceof Array && a.length === b.length) {
+        if (a.length === b.length) {
             const h = new Set([...a, ...b]);
 
             if (h.size === b.length) {
@@ -90,11 +82,7 @@ class CrossProduct extends CSet {
             }
         }
 
-        throw `Invalid union, headers don't match ${
-            a instanceof Array?a.join(", "):a
-        } <> ${
-            b instanceof Array?b.join(", "):b
-        }`;
+        throw `Invalid union, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
     }
 
     count () {
@@ -105,9 +93,7 @@ class CrossProduct extends CSet {
         const ah = this.a.header;
         const bh = this.b.header; 
 
-        return (ah instanceof Array?ah:[ah]).concat(
-            bh instanceof Array?bh:[bh]
-        );
+        return ah.concat(bh);
     }
 
     *values () {
@@ -176,11 +162,8 @@ class CrossProduct extends CSet {
     }
 
     projection (...h) {
-        const ah = this.a.header;
-        const bh = this.b.header;
-
-        const aHeader = ah instanceof Array?ah:[ah];
-        const bHeader = bh instanceof Array?bh:[bh];
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
 
         const ap = h.filter(v => aHeader.includes(v));
         const bp = h.filter(v => bHeader.includes(v));
