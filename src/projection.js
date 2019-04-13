@@ -102,21 +102,21 @@ CSet.prototype.projection =  function projection (...h) {
     const header = this.header;
     let hs = header instanceof Array?header:[header];
 
-    for (let i=0; i<h.length; i++) {
-        const a = h[i];
-        if (!hs.includes(a)) {
-            errorHeaderNotFound(a, hs);
-        }
+    if (h.length < hs.length) {
+        return new Projection(this, h);
     }
+    else if (h.length === hs.length) {
+        for (let i=0; i<h.length; i++) {
+            if (h[i] !== hs[i]) {
+                return new Projection(this, h);
+            }
+        }
 
-    if (hs.length === h.length) {
-        // its the same,
+        // projection is equal,
         return this;
     }
 
-    // since user will be able to extend CSet, we need to make sure
-    // that this method stops, in case projection is not implemented.
-    return new Projection(this, h);
+    throw `Projection headers ${h.join(", ")} don't match set header ${hs.join(", ")}`;
 }
 
 module.exports = Projection;
