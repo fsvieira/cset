@@ -35,7 +35,7 @@ class Alias extends CSet {
         return this.a.has(x);
     }
 
-    *values () {
+    *_values () {
         yield *this.a.values();
     }
 

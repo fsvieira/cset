@@ -19,7 +19,7 @@ class Union extends CSet {
         return this.a.count() + this.b.count() - this.a.intersect(this.b).count();
     }
 
-    *values () {
+    *_values () {
         yield *this.a.values();
 
         const a = this.a.header;

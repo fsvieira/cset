@@ -4,15 +4,15 @@ const {errorHeaderNotFound} = require("./utils");
 class CSetArray extends CSet {
     constructor (values) {
         super();
-        this._values = new Set(values);
+        this.sValues = new Set(values);
     }
 
     has (x) {
-        return this._values.has(x);
+        return this.sValues.has(x);
     }
 
     count () {
-        return this._values.size;
+        return this.sValues.size;
     }
 
     get header () {
@@ -20,7 +20,7 @@ class CSetArray extends CSet {
     }
 
     *values () {
-        yield* this._values;
+        yield* this.sValues;
     }
 
     projection (h, ...rest) {
@@ -36,7 +36,7 @@ class CSetArray extends CSet {
         return {
             name: "CSetArray",
             header: this.header,
-            values: [...this._values],
+            values: [...this.sValues],
         };
     }
 }

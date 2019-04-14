@@ -55,7 +55,7 @@ class Select extends CSet {
         return this.test(this.a.header, x) && this.a.has(x);
     }
 
-    *values () {
+    *_values () {
         for (let e of this.a.values()) {
             if (this.test(this.a.header, e)) {
                 yield e;

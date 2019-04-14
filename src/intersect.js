@@ -23,7 +23,7 @@ class Intersect extends CSet {
         return counter;
     }
 
-    *values () {
+    *_values () {
         const a = this.a.header;
         const b = this.b.header;
 

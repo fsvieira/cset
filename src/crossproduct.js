@@ -15,6 +15,22 @@ class CrossProduct extends CSet {
         if (h.length !== s.size) {
             throw `Repeated headers are not allowed ${h.join(", ")}`;
         }
+
+        if (a.isEqual(b)) {
+            // rename a as b,
+            let s = a;
+            const bHeader = this.b.header;
+            const aHeader = this.a.header;
+
+            for (let i=0; i<bHeader.length; i++) {
+                const ah = aHeader[i];
+                const bh = bHeader[i];
+
+                s = s.as(bh, ah);
+            }
+
+            this.b = s;
+        }
     }
     
     get _length () {
@@ -96,7 +112,8 @@ class CrossProduct extends CSet {
         return ah.concat(bh);
     }
 
-    *values () {
+    *_values () {
+        const rs = new Set();
         for (let x of this.a.values()) {
             const a = (x instanceof Array)?x:[x];
 
@@ -105,6 +122,7 @@ class CrossProduct extends CSet {
                     y instanceof Array?y:[y]
                 );
 
+                rs.add(r);
                 yield r;
             }
         }

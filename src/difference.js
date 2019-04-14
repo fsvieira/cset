@@ -18,7 +18,7 @@ class Difference extends CSet {
         return this.a.count() - this.a.intersect(this.b).count();
     }
 
-    *values () {
+    *_values () {
         const a = this.a.header;
         const b = this.b.header;
 

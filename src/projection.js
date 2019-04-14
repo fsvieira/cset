@@ -51,7 +51,7 @@ class Projection extends CSet {
         return this._header;
     }
 
-    *values () {
+    *_values () {
         const aHeader = this.a.header;
 
         const ar = aHeader.filter(v => this._header.includes(v));
@@ -78,7 +78,7 @@ class Projection extends CSet {
         }
     }
 
-    couunt () {
+    count () {
         return [...this.values()].length;
     }
 

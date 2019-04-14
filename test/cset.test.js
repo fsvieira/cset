@@ -11,6 +11,7 @@ test('Set intersection', () => {
   const a = new CSetArray([1, 2, 3]);
   const b = new CSetArray([2, 3, 4]);
   const ab = a.intersect(b);
+
   expect([...ab.values()]).toEqual([2, 3]);
 
   expect(ab.has(2)).toBeTruthy();
