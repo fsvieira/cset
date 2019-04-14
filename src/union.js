@@ -41,16 +41,23 @@ class Union extends CSet {
 }
 
 CSet.prototype.union = function (s) {
-    if (this.isEmpty()) {
+    if (this.isEqual(s)) {
+        return this;
+    }
+    else if (this.isEmpty()) {
         return s;
     }
     else if (s.isEmpty()) {
         return this;
     }
 
+    // return new Union(this.intersect(s), this.symmetricDifference(s));
     return new Union(this, s);
 }
 
+CSet.prototype._union = function (s) {
+    return new Union(this, s);
+}
 
 module.exports = Union;
 

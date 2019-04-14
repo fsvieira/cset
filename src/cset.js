@@ -7,7 +7,7 @@ class CSet {
     }
 
     symmetricDifference (s) {
-        return this.union(s).difference(this.intersect(s));
+        return this._union(s).difference(this.intersect(s));
     }
 
     // test methods,
@@ -16,8 +16,7 @@ class CSet {
     }
 
     isSubset (x) {
-        return this.difference(x).isEmpty() && 
-            !this.intersect(x).isEmpty();
+        return !this._intersect(x).isEmpty() && this.difference(x).isEmpty();
     }
 
     isProperSubset (x) {
@@ -33,7 +32,7 @@ class CSet {
     }
 
     isEqual (x) {
-        return this.isSubset(x) && x.isSubset(this);
+        return this === x || (this.isSubset(x) && x.isSubset(this));
     }
 
     count () {

@@ -30,12 +30,14 @@ class Difference extends CSet {
             }
         }
     }
+
+    get header () {
+        return this.a.header.concat(this.b.header);
+    }
 }
 
 CSet.prototype.difference = function (s) {
     return new Difference(this, s); 
 };
 
-
 module.exports = Difference;
-
