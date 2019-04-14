@@ -47,31 +47,40 @@ class Alias extends CSet {
         };
     }
 
-    /*
     projection (...h) {
-        const header = this._header;
-        const hs = header instanceof Array?header:[header];
-        const ah = this.a.header;
-        const aHeader = ah instanceof Array?ah:[ah];
-        const aProjection = [];
+        const header = this.header;
 
-        for (let i=0; i<h.length; i++) {
-            const a = h[i];
-            const index = hs.indexOf(a);
-            if (index === -1) {
-                errorHeaderNotFound(a, hs);
+        if (h.length < header.length) {
+            const aHeader = this.a.header;
+
+            const nh = [];
+            for (let i=0; i<h.length; i++) {
+                const v = h[i];
+                const index = aHeader.indexOf(v);
+                nh.push(aHeader[index]);
             }
-            else {
-                aProjection.push(aHeader[index]);
+            
+            let s = this.a.projection(nh);
+
+            for (let i=0; i<h.length; i++) {
+                s = s.as(h[i], nh[i]);
             }
+
+            return s;
         }
+        else if (h.length === header.length) {
+            for (let i=0; i<h.length; i++) {
+                if (h[i] !== header[i]) {
+                    return new Projection(this, h);
+                }
+            }
 
-        if (h.length === header.length) {
+            // projection is equal,
             return this;
         }
 
-        return this.a.projection(...aProjection).as(this.name);
-    }*/
+        throw `Projection headers ${h.join(", ")} don't match set header ${hs.join(", ")}`;
+    }
 
     as (rename, name) {
         return new Alias(this.a, rename, name, this.header);
