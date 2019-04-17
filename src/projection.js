@@ -51,7 +51,7 @@ class Projection extends CSet {
         return this._header;
     }
 
-    *_values () {
+    *values () {
         const aHeader = this.a.header;
 
         const ar = aHeader.filter(v => this._header.includes(v));

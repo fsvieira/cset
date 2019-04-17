@@ -32,15 +32,11 @@ class CrossProduct extends CSet {
             this.b = s;
         }
     }
-    
-    get _length () {
-        return this.a._length + this.b._length;
-    }
 
     has (x) {
         if (x instanceof Array) {
-            const aLength = this.a._length;
-            const bLength = this.b._length;
+            const aLength = this.a.header.length;
+            const bLength = this.b.header.length;
             const total = aLength + bLength;
             
             if (x.length === total) {
@@ -112,7 +108,7 @@ class CrossProduct extends CSet {
         return ah.concat(bh);
     }
 
-    *_values () {
+    *values () {
         const rs = new Set();
         for (let x of this.a.values()) {
             const a = (x instanceof Array)?x:[x];
@@ -205,7 +201,21 @@ class CrossProduct extends CSet {
 }
 
 CSet.prototype.crossProduct =  function crossProduct (s) {
-    return new CrossProduct(this, s);
+    // return new CrossProduct(this, s);
+    const r = new CrossProduct(this, s);
+
+    const header = r.header;
+
+    const middle = Math.ceil(header.length/2);
+    const a = header.slice(0, middle);
+    const b = header.slice(middle, header.length);
+
+    console.log(header, a, b);
+
+    return new CrossProduct(
+        r.projection(...a),
+        r.projection(...b)
+    );
 };
 
 module.exports = CrossProduct;
