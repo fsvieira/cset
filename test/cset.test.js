@@ -268,12 +268,11 @@ test("distinct cross product (SEND MORE MONEY)", () => {
 
   // console.log(JSON.stringify(sendMoreMoney.toJSON(), null, '  '));
 
-  console.log(sendMoreMoney.toDot());
-  /*
+  // console.log(sendMoreMoney.toDot());
   for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
     expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
       .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
-  }*/
+  }
 });
 
 test("distinct cross product", () => {
@@ -423,9 +422,9 @@ test("projection set extraction", () => {
   const s = a.crossProduct(b).crossProduct(c).crossProduct(d);
   const db = s.projection("d", "b");
 
-  expect(db.header).toEqual(["b", "d"]);
+  expect(db.header).toEqual(["d", "b"]);
   expect([...s.projection("d", "b").values()]).toEqual([
-      [3, 7], [3, 8], [4, 7], [4, 8]
+      [7, 3], [8, 3], [7, 4], [8, 4]
   ]);
 
 });

@@ -16,6 +16,7 @@ class CrossProduct extends CSet {
             throw `Repeated headers are not allowed ${h.join(", ")}`;
         }
 
+        /*
         if (a.isEqual(b)) {
             // rename a as b,
             let s = a;
@@ -30,7 +31,7 @@ class CrossProduct extends CSet {
             }
 
             this.b = s;
-        }
+        }*/
     }
 
     has (x) {
@@ -124,6 +125,7 @@ class CrossProduct extends CSet {
         }
     }
 
+    /*
     select (alias, {name, predicate}) {
         const ah = this.a.header;
 
@@ -158,8 +160,9 @@ class CrossProduct extends CSet {
                 this.b.select(alias, {name, predicate})
             );
         }
-    }
+    }*/
 
+    /*
     crossProduct (s) {
         const r = new CrossProduct(this, s);
 
@@ -197,11 +200,12 @@ class CrossProduct extends CSet {
         }
 
         return this.b.projection(...h);
-    }
+    }*/
 }
 
 CSet.prototype.crossProduct =  function crossProduct (s) {
-    // return new CrossProduct(this, s);
+    return new CrossProduct(this, s);
+    /*
     const r = new CrossProduct(this, s);
 
     const header = r.header;
@@ -215,7 +219,7 @@ CSet.prototype.crossProduct =  function crossProduct (s) {
     return new CrossProduct(
         r.projection(...a),
         r.projection(...b)
-    );
+    );*/
 };
 
 module.exports = CrossProduct;

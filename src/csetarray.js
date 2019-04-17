@@ -23,6 +23,7 @@ class CSetArray extends CSet {
         yield* this.sValues;
     }
 
+    /*
     projection (h, ...rest) {
         const header = this.header;
         if (!rest.length && header.includes(h)) {
@@ -30,15 +31,8 @@ class CSetArray extends CSet {
         }
 
         errorHeaderNotFound(header, [h].concat(rest));
-    }
+    }*/
 
-    toJSON () {
-        return {
-            name: "CSetArray",
-            header: this.header,
-            values: [...this.sValues],
-        };
-    }
 }
 
 module.exports = CSetArray;

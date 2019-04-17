@@ -1,7 +1,7 @@
 const CSet = require("./cset");
 const {
     reorder, 
-    errorHeaderNotFound
+    // errorHeaderNotFound
 } = require("./utils");
 
 
@@ -10,7 +10,7 @@ class Projection extends CSet {
         super();
         this.a = a;
 
-        this._header = h.length === 1?h[0]:h;
+        this._header = h; // h.length === 1?h[0]:h;
 
         if (new Set(h) === h.length) {
             throw "Repeated headers are not allowed, " + h.join(", ");
@@ -63,7 +63,12 @@ class Projection extends CSet {
             for (let i=0; i<aHeader.length; i++) {
                 const h = aHeader[i];
                 if (this._header.includes(h)) {
-                    v.push(e[i]);
+                    if (e instanceof Array) {
+                        v.push(e[i]);
+                    }
+                    else {
+                        v.push(e);
+                    }
                 }
             }
             
@@ -73,7 +78,12 @@ class Projection extends CSet {
 
             if (!dups.has(d)) {
                 dups.add(d);
-                yield r;
+                if (r.length === 1) {
+                    yield r[0];
+                }
+                else {
+                    yield r;
+                }
             }
         }
     }
@@ -82,6 +92,7 @@ class Projection extends CSet {
         return [...this.values()].length;
     }
 
+    /*
     projection (...h) {
         const header = this.header;
 
@@ -93,10 +104,12 @@ class Projection extends CSet {
         }
 
         return this.a.projection(...h);
-    }
+    }*/
 }
 
 CSet.prototype.projection =  function projection (...h) {
+    return new Projection(this, h);
+    /*
     const header = this.header;
 
     if (h.length < header.length) {
@@ -114,6 +127,7 @@ CSet.prototype.projection =  function projection (...h) {
     }
 
     throw `Projection headers ${h.join(", ")} don't match set header ${hs.join(", ")}`;
+    */
 }
 
 module.exports = Projection;

@@ -18,7 +18,7 @@ class CSet {
     }
 
     isSubset (x) {
-        return !this._intersect(x).isEmpty() && this.difference(x).isEmpty();
+        return !this.intersect(x).isEmpty() && this.difference(x).isEmpty();
     }
 
     isProperSubset (x) {

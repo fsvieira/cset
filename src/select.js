@@ -147,16 +147,6 @@ class Select extends CSet {
         return new Projection(this, h);
     }
 
-    toJSON () {
-        return {
-            name: "Select",
-            header: this.header,
-            args: this.alias.slice(),
-            predicate: this.name,
-            a: this.a.toJSON()
-        }
-    }
-
     get header () {
         return this.a.header;
     }

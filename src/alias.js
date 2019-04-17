@@ -39,14 +39,7 @@ class Alias extends CSet {
         yield *this.a.values();
     }
 
-    toJSON () {
-        return {
-            name: "Alias",
-            header: this.header,
-            a: this.a.toJSON()
-        };
-    }
-
+    /*
     projection (...h) {
         const header = this.header;
 
@@ -80,7 +73,7 @@ class Alias extends CSet {
         }
 
         throw `Projection headers ${h.join(", ")} don't match set header ${hs.join(", ")}`;
-    }
+    }*/
 
     as (rename, name) {
         return new Alias(this.a, rename, name, this.header);
