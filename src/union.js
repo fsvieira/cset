@@ -38,9 +38,15 @@ class Union extends CSet {
     get header () {
         return this.a.header;
     }
+
+    /** Query */
+    eCount () {
+        return this.a.eCount() + this.b.eCount(); 
+    }
 }
 
 CSet.prototype.union = function (s) {
+    /*
     if (this.isEqual(s)) {
         return this;
     }
@@ -50,12 +56,8 @@ CSet.prototype.union = function (s) {
     else if (s.isEmpty()) {
         return this;
     }
-
+    */
     // return new Union(this.intersect(s), this.symmetricDifference(s));
-    return new Union(this, s);
-}
-
-CSet.prototype._union = function (s) {
     return new Union(this, s);
 }
 

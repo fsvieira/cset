@@ -75,6 +75,7 @@ class Select extends CSet {
         return true;
     }
 
+    /*
     select (alias, {name, predicate}) {
         if (alias.length > this.alias.length) {
             return super.select(alias, {name, predicate});
@@ -145,10 +146,17 @@ class Select extends CSet {
         // select alias is not a subset of projection alias,
         // keep projection up.
         return new Projection(this, h);
-    }
+    }*/
 
     get header () {
         return this.a.header;
+    }
+
+    /** Query */
+    eCount () {
+        const perc = 1 - (this.alias.length / this.header.length);
+        const t = Math.ceil(this.a.eCount() * perc) || 1; 
+        return t;
     }
 }
 
@@ -162,4 +170,3 @@ CSet.prototype.select = function (alias, {name, predicate}) {
 };
 
 module.exports = Select;
-

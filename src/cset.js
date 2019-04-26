@@ -9,7 +9,7 @@ class CSet {
     }
 
     symmetricDifference (s) {
-        return this._union(s).difference(this.intersect(s));
+        return this.union(s).difference(this.intersect(s));
     }
 
     // test methods,
@@ -144,7 +144,51 @@ class CSet {
             yield value;
         }
     }
+
+    /** Query */
+    balance () {
+        if (this.a) {
+            this.a = this.a.balance();
+        }
+
+        if (this.b) {
+            this.b = this.b.balance();
+        }
+
+        return this;
+    }
 }
 
 module.exports = CSet;
 
+/*
+    Optimizations:
+        1. Select:
+            a. send select to leafs,
+            b. aggregate selects (in one function)
+        2. Projection:
+            a. send projection to leafs,
+            b. remove not needed atributes,
+            c. keep only needed projections.
+        3. CrossProduct:
+            a. Check for equal nodes and share them,
+            b. Balance nodes,
+        4. Alias:
+            a. rename names down,
+            b. remove not nedded alias,
+        5. **:
+            a. Share equal sets,
+            b. cache sets with more then one dependecy:
+                a. after complete cache remove links down.
+            c. order:
+                a. move sets with less elements to left side,
+                b. move sets with more cached elements to the left side,
+                c. on loops start with the set with more elements.
+
+    Optimizations 2:
+        - convert union, intersect, difference to select and optimize.
+            - intersect:
+                a.select(header, (...header) => b.has(header))
+                ** a.crossProduct(b).select([a, b], (a, b) => a === b)
+        
+*/

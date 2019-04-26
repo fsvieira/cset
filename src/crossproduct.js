@@ -125,6 +125,34 @@ class CrossProduct extends CSet {
         }
     }
 
+    /** Query */
+    eCount () {
+        return this.a.eCount() * this.b.eCount(); 
+    }
+
+    balance () {
+        const s = [];
+        const header = this.header;
+
+        for (let i=0; i<header.length; i++) {
+            const h = header[i];
+            s.push(this.projection(h));
+        }
+
+        s.sort((a, b) => a.eCount() - b.eCount());
+
+        while (s.length > 1) {
+//            s.sort((a, b) => a.eCount() - b.eCount());
+
+            const a = s.shift();
+            const b = s.shift();
+
+            s.push(a.crossProduct(b));
+        }
+
+        return s[0];
+    }
+
     /*
     select (alias, {name, predicate}) {
         const ah = this.a.header;

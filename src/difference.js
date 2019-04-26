@@ -1,4 +1,5 @@
 const CSet = require("./cset");
+const CSetArray = require("./csetarray");
 const {reorder} = require("./utils");
 
 class Difference extends CSet {
@@ -33,6 +34,11 @@ class Difference extends CSet {
 
     get header () {
         return this.a.header.concat(this.b.header);
+    }
+
+    /** Query */
+    eCount () {
+        return Math.abs(this.a.eCount() - this.b.eCount());
     }
 }
 

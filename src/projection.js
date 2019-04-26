@@ -105,6 +105,13 @@ class Projection extends CSet {
 
         return this.a.projection(...h);
     }*/
+
+    /** Query */
+    eCount () {
+        const perc = this._header.length / this.a.header.length;
+        return this.a.eCount() * perc;
+    }
+
 }
 
 CSet.prototype.projection =  function projection (...h) {

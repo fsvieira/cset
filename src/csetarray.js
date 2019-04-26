@@ -33,6 +33,10 @@ class CSetArray extends CSet {
         errorHeaderNotFound(header, [h].concat(rest));
     }*/
 
+    /** Query */
+    eCount () {
+        return this.sValues.size;
+    }
 }
 
 module.exports = CSetArray;

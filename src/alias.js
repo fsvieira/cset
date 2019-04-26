@@ -78,6 +78,11 @@ class Alias extends CSet {
     as (rename, name) {
         return new Alias(this.a, rename, name, this.header);
     }
+
+    /** Query */
+    eCount () {
+        return this.a.eCount();
+    }
 }
 
 CSet.prototype.as = function (rename, name) {
