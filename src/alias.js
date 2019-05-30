@@ -36,52 +36,31 @@ class Alias extends CSet {
     }
 
     *values () {
-        yield *this.a.values();
+        yield *this.compile()();
     }
-
-    /*
-    projection (...h) {
-        const header = this.header;
-
-        if (h.length < header.length) {
-            const aHeader = this.a.header;
-
-            const nh = [];
-            for (let i=0; i<h.length; i++) {
-                const v = h[i];
-                const index = aHeader.indexOf(v);
-                nh.push(aHeader[index]);
-            }
-            
-            let s = this.a.projection(nh);
-
-            for (let i=0; i<h.length; i++) {
-                s = s.as(h[i], nh[i]);
-            }
-
-            return s;
-        }
-        else if (h.length === header.length) {
-            for (let i=0; i<h.length; i++) {
-                if (h[i] !== header[i]) {
-                    return new Projection(this, h);
-                }
-            }
-
-            // projection is equal,
-            return this;
-        }
-
-        throw `Projection headers ${h.join(", ")} don't match set header ${hs.join(", ")}`;
-    }*/
 
     as (rename, name) {
         return new Alias(this.a, rename, name, this.header);
     }
 
-    /** Query */
-    eCount () {
-        return this.a.eCount();
+    compile (p) {
+        const n = {};
+        const header = this.a.header;
+
+        for (let k in p) {
+            const c = p[k];
+            const alias = c.alias.map(v => header[this._header.indexOf(v)]);
+
+            const key = JSON.stringify(alias.slice().sort());
+            n[key] = {
+                alias,
+                f: c.f
+            };
+        }
+
+        const aIt = this.a.compile(n); 
+
+        return aIt;
     }
 }
 

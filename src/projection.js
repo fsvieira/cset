@@ -86,55 +86,59 @@ class Projection extends CSet {
                 }
             }
         }
+        //   yield *this.compile()();
     }
+
+    /*
+    compile (p) {
+        const aHeader = this.a.header;
+        const _header = this._header;
+
+        const ar = aHeader.filter(v => _header.includes(v));
+        const aIt = this.compile(p);
+
+        return function *() {
+            const dups = new Set();
+
+            for (let e of aIt()) {
+                // remove values from result,
+                const v = [];
+                for (let i=0; i<aHeader.length; i++) {
+                    const h = aHeader[i];
+                    if (_header.includes(h)) {
+                        if (e instanceof Array) {
+                            v.push(e[i]);
+                        }
+                        else {
+                            v.push(e);
+                        }
+                    }
+                }
+                
+                // reorder,
+                const r = reorder(ar, _header, v);
+                const d = JSON.stringify(r);
+
+                if (!dups.has(d)) {
+                    dups.add(d);
+                    if (r.length === 1) {
+                        yield r[0];
+                    }
+                    else {
+                        yield r;
+                    }
+                }
+            }
+        }
+    }*/
 
     count () {
         return [...this.values()].length;
     }
-
-    /*
-    projection (...h) {
-        const header = this.header;
-
-        for (let i=0; i<h.length; i++) {
-            const a = h[i];
-            if (!header.includes(a)) {
-                errorHeaderNotFound(a, header);
-            }
-        }
-
-        return this.a.projection(...h);
-    }*/
-
-    /** Query */
-    eCount () {
-        const perc = this._header.length / this.a.header.length;
-        return this.a.eCount() * perc;
-    }
-
 }
 
 CSet.prototype.projection =  function projection (...h) {
     return new Projection(this, h);
-    /*
-    const header = this.header;
-
-    if (h.length < header.length) {
-        return new Projection(this, h);
-    }
-    else if (h.length === header.length) {
-        for (let i=0; i<h.length; i++) {
-            if (h[i] !== header[i]) {
-                return new Projection(this, h);
-            }
-        }
-
-        // projection is equal,
-        return this;
-    }
-
-    throw `Projection headers ${h.join(", ")} don't match set header ${hs.join(", ")}`;
-    */
 }
 
 module.exports = Projection;

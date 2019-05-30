@@ -1,11 +1,11 @@
+// const FSA = require("fsalib");
+
 let aliasCounter = 1;
 
-// TODO: should normalize header to always be an array??
 class CSet {
     constructor () {
         this.id = aliasCounter++;
         this.name = `set_${this.id}`;
-        this.cache = {};
     }
 
     symmetricDifference (s) {
@@ -84,79 +84,68 @@ class CSet {
         return g;
     }
 
+    stateName () {
+        return `${this.constructor.name}_${this.id}__${this.header.join("_")}`;
+    }
+
     _toDot (dot) {
-        const id = `${this.constructor.name}_${this.id}`;
+        const id = this.stateName();
 
         if (!dot.states.includes(id)) {
             dot.states.push(id);
 
             if (this.a) {
-                const aid = `${this.a.constructor.name}_${this.a.id}`;
+                const aid = this.a.stateName();
                 dot.transitions += `\t${id} -> ${aid};\n`; 
                 this.a._toDot(dot);
                 
             }
 
             if (this.b) {
-                const bid = `${this.b.constructor.name}_${this.b.id}`;
+                const bid = this.b.stateName();
                 dot.transitions += `\t${id} -> ${bid};\n`; 
                 this.b._toDot(dot);
             }
         }
     }
 
-    *values () {
-        if (this.cache.values && this.cache.values.isInvalid) {
-            yield* this._values();
-            return;
-        }
+    toFunc (p) {
+        if (p) {
+            let f;
+            for (let key in p) {
+                const c = p[key];
 
-        if (this.cache.values) {
-            yield* this.cache.values.s;
+                if (f) {
+                    const n = f;
+                    f = (header, x) => n(header, x) && c.f(header, x);
+                }
+                else {
+                    f = c.f;
+                }
+            }
+
+            return f;
+        }
+    }
+
+    compile (p) {
+        const values = () => this.values();
+        const f = this.toFunc(p);
+
+        if (f) {
+            return function *() {
+                for (let x of values()) {
+                    if (f(x)) {
+                        yield x;
+                    }
+                }
+            }
         }
         else {
-            const it = this._values();
-    
-            this.cache.values = {
-                s: [],
-                it,
-                done: false
-            };
-        }
-
-        while (!this.cache.values.done) {
-            const e = this.cache.values.it.next();
-
-            if (e.done) {
-                this.cache.values.done = true;
-                return;
-            }
-
-            const value = e.value;
-
-            if (this.cache.values.s.length < 10000) {
-                this.cache.values.s.push(value);
-            }
-            else {
-                this.cache.values.isInvalid = true;
-            }
-
-            yield value;
+            return function *() {yield *values()}
         }
     }
 
-    /** Query */
-    balance () {
-        if (this.a) {
-            this.a = this.a.balance();
-        }
-
-        if (this.b) {
-            this.b = this.b.balance();
-        }
-
-        return this;
-    }
 }
 
 module.exports = CSet;

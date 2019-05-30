@@ -20,6 +20,7 @@ class Difference extends CSet {
     }
 
     *values () {
+        /*
         const a = this.a.header;
         const b = this.b.header;
 
@@ -29,16 +30,28 @@ class Difference extends CSet {
             if (!this.b.has(bx)) {
                 yield x;
             }
-        }
+        }*/
+        yield *this.compile()();
     }
 
     get header () {
         return this.a.header.concat(this.b.header);
     }
 
-    /** Query */
-    eCount () {
-        return Math.abs(this.a.eCount() - this.b.eCount());
+    compile (p) {
+        const a = this.a.header;
+        const b = this.b.header;
+
+        const aIt = this.a.compile(p);
+        const has = x => this.b.has(reorder(b, a, x));
+
+        return function *() {
+            for (let x of aIt()) {
+                if (!has(x)) {
+                    yield x;
+                }
+            }
+        }
     }
 }
 

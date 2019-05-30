@@ -20,22 +20,38 @@ class CSetArray extends CSet {
     }
 
     *values () {
-        yield* this.sValues;
+        // yield* this.sValues;
+        yield *this.compile()();
     }
 
-    /*
-    projection (h, ...rest) {
+    compile (p) {
+        const f = this.toFunc(p);
+        const values = this.sValues;
         const header = this.header;
-        if (!rest.length && header.includes(h)) {
-            return this;
+
+        if (f) {
+            return function *() {
+                for (let x of values) {
+                    if (f(header, x)) {
+                        yield x;
+                    }
+                }
+            }
+        }
+        else {
+            return function *() {
+                yield *values;
+            }
         }
 
-        errorHeaderNotFound(header, [h].concat(rest));
-    }*/
-
-    /** Query */
-    eCount () {
-        return this.sValues.size;
+        /*
+        return function *() {
+            for (let x of this.sValues) {
+                if (!f || f(x)) {
+                    yield x;
+                }
+            }
+        }*/
     }
 }
 

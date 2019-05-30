@@ -24,6 +24,7 @@ class Intersect extends CSet {
     }
 
     *values () {
+        /*
         const a = this.a.header;
         const b = this.b.header;
 
@@ -34,13 +35,29 @@ class Intersect extends CSet {
                 yield x;
             }
         }
+        */
+       yield *this.compile()();
     }
 
     get header () {
         return this.a.header;
     }
 
-    /** Query */
+    compile (p) {
+        const a = this.a.header;
+        const b = this.b.header;
+
+        const aIt = this.a.compile(p);
+        const has = x => this.b.has(reorder(b, a, x));
+
+        return function *() {
+            for (let x of aIt()) {
+                if (has(x)) {
+                    yield x;
+                }
+            }
+        }
+    }
 }
 
 CSet.prototype.intersect = function intersect (s) {

@@ -266,15 +266,13 @@ test("distinct cross product (SEND MORE MONEY)", () => {
     }
   );
 
-  console.log(sendMoreMoney.balance().toDot());
-  // console.log(JSON.stringify(sendMoreMoney.toJSON(), null, '  '));
-
-  // console.log(sendMoreMoney.toDot());
-  /*
   for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
-    expect(S * 1000 + E * 100 + N * 10 + D + M * 1000 + O * 100 + R * 10  + E)
-      .toBe(M * 10000 + O * 1000 + N * 100 + E * 10 + Y)
-  }*/
+    const send = S * 1000 + E * 100 + N * 10 + D;
+    const more = M * 1000 + O * 100 + R * 10  + E;
+    const money = M * 10000 + O * 1000 + N * 100 + E * 10 + Y;
+    console.log(`${send} + ${more} = ${money}`)
+    expect(send + more).toBe(money);
+  }
 });
 
 test("distinct cross product", () => {

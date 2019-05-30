@@ -15,23 +15,6 @@ class CrossProduct extends CSet {
         if (h.length !== s.size) {
             throw `Repeated headers are not allowed ${h.join(", ")}`;
         }
-
-        /*
-        if (a.isEqual(b)) {
-            // rename a as b,
-            let s = a;
-            const bHeader = this.b.header;
-            const aHeader = this.a.header;
-
-            for (let i=0; i<bHeader.length; i++) {
-                const ah = aHeader[i];
-                const bh = bHeader[i];
-
-                s = s.as(bh, ah);
-            }
-
-            this.b = s;
-        }*/
     }
 
     has (x) {
@@ -110,7 +93,7 @@ class CrossProduct extends CSet {
     }
 
     *values () {
-        const rs = new Set();
+        /*
         for (let x of this.a.values()) {
             const a = (x instanceof Array)?x:[x];
 
@@ -119,135 +102,61 @@ class CrossProduct extends CSet {
                     y instanceof Array?y:[y]
                 );
 
-                rs.add(r);
                 yield r;
             }
+        }*/
+        yield *this.compile()();
+    }
+
+    filter (header, p) {
+        const r = {};
+        
+        for (let a in p) {
+            const c = p[a];
+
+            const t = c.alias.filter(v => header.indexOf(v) === -1);
+            if (t.length === 0) {
+                r[a] = p[a];
+                delete p[a];
+            }
         }
+
+        return r;
     }
 
-    /** Query */
-    eCount () {
-        return this.a.eCount() * this.b.eCount(); 
-    }
+    compile (p) {
+        const ah = this.a.header;
+        const bh = this.b.header;
 
-    balance () {
-        const s = [];
+        const pa = this.filter(ah, p);
+        const pb = this.filter(bh, p);
+
+        const ca = this.a.compile(pa);
+        const cb = this.b.compile(pb);
+
+        const pc = this.toFunc(p);
         const header = this.header;
 
-        for (let i=0; i<header.length; i++) {
-            const h = header[i];
-            s.push(this.projection(h));
-        }
+        return function *() {
+            for (let x of ca()) {
+                const a = (x instanceof Array)?x:[x];
 
-        s.sort((a, b) => a.eCount() - b.eCount());
+                for (let y of cb()) {
+                    const r = a.concat(
+                        y instanceof Array?y:[y]
+                    );
 
-        while (s.length > 1) {
-//            s.sort((a, b) => a.eCount() - b.eCount());
-
-            const a = s.shift();
-            const b = s.shift();
-
-            s.push(a.crossProduct(b));
-        }
-
-        return s[0];
-    }
-
-    /*
-    select (alias, {name, predicate}) {
-        const ah = this.a.header;
-
-        let isInA = true;
-        for (let i=0; i<alias.length; i++) {
-            const a = alias[i];
-            if (!ah.includes(a)) {
-                isInA = false;
-                break;
-            }
-        }
-
-        if (isInA) {
-            // a header contains select.
-            return new CrossProduct(
-                this.a.select(alias, {name, predicate}),
-                this.b
-            );
-        }
-        else {
-            const bh = this.b.header;
-            for (let i=0; i<alias.length; i++) {
-                const a = alias[i];
-                if (!bh.includes(a)) {
-                    return super.select(alias, {name, predicate});
+                    if (!pc || pc(header, r)) {
+                        yield r;                
+                    }
                 }
             }
-
-            // b header contains select.
-            return new CrossProduct(
-                this.a,
-                this.b.select(alias, {name, predicate})
-            );
         }
-    }*/
-
-    /*
-    crossProduct (s) {
-        const r = new CrossProduct(this, s);
-
-        const header = r.header;
-
-        const middle = Math.ceil(header.length/2);
-        const a = header.slice(0, middle);
-        const b = header.slice(middle, header.length);
-
-        return new CrossProduct(
-            r.projection(...a),
-            r.projection(...b)
-        );
     }
-
-    projection (...h) {
-        const aHeader = this.a.header;
-        const bHeader = this.b.header;
-
-        const ap = h.filter(v => aHeader.includes(v));
-        const bp = h.filter(v => bHeader.includes(v));
-
-        if (ap.length + bp.length !== h.length) {
-            throw `Projection headers ${h.join(", ")} are missing from set headers ${aHeader.concat(bHeader).join(", ")}.`;
-        }
-        
-        if (ap.length > 0 && bp.length > 0) {
-            return new CrossProduct(
-                this.a.projection(...ap),
-                this.b.projection(...bp)
-            );
-        }
-        else if (ap.length > 0) {
-            return this.a.projection(...h);
-        }
-
-        return this.b.projection(...h);
-    }*/
 }
 
 CSet.prototype.crossProduct =  function crossProduct (s) {
     return new CrossProduct(this, s);
-    /*
-    const r = new CrossProduct(this, s);
-
-    const header = r.header;
-
-    const middle = Math.ceil(header.length/2);
-    const a = header.slice(0, middle);
-    const b = header.slice(middle, header.length);
-
-    console.log(header, a, b);
-
-    return new CrossProduct(
-        r.projection(...a),
-        r.projection(...b)
-    );*/
 };
 
 module.exports = CrossProduct;
