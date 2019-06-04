@@ -31,7 +31,39 @@ class Difference extends CSet {
                 yield x;
             }
         }*/
-        yield *this.compile()();
+        // yield *this.compile()();
+        let f;
+
+        if (this.header.length === 1) {
+            f = function *(x) {
+                yield x[0];
+            };
+        }
+        else {
+            f = function *(x) {
+                yield x;
+            };
+        }
+
+       yield *this.cn(f)([]);
+    }
+
+    cn (f) {
+        let alias = this.a.header;
+        let predicate = x => !this.b.has(x);
+
+        if (alias.length > 1) {
+            alias = this.b.header;
+            predicate = (...x) => !this.b.has(x);
+        }
+
+        return this.a.select(
+            alias,
+            {
+                name: "difference",
+                predicate
+            }
+        ).cn(f);
     }
 
     get header () {

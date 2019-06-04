@@ -36,11 +36,20 @@ class Alias extends CSet {
     }
 
     *values () {
-        yield *this.compile()();
+        // yield *this.compile()();
+        yield *this.cn(
+            function *(x) {
+                yield x[0];
+            }
+        )([]);
     }
 
     as (rename, name) {
         return new Alias(this.a, rename, name, this.header);
+    }
+
+    cn (f) {
+        return this.a.cn(f);
     }
 
     compile (p) {

@@ -1,17 +1,19 @@
+
 function reorder (aHeader, bHeader, values) {
+
     if (values instanceof Array) {
-        const r = [];
-        for (let i=0; i<bHeader.length; i++) {
-            const label = bHeader[i];
-            r[aHeader.indexOf(label)] = values[i];
+        if (values.length > 1) {
+            const r = [];
+            for (let i=0; i<bHeader.length; i++) {
+                const label = bHeader[i];
+                r[aHeader.indexOf(label)] = values[i];
+            }
+
+            return r;
         }
-
-        return r;
     }
-    else {
-        return values;
-    }
-
+    
+    return values;
 }
 
 function errorHeaderNotFound (header, headers) {

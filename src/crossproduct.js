@@ -105,7 +105,18 @@ class CrossProduct extends CSet {
                 yield r;
             }
         }*/
-        yield *this.compile()();
+        // yield *this.compile()();
+        yield *this.cn(
+            function *(x) {
+                yield x;
+            }
+        )([]);
+    }
+
+    cn (f) {
+        return this.a.cn(
+            this.b.cn(f)
+        );
     }
 
     filter (header, p) {

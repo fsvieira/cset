@@ -207,11 +207,33 @@ test("cross product alias", () => {
 
 });
 
+test("Union + Cross Product", () => {
+  const a = new CSetArray([1, 3, 2]);
+  const b = a.union(new CSetArray([5, 3, 4])).as("AB");
+  
+  expect([...b.values()]).toEqual([1, 3, 2, 5, 4]);
+
+  expect(a.count()).toBe(3);
+  expect(b.count()).toBe(5);
+  
+  const ab = a.crossProduct(b); 
+  expect(ab.count()).toBe(15);
+  
+  expect([...ab.values()]).toEqual(
+    [
+      [1,1],[1,3],[1,2],[1,5],
+      [1,4],[3,1],[3,3],[3,2],
+      [3,5],[3,4],[2,1],[2,3],
+      [2,2],[2,5],[2,4]
+    ]
+  );
+});
+
 test("Count", () => {
 
   const a = new CSetArray([1, 3, 2]);
   const b = a.union(new CSetArray([5, 3, 4])).as("AB");
-
+  
   expect(a.count()).toBe(3);
   expect(b.count()).toBe(5);
 
@@ -270,7 +292,7 @@ test("distinct cross product (SEND MORE MONEY)", () => {
     const send = S * 1000 + E * 100 + N * 10 + D;
     const more = M * 1000 + O * 100 + R * 10  + E;
     const money = M * 10000 + O * 1000 + N * 100 + E * 10 + Y;
-    console.log(`${send} + ${more} = ${money}`)
+    // console.log(`${send} + ${more} = ${money}`);
     expect(send + more).toBe(money);
   }
 });
@@ -344,8 +366,9 @@ test("Order of cartasian set operations", () => {
 
     const ab_UNION_dc = ab.union(dc);
 
-    expect([...ab_UNION_dc.values()]).toEqual([[1,3],[1,4],[2,3],[2,4],[5,7],[6,7],[5,8],[6,8]]);
-
+    expect([...ab_UNION_dc.values()]).toEqual(
+      [[1,3],[1,4],[2,3],[2,4],[5,7],[6,7],[5,8],[6,8]]
+    );
   }
 
   {

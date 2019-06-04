@@ -145,7 +145,6 @@ class CSet {
             return function *() {yield *values()}
         }
     }
-
 }
 
 module.exports = CSet;

@@ -21,7 +21,33 @@ class CSetArray extends CSet {
 
     *values () {
         // yield* this.sValues;
-        yield *this.compile()();
+        // yield *this.compile()();
+        yield *this.cn(
+            function *(x) {
+                yield x[0];
+            })([]);
+        /*
+        yield *this.cn(
+            x => x[0]
+        )([]);*/
+    }
+/*
+    cn (f) {
+        return function *(x) {
+            for (let y of this.sValues) {
+                yield *f(x.concat([y]));
+            }
+        }
+    }
+*/
+
+    cn (f) {
+        const values = this.sValues;
+        return function *(x) {
+            for (let y of values) {
+                yield *f(x.concat(y));
+            }
+        }
     }
 
     compile (p) {

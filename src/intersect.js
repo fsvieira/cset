@@ -36,7 +36,44 @@ class Intersect extends CSet {
             }
         }
         */
-       yield *this.compile()();
+       // yield *this.compile()();
+
+        let f;
+
+        if (this.header.length === 1) {
+            f = function *(x) {
+                yield x[0];
+            };
+        }
+        else {
+            f = function *(x) {
+                yield x;
+            };
+        }
+
+       yield *this.cn(f)([]);
+    }
+
+    cn (f) {
+        let alias = this.a.header;
+
+        if (alias.length > 1) {
+            alias = this.b.header;
+        }
+
+        return this.a.select(
+            alias,
+            {
+                name: "intersect",
+                predicate: (...x) => {
+                    if (x.length === 1) {
+                        return this.b.has(x[0]);
+                    }
+
+                    return this.b.has(x);
+                }
+            }
+        ).cn(f);
     }
 
     get header () {

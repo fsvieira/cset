@@ -20,6 +20,7 @@ class Union extends CSet {
     }
 
     *values () {
+        /*
         yield *this.a.values();
 
         const a = this.a.header;
@@ -32,7 +33,64 @@ class Union extends CSet {
             if (!this.a.has(x)) {
                 yield x;
             }
+        }*/
+
+        // yield *this.cn();
+
+        let f;
+        if (this.header.length === 1) {
+            f = function *(x) {
+                yield x[0]
+            };
         }
+        else {
+            f = function *(x) {
+                yield x;
+            };
+        }
+
+        yield *this.cn(f)([]);
+    }
+
+
+    reorder (f, a, b) {
+        return function *(x) {
+            const y = x.slice(-b.length);
+            x = x.slice(0, x.length - b.length);
+            x = x.concat(reorder(a, b, y));
+
+            yield *f(x);
+        }
+    }
+
+    cn (f) {
+        let alias = this.b.header;
+
+        if (alias.length > 1) {
+            alias = this.a.header;
+        }
+
+        const ff = this.reorder(f, this.a.header, this.b.header);
+
+        const af = this.a.cn(f);
+        const bf = this.b.select(
+            alias, 
+            {
+                name: "union",
+                predicate: (...x) => {
+                    if (x.length === 1) {
+                        return !this.a.has(x[0]);
+                    }
+
+                    return !this.a.has(x);
+                }
+            }
+        ).cn(ff);
+
+        return function *(x) {
+            yield *af(x);
+            yield *bf(x);    
+        };
     }
 
     get header () {

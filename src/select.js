@@ -22,6 +22,11 @@ class Select extends CSet {
 
     test (header, x) {
         const arg = [];
+
+        if (x instanceof Array && x.length > header.length) {
+            x = x.slice(-header.length);
+        }
+
         for (let i=0; i<this.alias.length; i++) {
             const alias = this.alias[i];
 
@@ -57,7 +62,10 @@ class Select extends CSet {
                 yield e;
             }
         }*/
-        yield *this.compile()();
+        // yield *this.compile()();
+        yield *this.cn(function *(x) {
+            yield x;
+        })([]);
     }
 
     get header () {
@@ -66,6 +74,19 @@ class Select extends CSet {
 
     stateName () {
         return `${this.constructor.name}_${this.id}__${this.alias.join("_")}`;
+    }
+
+    cn (f) {
+        const header = this.a.header;
+        const t = x => this.test(header, x);
+
+        return this.a.cn(
+            function *(x) {
+                if (t(x)) {
+                    yield *f(x);
+                }
+            }
+        );
     }
 
     compile (p={}) {
