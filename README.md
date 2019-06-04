@@ -446,7 +446,6 @@ Solve expression:
 Where each letter on the expression is a digit (0..9) and all letters must have different values.
 Some people discard M=0 solutions, but in this case I will consider all solutions including M=0.
 
-The presented solution takes from 5 to 8 seconds to complete.
 ```javascript
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
