@@ -390,43 +390,6 @@ Creates a subset from original set with a restricted set of attributes.
   */
 ```
 
-# Custom Sets
-
-A custom set is made by extending the CSet class.
-Any method can be overridden but the most important is:
-  * values(p), where p argument is the constrain,
-  * count(), that gives the set number of elements, 
-  * has(x), that should test the existence of x on set.
-
-```javascript
-  class Even extends CSet {
-    *values (p) {
-      for (let i=2; ; i+=2) {
-        if (!p || p.test(i)) {
-          yield i;
-        }
-      }
-    }
-
-    count () {
-      return Infinity;
-    }
-
-    has (x) {
-      return x % 2 === 0;
-    }
-  };
-
-  const values = new CSetArray([1, 2, 3, 4, 5, 6]);
-  const even = new Even();
-
-  const ve = values.intersect(even);
-
-  console.log([...ve.values()]); // [2, 4, 6]);
-  console.log(ve.count()); // 3;
-```
-
-
 
 # Examples
 

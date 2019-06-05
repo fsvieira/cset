@@ -1,5 +1,4 @@
 const CSet = require("./cset");
-const {reorder} = require("./utils");
 
 class Select extends CSet {
     constructor (a, name, alias, predicate) {
@@ -56,13 +55,6 @@ class Select extends CSet {
     }
 
     *values () {
-        /*
-        for (let e of this.a.values()) {
-            if (this.test(this.a.header, e)) {
-                yield e;
-            }
-        }*/
-        // yield *this.compile()();
         yield *this.cn(function *(x) {
             yield x;
         })([]);
@@ -87,29 +79,6 @@ class Select extends CSet {
                 }
             }
         );
-    }
-
-    compile (p={}) {
-        const a = this.alias.slice().sort();
-        const key = JSON.stringify(a);
-
-        const po = p[key];
-        if (po) {
-            const pf = po.f;
-            po.f = (header, x) => pf(header, x) && this.test(header, x); 
-        }
-        else {
-            p[key] = {
-                alias: a,
-                f: (header, x) => this.test(header, x)
-            };
-        }
-
-        const aIt = this.a.compile(p); 
-
-        return function *() {
-            yield *aIt();
-        }
     }
 }
 

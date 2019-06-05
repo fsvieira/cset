@@ -52,6 +52,7 @@ class Projection extends CSet {
     }
 
     *values () {
+        /*
         const aHeader = this.a.header;
 
         const ar = aHeader.filter(v => this._header.includes(v));
@@ -85,52 +86,20 @@ class Projection extends CSet {
                     yield r;
                 }
             }
-        }
+        }*/
         //   yield *this.compile()();
+        yield *this.cn(
+            function *(x) {
+                yield x;
+            }
+        )([]);
     }
 
-    /*
-    compile (p) {
-        const aHeader = this.a.header;
-        const _header = this._header;
+    cn (f) {
+        return function *(x) {
 
-        const ar = aHeader.filter(v => _header.includes(v));
-        const aIt = this.compile(p);
-
-        return function *() {
-            const dups = new Set();
-
-            for (let e of aIt()) {
-                // remove values from result,
-                const v = [];
-                for (let i=0; i<aHeader.length; i++) {
-                    const h = aHeader[i];
-                    if (_header.includes(h)) {
-                        if (e instanceof Array) {
-                            v.push(e[i]);
-                        }
-                        else {
-                            v.push(e);
-                        }
-                    }
-                }
-                
-                // reorder,
-                const r = reorder(ar, _header, v);
-                const d = JSON.stringify(r);
-
-                if (!dups.has(d)) {
-                    dups.add(d);
-                    if (r.length === 1) {
-                        yield r[0];
-                    }
-                    else {
-                        yield r;
-                    }
-                }
-            }
         }
-    }*/
+    }
 
     count () {
         return [...this.values()].length;

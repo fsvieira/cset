@@ -93,19 +93,6 @@ class CrossProduct extends CSet {
     }
 
     *values () {
-        /*
-        for (let x of this.a.values()) {
-            const a = (x instanceof Array)?x:[x];
-
-            for (let y of this.b.values()) {
-                const r = a.concat(
-                    y instanceof Array?y:[y]
-                );
-
-                yield r;
-            }
-        }*/
-        // yield *this.compile()();
         yield *this.cn(
             function *(x) {
                 yield x;
@@ -117,52 +104,6 @@ class CrossProduct extends CSet {
         return this.a.cn(
             this.b.cn(f)
         );
-    }
-
-    filter (header, p) {
-        const r = {};
-        
-        for (let a in p) {
-            const c = p[a];
-
-            const t = c.alias.filter(v => header.indexOf(v) === -1);
-            if (t.length === 0) {
-                r[a] = p[a];
-                delete p[a];
-            }
-        }
-
-        return r;
-    }
-
-    compile (p) {
-        const ah = this.a.header;
-        const bh = this.b.header;
-
-        const pa = this.filter(ah, p);
-        const pb = this.filter(bh, p);
-
-        const ca = this.a.compile(pa);
-        const cb = this.b.compile(pb);
-
-        const pc = this.toFunc(p);
-        const header = this.header;
-
-        return function *() {
-            for (let x of ca()) {
-                const a = (x instanceof Array)?x:[x];
-
-                for (let y of cb()) {
-                    const r = a.concat(
-                        y instanceof Array?y:[y]
-                    );
-
-                    if (!pc || pc(header, r)) {
-                        yield r;                
-                    }
-                }
-            }
-        }
     }
 }
 

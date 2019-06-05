@@ -108,75 +108,7 @@ class CSet {
             }
         }
     }
-
-    toFunc (p) {
-        if (p) {
-            let f;
-            for (let key in p) {
-                const c = p[key];
-
-                if (f) {
-                    const n = f;
-                    f = (header, x) => n(header, x) && c.f(header, x);
-                }
-                else {
-                    f = c.f;
-                }
-            }
-
-            return f;
-        }
-    }
-
-    compile (p) {
-        const values = () => this.values();
-        const f = this.toFunc(p);
-
-        if (f) {
-            return function *() {
-                for (let x of values()) {
-                    if (f(x)) {
-                        yield x;
-                    }
-                }
-            }
-        }
-        else {
-            return function *() {yield *values()}
-        }
-    }
 }
 
 module.exports = CSet;
 
-/*
-    Optimizations:
-        1. Select:
-            a. send select to leafs,
-            b. aggregate selects (in one function)
-        2. Projection:
-            a. send projection to leafs,
-            b. remove not needed atributes,
-            c. keep only needed projections.
-        3. CrossProduct:
-            a. Check for equal nodes and share them,
-            b. Balance nodes,
-        4. Alias:
-            a. rename names down,
-            b. remove not nedded alias,
-        5. **:
-            a. Share equal sets,
-            b. cache sets with more then one dependecy:
-                a. after complete cache remove links down.
-            c. order:
-                a. move sets with less elements to left side,
-                b. move sets with more cached elements to the left side,
-                c. on loops start with the set with more elements.
-
-    Optimizations 2:
-        - convert union, intersect, difference to select and optimize.
-            - intersect:
-                a.select(header, (...header) => b.has(header))
-                ** a.crossProduct(b).select([a, b], (a, b) => a === b)
-        
-*/

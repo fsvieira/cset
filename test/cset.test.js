@@ -492,33 +492,6 @@ test("is equal", () => {
 
 });
 
-test("Extend CSet", () => {
-  class Even extends CSet {
-    *values () {
-      for (let i=2; ; i+=2) {
-          yield i;
-      }
-    }
-
-    count () {
-      return Infinity;
-    }
-
-    has (x) {
-      return x % 2 === 0;
-    }
-  };
-
-  const values = new CSetArray([1, 2, 3, 4, 5, 6]);
-  const even = new Even();
-
-  const ve = values.intersect(even);
-
-  expect([...ve.values()]).toEqual([2, 4, 6]);
-  expect(ve.count()).toEqual(3);
-
-});
-
 test("Select has(x)", () => {
   const a = new CSetArray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).as("a");
   const c = a.select(['a'], {

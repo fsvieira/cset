@@ -4,7 +4,6 @@ class Alias extends CSet {
     constructor(a, rename, name, header) {
         super();
         this.a = a;
-        // this.name = name || `set_${aliasCounter++}`;
         this._header = (header || this.a.header).slice();
 
         let index = 0;
@@ -36,7 +35,6 @@ class Alias extends CSet {
     }
 
     *values () {
-        // yield *this.compile()();
         yield *this.cn(
             function *(x) {
                 yield x[0];
@@ -52,25 +50,6 @@ class Alias extends CSet {
         return this.a.cn(f);
     }
 
-    compile (p) {
-        const n = {};
-        const header = this.a.header;
-
-        for (let k in p) {
-            const c = p[k];
-            const alias = c.alias.map(v => header[this._header.indexOf(v)]);
-
-            const key = JSON.stringify(alias.slice().sort());
-            n[key] = {
-                alias,
-                f: c.f
-            };
-        }
-
-        const aIt = this.a.compile(n); 
-
-        return aIt;
-    }
 }
 
 CSet.prototype.as = function (rename, name) {

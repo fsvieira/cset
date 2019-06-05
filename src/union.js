@@ -20,23 +20,6 @@ class Union extends CSet {
     }
 
     *values () {
-        /*
-        yield *this.a.values();
-
-        const a = this.a.header;
-        const b = this.b.header;
-
-        // map values to headers,
-        for (let x of this.b.values()) {
-            x = reorder(a, b, x);
-
-            if (!this.a.has(x)) {
-                yield x;
-            }
-        }*/
-
-        // yield *this.cn();
-
         let f;
         if (this.header.length === 1) {
             f = function *(x) {
