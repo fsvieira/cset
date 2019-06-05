@@ -52,53 +52,47 @@ class Projection extends CSet {
     }
 
     *values () {
-        /*
-        const aHeader = this.a.header;
-
-        const ar = aHeader.filter(v => this._header.includes(v));
-        const dups = new Set();
-
-        for (let e of this.a.values()) {
-            // remove values from result,
-            const v = [];
-            for (let i=0; i<aHeader.length; i++) {
-                const h = aHeader[i];
-                if (this._header.includes(h)) {
-                    if (e instanceof Array) {
-                        v.push(e[i]);
-                    }
-                    else {
-                        v.push(e);
-                    }
-                }
-            }
-            
-            // reorder,
-            const r = reorder(ar, this._header, v);
-            const d = JSON.stringify(r);
-
-            if (!dups.has(d)) {
-                dups.add(d);
-                if (r.length === 1) {
-                    yield r[0];
-                }
-                else {
-                    yield r;
-                }
-            }
-        }*/
-        //   yield *this.compile()();
         yield *this.cn(
             function *(x) {
-                yield x;
+                if (x.length === 1) {
+                    yield x[0];
+                }
+                else {
+                    yield x;
+                }
             }
         )([]);
     }
 
     cn (f) {
-        return function *(x) {
+        const header = this.a.header;
+        const prj = this._header;
+        const dups = new Set();
 
-        }
+        return this.a.cn(
+            function *(x) {
+                const al = header.length;
+                const a = x.slice(-al);
+                const b = x.slice(0, x.length - al);
+
+                const p = [];
+
+                for (let i=0; i<prj.length; i++) {
+                    const h = prj[i];
+                    const index = header.indexOf(h);
+                    p.push(a[index]);
+                }
+
+                const d = JSON.stringify(p);
+
+                if (!dups.has(d)) {
+                    dups.add(d);                    
+                    const y = b.concat(p);
+
+                    yield *f(y);
+                }
+            }
+        );
     }
 
     count () {
