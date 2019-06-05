@@ -1,6 +1,6 @@
 {
   "name": "cset",
-  "version": "1.0.14",
+  "version": "2.0.0",
   "description": "Combinatorial/Cartesian Lazzy Set",
   "homepage": "https://github.com/fsvieira/cset",
   "main": "src/cset.js",
