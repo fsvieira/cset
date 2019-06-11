@@ -1,4 +1,4 @@
-const {CSetArray, CSet} = require('../src/index');
+const {CSetArray, CSet} = require('../src');
 
 test('Create a set of 3 elements', () => {
   const a = new CSetArray([1, 2, 3]);

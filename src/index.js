@@ -1,4 +1,4 @@
-const CSet = require("./csetarray");
+const CSet = require("./cset");
 const CSetArray = require("./csetarray");
 require("./select");
 require("./projection");

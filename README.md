@@ -21,7 +21,7 @@ After set creation all operations on set are chainable, and they are not destruc
 
 
 ```javascript
-    const {CSetArray, CSet} = require("cset");
+    const {CSetArray} = require("cset");
 
     const A = new CSetArray([1, 2, 3]);
 ```
