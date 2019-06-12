@@ -36,9 +36,9 @@ Creates a set with the intersection of two sets.
     );
 ```
 
-### Intersection of cartesian product
+### Intersection of cartesian/cross product
 
-Both cartesian product must have same headers, headers don't need to be in the same order.
+Both cartesian/cross product must have same headers, headers don't need to be in the same order.
 
 ```javascript
     const a = new CSetArray([1, 2]).as("A");
@@ -47,8 +47,8 @@ Both cartesian product must have same headers, headers don't need to be in the s
     const c = new CSetArray([1, 2]).as("A");
     const d = new CSetArray([3, 5]).as("B");
 
-    const ab = a.cartesianProduct(b);
-    const dc = d.cartesianProduct(c);
+    const ab = a.crossProduct(b);
+    const dc = d.crossProduct(c);
 
     console.log(dc.header); // ["B", "A"];
     console.log(ab.header); // ["A", "B"];
@@ -69,9 +69,9 @@ Creates a set with the union of two sets.
     );
 ```
 
-### Union of cartesian product
+### Union of cartesian/cross product
 
-Both cartesian product must have same headers, headers don't need to be in the same order.
+Both cartesian/cross product must have same headers, headers don't need to be in the same order.
 
 ```javascript
     const a = new CSetArray([1, 2]).as("A");
@@ -80,8 +80,8 @@ Both cartesian product must have same headers, headers don't need to be in the s
     const c = new CSetArray([5, 6]).as("A");
     const d = new CSetArray([7, 8]).as("B");
 
-    const ab = a.cartesianProduct(b);
-    const cd = c.cartesianProduct(d);
+    const ab = a.crossProduct(b);
+    const cd = c.crossProduct(d);
 
     const ab_UNION_cd = ab.union(cd);
 
@@ -99,9 +99,9 @@ Creates a set with the difference of two sets.
     );
 ```
 
-### Difference of cartesian product
+### Difference of cartesian/cross product
 
-Both cartesian product must have same headers, headers don't need to be in the same order.
+Both cartesian/cross product must have same headers, headers don't need to be in the same order.
 
 ```javascript
     const a = new CSetArray([1, 2]).as("A");
@@ -110,8 +110,8 @@ Both cartesian product must have same headers, headers don't need to be in the s
     const c = new CSetArray([1, 2]).as("A");
     const d = new CSetArray([3, 5]).as("B");
 
-    const ab = a.cartesianProduct(b);
-    const dc = d.cartesianProduct(c);
+    const ab = a.crossProduct(b);
+    const dc = d.crossProduct(c);
 
     const ab_DIFFERENCE_dc = ab.difference(dc);
 
@@ -129,9 +129,9 @@ Creates a set with the symmetric difference of two sets.
     );
 ```
 
-### SymmetricDifference of cartesian product
+### SymmetricDifference of cartesian/cross product
 
-Both cartesian product must have same headers, headers don't need to be in the same order.
+Both cartesian/cross product must have same headers, headers don't need to be in the same order.
 
 ```javascript
     const a = new CSetArray([1, 2]).as("A");
@@ -140,20 +140,20 @@ Both cartesian product must have same headers, headers don't need to be in the s
     const c = new CSetArray([1, 2]).as("A");
     const d = new CSetArray([3, 5]).as("B");
 
-    const ab = a.cartesianProduct(b);
-    const dc = d.cartesianProduct(c);
+    const ab = a.crossProduct(b);
+    const dc = d.crossProduct(c);
 
     const ab_SYMMETRIC_DIFFERENCE_dc = ab.symmetricDifference(dc);
 
     console.log(JSON.stringify([...ab_SYMMETRIC_DIFFERENCE_dc.values()])); // [[1,4],[2,4],[1,5],[2,5]]
 ```
 
-## CartesianProduct
+## Cartesian/Cross Product
 
-Creates a set with the cartesian product of two sets.
+Creates a set with the cartesian/cross product of two sets.
 
 ```javascript
-    const A = new CSetArray([1, 2, 3]).cartesianProduct(
+    const A = new CSetArray([1, 2, 3]).crossProduct(
         new CSetArray([1, 2])
     );
 ```
@@ -273,14 +273,14 @@ It binds an alias to a set. The "as" operation is normally useful to use with se
     const AC = A.union(C).as("AC"); // add alias to A and C union. 
 ```
 
-### Alias on cartesian products
+### Alias on cartesian/cross products
 
-In case of cartesian products an alias work as prefix, or table name, so that each individual 
+In case of cartesian/cross products an alias work as prefix, or table name, so that each individual 
 element on resulting tuples can still be referenced.
 
 ```javascript
-  const ab = new CSetArray([1, 2]).as("a").cartesianProduct(new CSetArray([1, 2, 3]).as("b"));
-  const AB = ab.as("A").cartesianProduct(ab.as("B"));
+  const ab = new CSetArray([1, 2]).as("a").crossProduct(new CSetArray([1, 2, 3]).as("b"));
+  const AB = ab.as("A").crossProduct(ab.as("B"));
 
   console.log(AB.header); // "A.a", "A.b", "B.a", "B.b";
 ```
@@ -288,7 +288,7 @@ element on resulting tuples can still be referenced.
 
 ## Header
 
-In case of cartesian product it will return an array of alias (string), 
+In case of cartesian/cross product it will return an array of alias (string), 
 for normal sets it will return one alias (string).
 
 ```javascript
@@ -298,7 +298,7 @@ for normal sets it will return one alias (string).
 
     console.log(A.header); // ["A"]
 
-    const AxB = A.cartesianProduct(B);
+    const AxB = A.crossProduct(B);
     console.log(AxB.header); // ["A", "B"]
 
 ```
@@ -315,10 +315,10 @@ where all set elements must comply with provided constrains.
   expect(a.count()).toBe(3);
   expect(b.count()).toBe(5);
 
-  const ab = a.cartesianProduct(b); 
+  const ab = a.crossProduct(b); 
   expect(ab.count()).toBe(15);
 
-  const oddSum = a.as("A").cartesianProduct(b.as("B")).select(
+  const oddSum = a.as("A").crossProduct(b.as("B")).select(
     ["A", "B"],
     {
       name: "odd-sum",
@@ -343,7 +343,7 @@ where all set elements must comply with provided constrains.
 
 ```
 
-Making a distinct cartesian product with selects:
+Making a distinct cartesian/cross product with selects:
 
 ```javascript
   const notEqualPred = {
@@ -351,7 +351,7 @@ Making a distinct cartesian product with selects:
     predicate: (a, b) => a !== b
   };
 
-  const A = new CSetArray([1, 2, 3]).as("a").cartesianProduct(
+  const A = new CSetArray([1, 2, 3]).as("a").crossProduct(
     new CSetArray([1, 2]).as("b")
   ).select(["a", "b"], notEqualPred);
 
@@ -382,7 +382,7 @@ Creates a subset from original set with a restricted set of attributes.
   const c = new CSetArray([5, 6]).as("c");
   const d = new CSetArray([7, 8]).as("d");
 
-  const s = a.cartesianProduct(b).cartesianProduct(c).cartesianProduct(d);
+  const s = a.crossProduct(b).crossProduct(c).crossProduct(d);
   
   console.log([...s.projection("d", "b").values()]); 
   /* Output:
@@ -423,17 +423,17 @@ Some people discard M=0 solutions, but in this case I will consider all solution
   for (let i=1; i<letters.length; i++) {
     const letter=letters[i];
 
-    s = s.cartesianProduct(d.as(letter));
+    s = s.crossProduct(d.as(letter));
     
     // make constrains to all variables be different.
     for (let j=i-1; j>=0; j--) {
       const a = letters[j];
-      s = s.constrain([a, letter], notEqualPred);
+      s = s.select([a, letter], notEqualPred);
     }
   }
 
   // S E N D M O R Y
-  const sendMoreMoney = s.constrain(
+  const sendMoreMoney = s.select(
       ["S", "E", "N", "D", "M", "O", "R", "Y"],
       {
         name: "add",
