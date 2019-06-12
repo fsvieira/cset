@@ -5,8 +5,27 @@ const {reorder} = require("./utils");
 class Difference extends CSet {
     constructor (a, b) {
         super();
+        
         this.a = a;
         this.b = b;
+
+        const ah = a.header;
+        const bh = b.header;
+
+        if (ah.length === bh.length) {
+            if (ah.length === 1) {
+                return;
+            }
+
+            const h = new Set([...ah, ...bh]);
+
+            if (h.size === ah.length) {
+                return;
+            }
+        }
+
+        throw `Invalid difference, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
+
     }
 
     has (x) {

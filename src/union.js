@@ -5,8 +5,26 @@ class Union extends CSet {
 
     constructor (a, b) {
         super();
+
+        const ah = a.header;
+        const bh = b.header;
+        
         this.a = a;
         this.b = b;
+
+        if (ah.length === bh.length) {
+            if (ah.length === 1) {
+                return;
+            }
+
+            const h = new Set([...ah, ...bh]);
+
+            if (h.size === bh.length) {
+                return;
+            }
+        }
+
+        throw `Invalid union, headers don't match ${ah.join(", ")} <> ${bh.join(", ")}`;
     }
 
     has (x) {

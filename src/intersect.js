@@ -6,6 +6,24 @@ class Intersect extends CSet {
         super();
         this.a = a;
         this.b = b;
+
+        const ah = a.header;
+        const bh = b.header;
+
+        if (ah.length === bh.length) {
+            if (ah.length === 1) {
+                return;
+            }
+
+            const h = new Set([...ah, ...bh]);
+
+            if (h.size === ah.length) {
+                return;
+            }
+        }
+
+        throw `Invalid intersect, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
+
     }
 
     has (x) {

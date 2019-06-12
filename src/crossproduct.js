@@ -35,6 +35,7 @@ class CrossProduct extends CSet {
         return false;
     }
 
+    /*
     intersect (s) {
         const a = this.header;
         const b = s.header;
@@ -49,8 +50,9 @@ class CrossProduct extends CSet {
 
         throw `Invalid intersect, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
 
-    }
+    }*/
 
+    /*
     difference (s) {
         const a = this.header;
         const b = s.header;
@@ -64,8 +66,9 @@ class CrossProduct extends CSet {
         }
 
         throw `Invalid difference, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
-    }
+    }*/
 
+    /*
     union (s) {
         const a = this.header;
         const b = s.header;
@@ -79,7 +82,7 @@ class CrossProduct extends CSet {
         }
 
         throw `Invalid union, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
-    }
+    }*/
 
     count () {
         return this.a.count() * this.b.count();
