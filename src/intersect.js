@@ -22,7 +22,7 @@ class Intersect extends CSet {
             }
         }
 
-        throw `Invalid intersect, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
+        throw `Invalid intersect, headers don't match ${ah.join(", ")} <> ${bh.join(", ")}`;
 
     }
 

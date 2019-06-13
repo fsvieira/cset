@@ -24,7 +24,7 @@ class Difference extends CSet {
             }
         }
 
-        throw `Invalid difference, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
+        throw `Invalid difference, headers don't match ${ah.join(", ")} <> ${bh.join(", ")}`;
 
     }
 
