@@ -74,7 +74,7 @@ class Difference extends CSet {
     }
 
     get header () {
-        return this.a.header.concat(this.b.header);
+        return this.a.header;
     }
 }
 
