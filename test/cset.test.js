@@ -78,6 +78,7 @@ test('Set cartasian product intersection', () => {
   expect(abcd.has([1, 4])).toBeTruthy();
 });
 
+/*
 test('Set cartasian product difference', () => {
   const a = new CSetArray([1, 2]).as("A");
   const b = new CSetArray([3, 4]).as("B");
@@ -506,5 +507,6 @@ test("Select has(x)", () => {
   expect(c.has(3)).toBeFalsy(); 
 
 });
+*/
 
 // TODO: test cross product for duplicated values (for self, union, ...)

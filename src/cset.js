@@ -6,7 +6,53 @@ class CSet {
     constructor () {
         this.id = aliasCounter++;
         this.name = `set_${this.id}`;
+        this.cellSize = 10;
     }
+
+    // -- Grid utils start,
+    getGrid () {
+        return this.calcGrid();
+    }
+
+    compare (a, b) {
+        const ar = a instanceof Array?a:[a];
+        const br = b instanceof Array?b:[b];
+
+        if (ar.length === br.length) {
+            for (let i=0; i<ar.length; i++) {
+                const ae = ar[i];
+                const be = ar[i];
+
+                if (ae !== be) {
+                    return ae - be;
+                }
+            }
+
+            return 0;
+        }
+
+        return ar.length - br.length;
+    }
+
+    min (a, b) {
+        const c = this.compare(a, b);
+        if (c <= 0) {
+            return a;
+        }
+
+        return b;
+    }
+
+    max (a, b) {
+        const c = this.compare(a, b);
+        if (c >= 0) {
+            return a;
+        }
+
+        return b;
+    }
+
+    // -- Grid utils end.
 
     symmetricDifference (s) {
         return this.union(s).difference(this.intersect(s));

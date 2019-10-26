@@ -27,6 +27,42 @@ class Union extends CSet {
         throw `Invalid union, headers don't match ${ah.join(", ")} <> ${bh.join(", ")}`;
     }
 
+    calcGrid () {
+        if (!this.grid) {
+            const aGrid = this.a.getGrid();
+            const bGrid = this.b.getGrid();
+    
+            const grid = this.grid = {
+                cells: {},
+                positions: new Set(aGrid.positions.concat(bGrid.positions))
+            };
+    
+            for (let i=0; i<grid.positions.length; i++) {
+                const position = grid.positions[i];
+
+                const aCell = aGrid.cells[position];
+                const bCell = bGrid.cells[position];
+
+                const abCell = {
+                    count: aCell.count + bCell.count,
+                    min: aCell.min > bCell.min?bCell.min:aCell.min,
+                    max: aCell.max > bCell.max?aCell.max:bCell.max
+                };
+
+                const elCount = (abCell.max - abCell.min) + 1; 
+
+                if (elCount < abCell.count) {
+                    abCell.count = elCount;
+                    abCell.intersect = abCell.count - elCount;
+                }
+    
+                this.grid.cells[aPosition] = abCell;
+            }    
+        }
+
+        return this.grid;
+    }
+
     has (x) {
         return this.a.has(x) || this.b.has(
             reorder(this.b.header, this.a.header, x)
@@ -37,20 +73,14 @@ class Union extends CSet {
         return this.a.count() + this.b.count() - this.a.intersect(this.b).count();
     }
 
-    *values () {
-        let f;
-        if (this.header.length === 1) {
-            f = function *(x) {
-                yield x[0]
-            };
-        }
-        else {
-            f = function *(x) {
-                yield x;
-            };
-        }
+    *values (min, max) {
+        yield *this.a.values(min, max);
 
-        yield *this.cn(f)([]);
+        for (let e of this.b.values(min, max)) {
+            if (!this.a.has(e)) {
+                yield e;
+            }
+        }
     }
 
 
@@ -62,36 +92,6 @@ class Union extends CSet {
 
             yield *f(x);
         }
-    }
-
-    cn (f) {
-        let alias = this.b.header;
-
-        if (alias.length > 1) {
-            alias = this.a.header;
-        }
-
-        const ff = this.reorder(f, this.a.header, this.b.header);
-
-        const af = this.a.cn(f);
-        const bf = this.b.select(
-            alias, 
-            {
-                name: "union",
-                predicate: (...x) => {
-                    if (x.length === 1) {
-                        return !this.a.has(x[0]);
-                    }
-
-                    return !this.a.has(x);
-                }
-            }
-        ).cn(ff);
-
-        return function *(x) {
-            yield *af(x);
-            yield *bf(x);    
-        };
     }
 
     get header () {

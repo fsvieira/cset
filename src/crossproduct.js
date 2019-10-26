@@ -1,7 +1,4 @@
 const CSet = require("./cset");
-const Intersect = require("./intersect");
-const Union = require("./union");
-const Difference = require("./difference");
 
 class CrossProduct extends CSet {
     constructor (a, b) {
@@ -15,6 +12,46 @@ class CrossProduct extends CSet {
         if (h.length !== s.size) {
             throw `Repeated headers are not allowed ${h.join(", ")}`;
         }
+    }
+
+    calcGrid () {
+        if (!this.grid) {
+            const aGrid = this.a.getGrid();
+            const bGrid = this.b.getGrid();
+    
+            this.grid = {
+                cells: {},
+                positions: []
+            };
+    
+            for (let i=0; i<aGrid.positions.length; i++) {
+                const aPosition = aGrid.positions[i];
+                const aCell = aGrid.cells[aPosition];
+                const ap = aPosition instanceof Array?aPosition:[aPosition];
+
+                for (let i=0; i<bGrid.positions.length; i++) {
+                    const bPosition = bGrid.positions[i];
+                    const bCell = bGrid.cells[bPosition];
+                    const bp = bPosition instanceof Array?bPosition:[bPosition];
+
+                    const abPosition = ap.concat(bp);
+
+                    const abCell = this.grid.cells[abPosition] = this.grid.cells[abPosition] || {};
+
+                    abCell.count = aCell.count * bCell.count;
+                    abCell.min = this.min(aCell.min, bCell.min);
+                    abCell.max = this.max(aCell.max, bCell.max);
+
+                    this.grid.positions.push(abPosition);
+                }
+            }
+
+            this.grid.positions.sort((a, b) => this.compare(a, b));
+        }
+
+        console.log(JSON.stringify(this.grid));
+
+        return this.grid;
     }
 
     has (x) {
@@ -35,55 +72,6 @@ class CrossProduct extends CSet {
         return false;
     }
 
-    /*
-    intersect (s) {
-        const a = this.header;
-        const b = s.header;
-
-        if (a.length === b.length) {
-            const h = new Set([...a, ...b]);
-
-            if (h.size === b.length) {
-                return new Intersect(this, s);
-            }
-        }
-
-        throw `Invalid intersect, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
-
-    }*/
-
-    /*
-    difference (s) {
-        const a = this.header;
-        const b = s.header;
-
-        if (a.length === b.length) {
-            const h = new Set([...a, ...b]);
-
-            if (h.size === b.length) {
-                return new Difference(this, s);
-            }
-        }
-
-        throw `Invalid difference, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
-    }*/
-
-    /*
-    union (s) {
-        const a = this.header;
-        const b = s.header;
-
-        if (a.length === b.length) {
-            const h = new Set([...a, ...b]);
-
-            if (h.size === b.length) {
-                return new Union(this, s);
-            }
-        }
-
-        throw `Invalid union, headers don't match ${a.join(", ")} <> ${b.join(", ")}`;
-    }*/
-
     count () {
         return this.a.count() * this.b.count();
     }
@@ -95,18 +83,16 @@ class CrossProduct extends CSet {
         return ah.concat(bh);
     }
 
-    *values () {
-        yield *this.cn(
-            function *(x) {
-                yield x;
-            }
-        )([]);
-    }
+    *values (min, max) {
+        for (let a of this.a.values(min, max)) {
+            a = a instanceof Array?a:[a];
 
-    cn (f) {
-        return this.a.cn(
-            this.b.cn(f)
-        );
+            for (let b of this.b.values(min, max)) {
+                b = b instanceof Array?b:[b];
+
+                yield a.concat(b);
+            }
+        }
     }
 }
 

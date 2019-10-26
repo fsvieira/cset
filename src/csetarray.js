@@ -1,36 +1,57 @@
 const CSet = require("./cset");
-const {errorHeaderNotFound} = require("./utils");
+// const {errorHeaderNotFound} = require("./utils");
 
 class CSetArray extends CSet {
     constructor (values) {
         super();
-        this.sValues = new Set(values);
+        this.sValues = values.slice().sort();
+    }
+
+    calcGrid () {
+        if (!this.grid) {
+            const values = this.sValues;
+
+            this.grid = {
+                cells: {},
+                positions: []
+            };
+
+            for (let i=0; i<values.length; i++) {
+                const value = values[i];
+                const position = Math.floor(value/this.cellSize);
+                const cell = this.grid.cells[position] = this.grid.cells[position] || {count: 0, min: Infinity, max: 0};
+
+                cell.min = value < cell.min?value:cell.min;
+                cell.max = value > cell.max?value:cell.max;
+                cell.count++;
+
+                if (!this.grid.positions.includes(position)) {
+                    this.grid.positions.push(position);
+                }
+            }
+
+            this.grid.positions.sort();
+        }
+
+        return this.grid;
     }
 
     has (x) {
-        return this.sValues.has(x);
+        return this.sValues.includes(x);
     }
 
     count () {
-        return this.sValues.size;
+        return this.sValues.length;
     }
 
     get header () {
         return [this.name];
     }
 
-    *values () {
-        yield *this.cn(
-            function *(x) {
-                yield x[0];
-            })([]);
-    }
-
-    cn (f) {
-        const values = this.sValues;
-        return function *(x) {
-            for (let y of values) {
-                yield *f(x.concat(y));
+    *values (min=0, max=Infinity) {
+        for (let e of this.sValues) {
+            if (e >= min && e <=max) {
+                yield e;
             }
         }
     }

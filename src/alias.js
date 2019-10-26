@@ -26,6 +26,10 @@ class Alias extends CSet {
         }
     }
 
+    calcGrid () {
+        return this.a.calcGrid();
+    }
+
     get header () {
         return this._header;
     }
@@ -35,21 +39,12 @@ class Alias extends CSet {
     }
 
     *values () {
-        yield *this.cn(
-            function *(x) {
-                yield x[0];
-            }
-        )([]);
+        yield *this.a.values();
     }
 
     as (rename, name) {
         return new Alias(this.a, rename, name, this.header);
     }
-
-    cn (f) {
-        return this.a.cn(f);
-    }
-
 }
 
 CSet.prototype.as = function (rename, name) {
