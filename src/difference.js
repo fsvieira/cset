@@ -1,5 +1,4 @@
 const CSet = require("./cset");
-const CSetArray = require("./csetarray");
 const {reorder} = require("./utils");
 
 class Difference extends CSet {
@@ -25,7 +24,6 @@ class Difference extends CSet {
         }
 
         throw `Invalid difference, headers don't match ${ah.join(", ")} <> ${bh.join(", ")}`;
-
     }
 
     has (x) {
@@ -34,43 +32,30 @@ class Difference extends CSet {
         );
     }
 
+    calcGrid () {
+        if (!this.grid) {
+            // There is no way to know if intersect cells has different elements, so 
+            // we need to make a union grid.
+            this.grid = this.a.union(b).getGrid();
+        }
+        
+        return this.grid;
+    }
+
     count () {
         return this.a.count() - this.a.intersect(this.b).count();
     }
 
-    *values () {
-        let f;
+    *values (min, max) {
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
 
-        if (this.header.length === 1) {
-            f = function *(x) {
-                yield x[0];
-            };
-        }
-        else {
-            f = function *(x) {
-                yield x;
-            };
-        }
-
-       yield *this.cn(f)([]);
-    }
-
-    cn (f) {
-        let alias = this.a.header;
-        let predicate = x => !this.b.has(x);
-
-        if (alias.length > 1) {
-            alias = this.b.header;
-            predicate = (...x) => !this.b.has(x);
-        }
-
-        return this.a.select(
-            alias,
-            {
-                name: "difference",
-                predicate
+        for (let e of this.a.values(min, max)) {
+            const be = reorder(aHeader, bHeader, e);
+            if (!this.b.has(be)) {
+                yield e;
             }
-        ).cn(f);
+        }
     }
 
     get header () {

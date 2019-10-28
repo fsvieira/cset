@@ -50,14 +50,24 @@ class Select extends CSet {
         return counter;
     }
 
+    getGrid () {
+        return this.a.getGrid();
+    }
+    
     has (x) {
         return this.test(this.a.header, x) && this.a.has(x);
     }
 
-    *values () {
-        yield *this.cn(function *(x) {
-            yield x;
-        })([]);
+    *values (min, max) {
+        /**
+         * TODO:
+         *  - Test function should test element, but also ranges so that we can eliminate further processing.
+         */
+        for (let e of this.a.values(min, max)) {
+            if (this.has(e)) {
+                yield e;
+            }
+        }
     }
 
     get header () {
@@ -66,19 +76,6 @@ class Select extends CSet {
 
     stateName () {
         return `${this.constructor.name}_${this.id}__${this.alias.join("_")}`;
-    }
-
-    cn (f) {
-        const header = this.a.header;
-        const t = x => this.test(header, x);
-
-        return this.a.cn(
-            function *(x) {
-                if (t(x)) {
-                    yield *f(x);
-                }
-            }
-        );
     }
 }
 

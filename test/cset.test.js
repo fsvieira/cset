@@ -78,7 +78,6 @@ test('Set cartasian product intersection', () => {
   expect(abcd.has([1, 4])).toBeTruthy();
 });
 
-/*
 test('Set cartasian product difference', () => {
   const a = new CSetArray([1, 2]).as("A");
   const b = new CSetArray([3, 4]).as("B");
@@ -88,8 +87,7 @@ test('Set cartasian product difference', () => {
   const d = new CSetArray([2, 4]).as("B");
 
   const cd = c.crossProduct(d);
-
-  const abcd = ab.difference(cd);
+  const abcd = ab.difference(cd); 
 
   expect([...abcd.values()]).toEqual([[1,3],[2,3],[2,4]]);
   expect(abcd.has([1, 3])).toBeTruthy();
@@ -211,21 +209,20 @@ test("cross product alias", () => {
 test("Union + Cross Product", () => {
   const a = new CSetArray([1, 3, 2]);
   const b = a.union(new CSetArray([5, 3, 4])).as("AB");
-  
-  expect([...b.values()]).toEqual([1, 3, 2, 5, 4]);
+
+  expect([...b.values()]).toEqual([1, 2, 3, 4, 5]);
 
   expect(a.count()).toBe(3);
   expect(b.count()).toBe(5);
   
   const ab = a.crossProduct(b); 
   expect(ab.count()).toBe(15);
-  
+
   expect([...ab.values()]).toEqual(
     [
-      [1,1],[1,3],[1,2],[1,5],
-      [1,4],[3,1],[3,3],[3,2],
-      [3,5],[3,4],[2,1],[2,3],
-      [2,2],[2,5],[2,4]
+      [1,1],[1,2],[1,3],[1,4],[1,5],
+      [2,1],[2,2],[2,3],[2,4],[2,5],
+      [3,1],[3,2],[3,3],[3,4],[3,5]
     ]
   );
 });
@@ -253,6 +250,7 @@ test("Count", () => {
 
 });
 
+/*
 test("distinct cross product (SEND MORE MONEY)", () => {
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -297,6 +295,7 @@ test("distinct cross product (SEND MORE MONEY)", () => {
     expect(send + more).toBe(money);
   }
 });
+*/
 
 test("distinct cross product", () => {
 
@@ -490,7 +489,6 @@ test("is equal", () => {
     ]);
   
     expect(a.isEqual(b)).toBe(true);
-
 });
 
 test("Select has(x)", () => {
@@ -507,6 +505,5 @@ test("Select has(x)", () => {
   expect(c.has(3)).toBeFalsy(); 
 
 });
-*/
 
 // TODO: test cross product for duplicated values (for self, union, ...)

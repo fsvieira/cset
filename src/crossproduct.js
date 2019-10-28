@@ -1,4 +1,5 @@
 const CSet = require("./cset");
+const {reorder} = require("./utils");
 
 class CrossProduct extends CSet {
     constructor (a, b) {
@@ -35,7 +36,6 @@ class CrossProduct extends CSet {
                     const bp = bPosition instanceof Array?bPosition:[bPosition];
 
                     const abPosition = ap.concat(bp);
-
                     const abCell = this.grid.cells[abPosition] = this.grid.cells[abPosition] || {};
 
                     abCell.count = aCell.count * bCell.count;
@@ -48,8 +48,6 @@ class CrossProduct extends CSet {
 
             this.grid.positions.sort((a, b) => this.compare(a, b));
         }
-
-        console.log(JSON.stringify(this.grid));
 
         return this.grid;
     }

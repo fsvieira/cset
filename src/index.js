@@ -6,6 +6,7 @@ require("./alias");
 require("./union");
 require("./intersect");
 require("./crossproduct");
+require("./difference");
 
 module.exports = {
     CSetArray,

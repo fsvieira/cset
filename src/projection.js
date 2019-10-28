@@ -51,48 +51,30 @@ class Projection extends CSet {
         return this._header;
     }
 
-    *values () {
-        yield *this.cn(
-            function *(x) {
-                if (x.length === 1) {
-                    yield x[0];
-                }
-                else {
-                    yield x;
-                }
-            }
-        )([]);
-    }
+    *values (min, max) {
+        const aHeader = this.a.header;
 
-    cn (f) {
-        const header = this.a.header;
-        const prj = this._header;
-        const dups = new Set();
+        if (aHeader.length === 1) {
+            yield *this.a.values(min, max);
+        }
+        else {
+            const dup = {};
+            const indexes = this._header.map(h => aHeader.indexOf(h));
 
-        return this.a.cn(
-            function *(x) {
-                const al = header.length;
-                const a = x.slice(-al);
-                const b = x.slice(0, x.length - al);
+            for (let e of this.a.values(min, max)) {
+                const r = indexes.map(i => e[i]);
 
-                const p = [];
-
-                for (let i=0; i<prj.length; i++) {
-                    const h = prj[i];
-                    const index = header.indexOf(h);
-                    p.push(a[index]);
-                }
-
-                const d = JSON.stringify(p);
-
-                if (!dups.has(d)) {
-                    dups.add(d);                    
-                    const y = b.concat(p);
-
-                    yield *f(y);
+                if (!dup[r]) {
+                    dup[r] = true;
+                    if (r.length === 1) {
+                        yield r[0];
+                    }
+                    else {
+                        yield r;
+                    }
                 }
             }
-        );
+        }
     }
 
     count () {

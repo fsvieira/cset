@@ -35,18 +35,25 @@ class Intersect extends CSet {
                 positions: []
             };
     
+            const aHeader = this.a.header;
+            const bHeader = this.b.header;
+
             for (let i=0; i<aGrid.positions.length; i++) {
                 const aPosition = aGrid.positions[i];
                 const bCell = bGrid.cells[aPosition];
     
                 if (bCell) {
                     const aCell = aGrid.cells[aPosition];
+                    const rbMin = reorder(aHeader, bHeader, bCell.min); 
+                    const rbMax = reorder(aHeader, bHeader, bCell.max);
+
                     const abCell = {
-                        count: aCell.count < bCell.count?aCell.count:bCell.count,
-                        min: aCell.min < bCell.min?bCell.min:aCell.min,
-                        max: aCell.max < bCell.max?aCell.max:bCell.max
+                        count: this.min(aCell.count, bCell.count),
+                        min: this.min(aCell.min, rbMin),
+                        max: this.max(aCell.max, rbMax)
                     };
     
+                    // TODO: make a count.
                     const elCount = (abCell.max - abCell.min) + 1; 
     
                     if (elCount > 0) {
@@ -82,6 +89,9 @@ class Intersect extends CSet {
     *values (min, max) {
         const grid = this.calcGrid();
 
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
+
         for (let i=0; i<grid.positions.length; i++) {
             const position = grid.positions[i];
             const cell = this.grid.cells[position];
@@ -91,7 +101,9 @@ class Intersect extends CSet {
                 (max === undefined || this.compare(max, cell.min) >= 0)
             ) {
                 for (let e of this.a.values(min, max)) {
-                    if (this.b.has(e)) {
+                    const be = reorder(bHeader, aHeader, e);
+
+                    if (this.b.has(be)) {
                         yield e;
                     }
                 }

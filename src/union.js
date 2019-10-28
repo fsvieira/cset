@@ -31,10 +31,23 @@ class Union extends CSet {
         if (!this.grid) {
             const aGrid = this.a.getGrid();
             const bGrid = this.b.getGrid();
-    
+            const dups = {};
+            const positions = [];
+
+            for (let i=0; i<aGrid.positions.length; i++) {
+                const p = aGrid.positions[i];
+
+                if (dups[p]) {
+                    dups[p] = true;
+                    positions.push(p);
+                }
+            }
+            
+            positions.sort((a, b) => this.compare(a, b));
+
             const grid = this.grid = {
                 cells: {},
-                positions: new Set(aGrid.positions.concat(bGrid.positions))
+                positions
             };
     
             for (let i=0; i<grid.positions.length; i++) {
@@ -76,14 +89,20 @@ class Union extends CSet {
     *values (min, max) {
         yield *this.a.values(min, max);
 
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
+
         for (let e of this.b.values(min, max)) {
-            if (!this.a.has(e)) {
-                yield e;
+            const ea = reorder(aHeader, bHeader, e);
+
+            if (!this.a.has(ea)) {
+                yield ea;
             }
         }
     }
 
 
+    /*
     reorder (f, a, b) {
         return function *(x) {
             const y = x.slice(-b.length);
@@ -92,7 +111,7 @@ class Union extends CSet {
 
             yield *f(x);
         }
-    }
+    }*/
 
     get header () {
         return this.a.header;
