@@ -488,6 +488,9 @@ test("is equal", () => {
       [1, 0, 0]
     ]);
   
+    expect([...a.intersect(b).values()]).toEqual([[0,0,0],[0,1,0],[1,0,0],[1,1,1]]);
+    expect([...a.difference(b).values()]).toEqual([]);
+
     expect(a.isEqual(b)).toBe(true);
 });
 

@@ -78,12 +78,6 @@ class CSet {
     }
 
     isEqual (x) {
-        console.log("---");
-        console.log(this.isSubset(x));
-        console.log(x.isSubset(this));
-
-        console.log([...this.values()], " ----> ",  [...x.values()]);
-
         return this === x || (this.isSubset(x) && x.isSubset(this));
     }
 

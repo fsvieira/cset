@@ -37,7 +37,7 @@ class Union extends CSet {
             for (let i=0; i<aGrid.positions.length; i++) {
                 const p = aGrid.positions[i];
 
-                if (dups[p]) {
+                if (!dups[p]) {
                     dups[p] = true;
                     positions.push(p);
                 }
@@ -69,7 +69,7 @@ class Union extends CSet {
                     abCell.intersect = abCell.count - elCount;
                 }
     
-                this.grid.cells[aPosition] = abCell;
+                this.grid.cells[position] = abCell;
             }    
         }
 
