@@ -1,7 +1,12 @@
 const CSet = require("./cset");
 
 class Select extends CSet {
-    constructor (a, name, alias, predicate) {
+    constructor (
+        a, name, alias, 
+        test, 
+        parcial = () => true, 
+        bound = (min, max) => [min, max]
+    ) {
         super();
 
         const header = a.header;
@@ -16,7 +21,18 @@ class Select extends CSet {
         this.a = a;
         this.name = name;
         this.alias = alias;
-        this.predicate = predicate;
+
+        this.predicate = test;
+
+        const check = (headers, values) => {
+            const hs = headers.filter(h => alias.includes(h));
+            return (hs.length === alias.length?test:parcial)(header, values);
+        };
+
+        this.selector = (headers, values, min, max) => [
+            check(headers, values),
+            bound(min, max)
+        ];
     }
 
     test (header, x) {
@@ -58,16 +74,17 @@ class Select extends CSet {
         return this.test(this.a.header, x) && this.a.has(x);
     }
 
+    /*
     *values (min, max) {
-        /**
-         * TODO:
-         *  - Test function should test element, but also ranges so that we can eliminate further processing.
-         */
         for (let e of this.a.values(min, max)) {
             if (this.has(e)) {
                 yield e;
             }
         }
+    }*/
+
+    *values (selector) {
+        yield *this.a.values(selector);
     }
 
     get header () {

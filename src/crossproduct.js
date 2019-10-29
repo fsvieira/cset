@@ -81,11 +81,30 @@ class CrossProduct extends CSet {
         return ah.concat(bh);
     }
 
+    /*
     *values (min, max) {
         for (let a of this.a.values(min, max)) {
             a = a instanceof Array?a:[a];
 
             for (let b of this.b.values(min, max)) {
+                b = b instanceof Array?b:[b];
+
+                yield a.concat(b);
+            }
+        }
+    }*/
+
+    *values (selector) {
+        const aHeader = this.a.header;
+        for (let a of this.a.values(selector)) {
+            a = a instanceof Array?a:[a];
+
+            for (let b of this.b.values(
+                    selector?(headers, values, min, max) =>
+                        selector(aHeader.concat(headers), a.concat(values), min, max):
+                    undefined
+                )
+            ) {
                 b = b instanceof Array?b:[b];
 
                 yield a.concat(b);

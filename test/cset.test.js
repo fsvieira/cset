@@ -250,7 +250,6 @@ test("Count", () => {
 
 });
 
-/*
 test("distinct cross product (SEND MORE MONEY)", () => {
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -295,7 +294,6 @@ test("distinct cross product (SEND MORE MONEY)", () => {
     expect(send + more).toBe(money);
   }
 });
-*/
 
 test("distinct cross product", () => {
 
