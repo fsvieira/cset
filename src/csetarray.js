@@ -48,10 +48,24 @@ class CSetArray extends CSet {
         return [this.name];
     }
 
+    /*
     *values (min=0, max=Infinity) {
         for (let e of this.sValues) {
             if (e >= min && e <=max) {
                 yield e;
+            }
+        }
+    }*/
+    *values (selector) {
+        if (!selector) {
+            yield *this.sValues;
+        }
+        else {
+            for (let e of this.sValues) {
+                const [isElement] = selector(this.header, [e]);
+                if (isElement) {
+                    yield e;
+                }
             }
         }
     }

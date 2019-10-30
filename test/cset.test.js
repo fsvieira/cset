@@ -105,6 +105,9 @@ test('Set cartasian no repeat product', () => {
       predicate: (a, b) => a !== b
     });
 
+    // console.log(JSON.stringify([...ab.values()]));
+    // [[1,1],[1,2],[2,1],[2,2]]
+
   expect([...ab.values()]).toEqual([[1, 2], [2, 1]]);
 
   expect(ab.has([1, 2])).toBeTruthy();
@@ -348,7 +351,6 @@ test("distinct cross product", () => {
         ]
       );
     }
-
 });
 
 test("Order of cartasian set operations", () => {
