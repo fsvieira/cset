@@ -1,12 +1,10 @@
 const CSet = require("./cset");
-const {reorder} = require("./utils");
 
 class Select extends CSet {
     constructor (
         a, name, alias, 
         test, 
-        parcial,
-        bound = (min, max) => [min, max]
+        parcial
     ) {
         super();
 
@@ -25,7 +23,7 @@ class Select extends CSet {
 
         this.predicate = test;
 
-        const check = (headers, values) => {
+        this.selector = (headers, values) => {
             const vs = [];
             const hs = [];
 
@@ -46,33 +44,6 @@ class Select extends CSet {
 
             return parcial?parcial(hs, vs):true;
         };
-
-        this.selector = (headers, values, min, max) => [
-            check(headers, values),
-            bound(min, max)
-        ];
-    }
-
-    test (header, x) {
-        const arg = [];
-
-        if (x instanceof Array && x.length > header.length) {
-            x = x.slice(-header.length);
-        }
-
-        for (let i=0; i<this.alias.length; i++) {
-            const alias = this.alias[i];
-
-            if (x instanceof Array) {
-                const index = header.indexOf(alias);
-                arg.push(x[index]);    
-            }
-            else {
-                arg.push(x);    
-            }
-        }
-
-        return !!this.predicate(...arg);
     }
 
     count () {
@@ -101,19 +72,13 @@ class Select extends CSet {
         }
     }*/
 
-    *values (selector) {
-        const s = (...args) => {
-            const r = this.selector(...args);
-            const [isElement] = r;
-
-            if (isElement && selector) {
-                return selector(...args);
-            }
-
-            return r;
-        }
-
-        yield *this.a.values(s);
+    *values (min, max, selector) {
+        yield *this.a.values(
+            min, 
+            max, 
+            (...args) => 
+                this.selector(...args) && (!selector || selector(...args))
+        );
     }
 
     get header () {

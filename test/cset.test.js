@@ -23,7 +23,9 @@ test('Set Union', () => {
   const a = new CSetArray([1, 2, 3]);
   const b = new CSetArray([2, 3, 4]);
   const ab = a.union(b);
-  expect([...ab.values()]).toEqual([1, 2, 3, 4]);
+
+  console.log([...ab.values()]);
+  expect([...ab.values()]).toEqual([2, 3, 4, 1]);
 
   expect(ab.has(1)).toBeTruthy();
   expect(ab.has(4)).toBeTruthy();

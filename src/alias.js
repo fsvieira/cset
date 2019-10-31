@@ -38,15 +38,15 @@ class Alias extends CSet {
         return this.a.has(x);
     }
 
-    *values (selector) {
+    *values (min, max, selector) {
         // alias need to rename headers,
-        let s;
-        if (selector) {
-            s = (headers, ...args) => 
-                selector(headers.map((h, i) => this._header[i]), ...args);
-        }
-
-        yield *this.a.values(s);
+        yield *this.a.values(
+            min, 
+            max, 
+            selector?(headers, ...args) => 
+                selector(headers.map((h, i) => this._header[i]), ...args)
+            :undefined
+        );
     }
 
     as (rename, name) {

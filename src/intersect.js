@@ -86,6 +86,7 @@ class Intersect extends CSet {
         return counter;
     }
 
+    /*
     *values (min, max) {
         const grid = this.calcGrid();
 
@@ -107,6 +108,40 @@ class Intersect extends CSet {
                         yield e;
                     }
                 }
+            }
+        }
+    }*/
+
+    *values (min, max, selector) {
+        const grid = this.calcGrid();
+
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
+
+        for (let i=0; i<grid.positions.length; i++) {
+            const position = grid.positions[i];
+            const cell = this.grid.cells[position];
+
+            if (
+                (min === undefined || this.compare(min, cell.max) <= 0) && 
+                (max === undefined || this.compare(max, cell.min) >= 0)
+            ) {
+                yield *this.a.values(
+                    min, max, (header, values) => {
+                        if (!selector || selector(header, values)) {
+            
+                            if (header.length === aHeader.length) {
+                                const be = reorder(aHeader, bHeader, values);
+                                return this.b.has(be);
+                            }
+                            else {
+                                return true;
+                            }
+                        }
+            
+                        return false;
+                    }
+                );
             }
         }
     }

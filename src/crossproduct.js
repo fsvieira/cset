@@ -94,12 +94,15 @@ class CrossProduct extends CSet {
         }
     }*/
 
-    *values (selector) {
+    *values (min, max, selector) {
         const aHeader = this.a.header;
-        for (let a of this.a.values(selector)) {
+
+        for (let a of this.a.values(min, max, selector)) {
             a = a instanceof Array?a:[a];
 
             for (let b of this.b.values(
+                    min,
+                    max,
                     selector?(headers, values, min, max) =>
                         selector(aHeader.concat(headers), a.concat(values), min, max):
                     undefined

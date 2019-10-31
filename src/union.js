@@ -86,6 +86,7 @@ class Union extends CSet {
         return this.a.count() + this.b.count() - this.a.intersect(this.b).count();
     }
 
+    /*
     *values (min, max) {
         yield *this.a.values(min, max);
 
@@ -99,19 +100,43 @@ class Union extends CSet {
                 yield ea;
             }
         }
-    }
-
-
-    /*
-    reorder (f, a, b) {
-        return function *(x) {
-            const y = x.slice(-b.length);
-            x = x.slice(0, x.length - b.length);
-            x = x.concat(reorder(a, b, y));
-
-            yield *f(x);
-        }
     }*/
+    
+    /*
+        TODO: generate grid with cell information if 
+        has elments of a or/and b, so that we can easly defer generator 
+        to one set or two sets using selector.
+
+        TODO: order of union:
+            - on case of a and b has cell grid intersect, we can:
+                - get both a and b values,
+                - if a < b, then:
+                    * yield a,
+                    * defer all a values from range ]a, b[;
+                    * yield b
+                - if a = b then yield a,
+                - if a > b then same step of a < b inversed.
+    */
+    *values (min, max, selector) {
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
+
+        yield *this.b.values(min, max, selector);
+        yield *this.a.values(min, max, (header, values) => {
+            if (!selector || selector(header, values)) {
+            
+                if (header.length === aHeader.length) {
+                    const be = reorder(header, bHeader, values);
+                    return !this.b.has(be);
+                }
+                else {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
 
     get header () {
         return this.a.header;

@@ -46,16 +46,37 @@ class Difference extends CSet {
         return this.a.count() - this.a.intersect(this.b).count();
     }
 
-    *values (min, max) {
+    /*
+    *values (min, max, selector) {
         const aHeader = this.a.header;
         const bHeader = this.b.header;
 
-        for (let e of this.a.values(min, max)) {
+        for (let e of this.a.values(min, max, selector)) {
             const be = reorder(aHeader, bHeader, e);
             if (!this.b.has(be)) {
                 yield e;
             }
         }
+    }*/
+
+    *values (min, max, selector) {
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
+
+        yield *this.a.values(min, max, (header, values) => {
+            if (!selector || selector(header, values)) {
+
+                if (header.length === aHeader.length) {
+                    const be = reorder(aHeader, bHeader, e);
+                    return !this.b.has(be);
+                }
+                else {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     get header () {

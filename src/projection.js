@@ -51,6 +51,7 @@ class Projection extends CSet {
         return this._header;
     }
 
+    /*
     *values (min, max) {
         const aHeader = this.a.header;
 
@@ -75,7 +76,35 @@ class Projection extends CSet {
                 }
             }
         }
+    }*/
+    *values (min, max, selector) {
+        const aHeader = this.a.header;
+
+        if (aHeader.length === 1) {
+            yield *this.a.values(min, max, selector);
+        }
+        else {
+            const dup = {};
+            const indexes = this._header.map(h => aHeader.indexOf(h));
+
+            yield *this.a.values(min, max, (header, values) => {
+                if (!selector || selector(header, values)) {
+
+                    if (header.length === aHeader._header.length) {
+                        const r = indexes.map(i => values[i]);
+
+                        if (!dup[r]) {
+                            dup[r] = true;
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            });
+        }
     }
+
 
     count () {
         return [...this.values()].length;

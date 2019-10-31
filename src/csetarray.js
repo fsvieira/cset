@@ -37,6 +37,8 @@ class CSetArray extends CSet {
     }
 
     has (x) {
+        x = x instanceof Array && x.length===1?x[0]:x;
+
         return this.sValues.includes(x);
     }
 
@@ -56,14 +58,13 @@ class CSetArray extends CSet {
             }
         }
     }*/
-    *values (selector) {
+    *values (min=0, max=Infinity, selector) {
         if (!selector) {
-            yield *this.sValues;
+            yield *this.sValues.filter(e => e >= min && e <=max);
         }
         else {
             for (let e of this.sValues) {
-                const [isElement] = selector(this.header, [e]);
-                if (isElement) {
+                if (e >= min && e <=max && selector(this.header, [e])) {
                     yield e;
                 }
             }
