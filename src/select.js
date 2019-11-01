@@ -91,7 +91,7 @@ CSet.prototype.select = function (alias, {name, predicate, parcial}) {
         this,
         name,
         alias,
-        predicate,
+        predicate || ((...values) => parcial(this.header, values)),
         parcial
     );
 };

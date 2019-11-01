@@ -315,6 +315,45 @@ test("distinct cross product", () => {
     }
 
     {
+      const A = new CSetArray([1, 2, 3, 4, 5, 7, 8, 9, 10]);
+      const B = A.as("a").crossProduct(A.as("b")).crossProduct(
+        A.as("c").crossProduct(A.as("d"))
+      )
+        .select(["a", "b", "c", "d"], {
+          name: "<>",
+          parcial: (headers, values) => {
+              const p = headers.map(h => ["a", "b", "c", "d"].indexOf(h));
+              const s = values[0];
+              for (let i=1; i<values.length; i++) {
+                if (values[i] !== s + p[i]) {
+                  return false;
+                }
+              }
+
+              return true;
+            }
+        });
+
+        console.log(JSON.stringify([...B.values()]));
+      expect([...B.values()]).toEqual([[1,2,3,4],[2,3,4,5],[7,8,9,10]]);
+    }
+
+    {
+      const A = new CSetArray([1, 2, 3, 4, 5, 7, 8, 9, 10]);
+
+      const B = A.as("a").crossProduct(A.as("b")).crossProduct(
+        A.as("c").crossProduct(A.as("d"))
+      )
+        .select(["a", "b", "c", "d"], {
+          name: "<>",
+          predicate: (a, b, c, d) => b === a + 1 && c === b + 1 && d === c + 1,
+          parcial: (headers, ...args) => new Set(args).size === args.length
+        });
+
+      expect([...B.values()]).toEqual([[1,2,3,4],[2,3,4,5],[7,8,9,10]]);
+    }
+
+    {
       const A = new CSetArray([1, 2, 3]);
 
       const B = A.as("a").crossProduct(A.as("b")).crossProduct(

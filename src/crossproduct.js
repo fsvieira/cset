@@ -104,7 +104,7 @@ class CrossProduct extends CSet {
                     min,
                     max,
                     selector?(headers, values, min, max) =>
-                        selector(aHeader.concat(headers), a.concat(values), min, max):
+                        selector(aHeader.concat(headers), a.concat(values)):
                     undefined
                 )
             ) {

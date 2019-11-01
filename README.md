@@ -1,9 +1,16 @@
 # CSet
 
-CSet is a javascript lazzy Set library with support for cartesian product and predicate filtering, that is loosely based on 
+CSet is a JavaScript lazy Set library with support for cartesian product and predicate filtering, that is loosely based on 
 tuple relation calculus and relation algebra.
 
 Currently CSet support most normal set operation, including cartesian product.
+
+# Changes
+
+## 2.0.0
+  * Version schema is now based on Semantic Version System (https://semver.org/)
+  * Only support positive integers as elements.
+  * Select now supports partial testing.
 
 # Install
 
@@ -357,6 +364,11 @@ Making a distinct cartesian/cross product with selects:
 
   console.log(JSON.stringfy([...A.values()]); // [[ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ]]
 ```
+
+Since 2.0.0 selects supports a partial testing function, witch makes it more efficient and 
+removes the need to split selects, for example:
+
+
 
 Note: Its better to make selects with less variables, for example one or two variables, 
 because they can be distributed and tested sooner on partial results.
