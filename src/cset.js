@@ -19,7 +19,7 @@ class CSet {
         if (ar.length === br.length) {
             for (let i=0; i<ar.length; i++) {
                 const ae = ar[i];
-                const be = ar[i];
+                const be = br[i];
 
                 if (ae !== be) {
                     return ae - be;

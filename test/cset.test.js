@@ -24,8 +24,7 @@ test('Set Union', () => {
   const b = new CSetArray([2, 3, 4]);
   const ab = a.union(b);
 
-  console.log([...ab.values()]);
-  expect([...ab.values()]).toEqual([2, 3, 4, 1]);
+  expect([...ab.values()]).toEqual([1, 2, 3, 4]);
 
   expect(ab.has(1)).toBeTruthy();
   expect(ab.has(4)).toBeTruthy();
@@ -106,9 +105,6 @@ test('Set cartasian no repeat product', () => {
       name: "<>",
       predicate: (a, b) => a !== b
     });
-
-    // console.log(JSON.stringify([...ab.values()]));
-    // [[1,1],[1,2],[2,1],[2,2]]
 
   expect([...ab.values()]).toEqual([[1, 2], [2, 1]]);
 
@@ -215,7 +211,7 @@ test("Union + Cross Product", () => {
   const a = new CSetArray([1, 3, 2]);
   const b = a.union(new CSetArray([5, 3, 4])).as("AB");
 
-  expect([...b.values()]).toEqual([1, 2, 3, 4, 5]);
+  expect([...b.values()]).toEqual([3, 4, 5, 1, 2]);
 
   expect(a.count()).toBe(3);
   expect(b.count()).toBe(5);

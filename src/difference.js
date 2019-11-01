@@ -67,7 +67,7 @@ class Difference extends CSet {
             if (!selector || selector(header, values)) {
 
                 if (header.length === aHeader.length) {
-                    const be = reorder(aHeader, bHeader, e);
+                    const be = reorder(aHeader, bHeader, values);
                     return !this.b.has(be);
                 }
                 else {

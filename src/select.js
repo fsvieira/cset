@@ -21,7 +21,7 @@ class Select extends CSet {
         this.name = name;
         this.alias = alias;
 
-        this.predicate = test;
+        this.test = test;
 
         this.selector = (headers, values) => {
             const vs = [];
@@ -62,15 +62,6 @@ class Select extends CSet {
     has (x) {
         return this.test(this.a.header, x) && this.a.has(x);
     }
-
-    /*
-    *values (min, max) {
-        for (let e of this.a.values(min, max)) {
-            if (this.has(e)) {
-                yield e;
-            }
-        }
-    }*/
 
     *values (min, max, selector) {
         yield *this.a.values(

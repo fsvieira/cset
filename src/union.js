@@ -56,20 +56,30 @@ class Union extends CSet {
                 const aCell = aGrid.cells[position];
                 const bCell = bGrid.cells[position];
 
-                const abCell = {
-                    count: aCell.count + bCell.count,
-                    min: aCell.min > bCell.min?bCell.min:aCell.min,
-                    max: aCell.max > bCell.max?aCell.max:bCell.max
-                };
+                let cell;
+                if (aCell && bCell) {
+                    cell = {
+                        count: aCell.count + bCell.count,
+                        min: aCell.min > bCell.min?bCell.min:aCell.min,
+                        max: aCell.max > bCell.max?aCell.max:bCell.max,
+                        sets: "ab"
+                    };
+                }
+                else if (aCell) {
+                    cell = {...aCell, sets: "a"};
+                }
+                else {
+                    cell = {...bCell, sets: "b"}
+                }
 
-                const elCount = (abCell.max - abCell.min) + 1; 
+                const elCount = (cell.max - cell.min) + 1; 
 
-                if (elCount < abCell.count) {
-                    abCell.count = elCount;
-                    abCell.intersect = abCell.count - elCount;
+                if (elCount < cell.count) {
+                    cell.count = elCount;
+                    cell.intersect = cell.count - elCount;
                 }
     
-                this.grid.cells[position] = abCell;
+                this.grid.cells[position] = cell;
             }    
         }
 
@@ -117,6 +127,102 @@ class Union extends CSet {
                 - if a = b then yield a,
                 - if a > b then same step of a < b inversed.
     */
+   *values (min, max, selector) {
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
+
+        const grid = this.calcGrid();
+
+        for (let i=0; i<grid.positions.length; i++) {
+            const position = grid.positions[i];
+            const cell = this.grid.cells[position];
+
+            if (
+                (min === undefined || this.compare(min, cell.max) <= 0) && 
+                (max === undefined || this.compare(max, cell.min) >= 0)
+            ) {
+                if (cell.sets === 'ab') {
+                    let ai = this.a.values(cell.min, cell.max, selector);
+                    let bi = this.b.values(cell.min, cell.max, selector);
+
+                    let an = ai.next();
+                    let bn = bi.next();
+
+                    for (;;) {
+                        if (!an.done && !bn.done) {
+                            const a = an.value;
+                            const b = bn.value;
+
+                            const cmp = this.compare(a, b);
+                            if (cmp < 0) {
+                                const ab = reorder(aHeader, bHeader, b);
+
+                                yield *this.a.values(a, ab, selector);
+
+                                ai = this.a.values(ab, cell.max);
+
+                                if (!this.a.has(ab)) {
+                                    yield ab;
+                                }
+                                else {
+                                    // descard one value,
+                                    ai.next();
+                                }
+                            }
+                            else if (cmp > 0) {
+                                const ba = reorder(bHeader, aHeader, b);
+                                
+                                for (let e of this.b.values(b, ba, selector)) {
+                                    yield reorder(aHeader, bHeader, e);
+                                }
+
+                                bi = this.a.values(ab, cell.max);
+
+                                if (!this.b.has(ba)) {
+                                    yield ba;
+                                }
+                                else {
+                                    // discard one value,
+                                    bi.next();
+                                }
+                            }
+                            else {
+                                yield a;
+                            }
+                        }
+                        else {
+
+                            if (!an.done) {
+                                yield an.value;
+                                yield *ai;
+                            }
+                            else if (!bn.done) {
+                                yield bn.value;
+                                for (let e of bi) {
+                                    yield reorder(aHeader, bHeader, e);
+                                }
+                            }
+
+                            break;
+                        }
+
+                        an = ai.next();
+                        bn = bi.next();
+                    }
+                }
+                else if (cell.sets === 'a') {
+                    yield *this.a.values(cell.min, cell.max, selector);
+                }
+                else if (cell.sets === 'b') {
+                    for (let e of this.b.values(cell.min, cell.max, selector)) {
+                        yield reorder(aHeader, bHeader, e);
+                    }
+                }
+            }
+        }
+    }
+
+    /*
     *values (min, max, selector) {
         const aHeader = this.a.header;
         const bHeader = this.b.header;
@@ -136,7 +242,7 @@ class Union extends CSet {
 
             return false;
         });
-    }
+    }*/
 
     get header () {
         return this.a.header;
