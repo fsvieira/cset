@@ -211,7 +211,7 @@ test("Union + Cross Product", () => {
   const a = new CSetArray([1, 3, 2]);
   const b = a.union(new CSetArray([5, 3, 4])).as("AB");
 
-  expect([...b.values()]).toEqual([3, 4, 5, 1, 2]);
+  expect([...b.values()]).toEqual([1, 2, 3, 4, 5]);
 
   expect(a.count()).toBe(3);
   expect(b.count()).toBe(5);
@@ -256,23 +256,10 @@ test("distinct cross product (SEND MORE MONEY)", () => {
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const d = new CSetArray(digits);
   const letters = ["S", "E", "N", "D", "M", "O", "R", "Y"];
-  const notEqualPred = {
-    name: "<>",
-    predicate: (a, b) => a !== b
-  };
 
-  let s = d.as(letters[0]);
-  for (let i=1; i<letters.length; i++) {
-    const letter=letters[i];
-
-    s = s.crossProduct(d.as(letter));
-    
-    // make selects to all variables be different.
-    for (let j=i-1; j>=0; j--) {
-      const a = letters[j];
-      s = s.select([a, letter], notEqualPred);
-    }
-  }
+  const s = letters.map(h => d.as(h)).reduce(
+    (s, e) => s?s.crossProduct(e):e
+  );
 
   // S E N D M O R Y
   const sendMoreMoney = s.select(
@@ -283,7 +270,8 @@ test("distinct cross product (SEND MORE MONEY)", () => {
           S * 1000 + E * 100 + N * 10 + D 
         + M * 1000 + O * 100 + R * 10  + E  
           === 
-          M * 10000 + O * 1000 + N * 100 + E * 10 + Y
+          M * 10000 + O * 1000 + N * 100 + E * 10 + Y,
+      parcial: (header, values) => new Set(values).size === values.length
     }
   );
 

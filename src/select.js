@@ -21,7 +21,7 @@ class Select extends CSet {
         this.name = name;
         this.alias = alias;
 
-        this.test = test;
+        // this.test = test;
 
         this.selector = (headers, values) => {
             const vs = [];
@@ -36,13 +36,17 @@ class Select extends CSet {
                 }
             }
 
-            if (hs.length === alias.length) {
-                const r = test(...vs);
+            if (!parcial || parcial(hs, vs)) {
+                if (hs.length === alias.length) {
+                    const r = test(...vs);
 
-                return r;
+                    return r;
+                }
+
+                return true;
             }
 
-            return parcial?parcial(hs, vs):true;
+            return false;
         };
     }
 
@@ -60,7 +64,8 @@ class Select extends CSet {
     }
     
     has (x) {
-        return this.test(this.a.header, x) && this.a.has(x);
+        // return this.test(this.a.header, x) && this.a.has(x);
+        return this.selector(this.a.header, x instanceof Array?x:[x]) && this.a.has(x);
     }
 
     *values (min, max, selector) {
@@ -81,12 +86,13 @@ class Select extends CSet {
     }
 }
 
-CSet.prototype.select = function (alias, {name, predicate}) {
+CSet.prototype.select = function (alias, {name, predicate, parcial}) {
     return new Select (
         this,
         name,
         alias,
-        predicate
+        predicate,
+        parcial
     );
 };
 

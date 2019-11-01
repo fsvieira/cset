@@ -127,6 +127,7 @@ class Union extends CSet {
                 - if a = b then yield a,
                 - if a > b then same step of a < b inversed.
     */
+   /*
    *values (min, max, selector) {
         const aHeader = this.a.header;
         const bHeader = this.b.header;
@@ -220,20 +221,20 @@ class Union extends CSet {
                 }
             }
         }
-    }
+    }*/
 
-    /*
+    // No order,
     *values (min, max, selector) {
         const aHeader = this.a.header;
         const bHeader = this.b.header;
 
-        yield *this.b.values(min, max, selector);
-        yield *this.a.values(min, max, (header, values) => {
+        yield *this.a.values(min, max, selector);
+        
+        for (let e of this.b.values(min, max, (header, values) => {
             if (!selector || selector(header, values)) {
-            
                 if (header.length === aHeader.length) {
-                    const be = reorder(header, bHeader, values);
-                    return !this.b.has(be);
+                    const ae = reorder(aHeader, bHeader, values);
+                    return !this.a.has(ae);
                 }
                 else {
                     return true;
@@ -241,8 +242,10 @@ class Union extends CSet {
             }
 
             return false;
-        });
-    }*/
+        })) {
+            yield reorder(aHeader, bHeader, e);
+        }
+    }
 
     get header () {
         return this.a.header;
