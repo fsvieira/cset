@@ -251,7 +251,7 @@ test("Count", () => {
 
 });
 
-test("distinct cross product (SEND MORE MONEY)", () => {
+test("distinct cross product (SEND MORE MONEY) [NO OPTIMIZATIONS]", () => {
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const d = new CSetArray(digits);
@@ -271,7 +271,83 @@ test("distinct cross product (SEND MORE MONEY)", () => {
         + M * 1000 + O * 100 + R * 10  + E  
           === 
           M * 10000 + O * 1000 + N * 100 + E * 10 + Y,
-      parcial: (header, values) => new Set(values).size === values.length
+      partial: (headers, values) => new Set(values).size === values.length
+    }
+  );
+
+  for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
+    const send = S * 1000 + E * 100 + N * 10 + D;
+    const more = M * 1000 + O * 100 + R * 10  + E;
+    const money = M * 10000 + O * 1000 + N * 100 + E * 10 + Y;
+    // console.log(`${send} + ${more} = ${money}`);
+    expect(send + more).toBe(money);
+  }
+});
+
+test("distinct cross product (SEND MORE MONEY) [OPTIMIZATIONS]", () => {
+
+  const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const d = new CSetArray(digits);
+  const letters = ["S", "E", "N", "D", "M", "O", "R", "Y"];
+
+  const s = letters.map(h => d.as(h)).reduce(
+    (s, e) => s?s.crossProduct(e):e
+  );
+
+  // S E N D M O R Y
+  const sendMoreMoney = s.select(
+    ["S", "E", "N", "D", "M", "O", "R", "Y"],
+    {
+      name: "add",
+      predicate: (S, E, N, D, M, O, R, Y) => 
+          S * 1000 + E * 100 + N * 10 + D 
+        + M * 1000 + O * 100 + R * 10  + E  
+          === 
+          M * 10000 + O * 1000 + N * 100 + E * 10 + Y,
+      partial: (headers, values) => {
+        if (new Set(values).size === values.length) {
+
+          if (headers.length >= 3) {
+            const e = headers.indexOf("E");
+            let rs = true;
+
+            if (e !== -1) {
+              const d = headers.indexOf("D");
+              const y = headers.indexOf("Y");
+              const n = headers.indexOf("N");
+              const r = headers.indexOf("R");
+              const o = headers.indexOf("O");
+  
+              if (d !== -1 && y !== -1) {
+                rs = rs && (values[d] + values[e]) % 10 === values[y];
+              }
+
+              if (n !== -1) {
+                if (r !== -1) {
+                  rs = rs && 
+                    ((values[n] + values[r]) % 10 === values[e]
+                      || (values[n] + values[r] + 1) % 10 === values[e]
+                    );
+                }
+
+                if (o !== -1) {
+                  rs = rs && (
+                    values[e] + values[o]) % 10 === values[n]
+                    || (values[e] + values[o] + 1) % 10 === values[n]
+                    ;
+                }
+              }
+
+            }
+
+            return rs;
+          }
+
+          return true;
+        }
+
+        return false;
+      }
     }
   );
 
@@ -321,7 +397,7 @@ test("distinct cross product", () => {
       )
         .select(["a", "b", "c", "d"], {
           name: "<>",
-          parcial: (headers, values) => {
+          partial: (headers, values) => {
               const p = headers.map(h => ["a", "b", "c", "d"].indexOf(h));
               const s = values[0];
               for (let i=1; i<values.length; i++) {
@@ -334,7 +410,6 @@ test("distinct cross product", () => {
             }
         });
 
-        console.log(JSON.stringify([...B.values()]));
       expect([...B.values()]).toEqual([[1,2,3,4],[2,3,4,5],[7,8,9,10]]);
     }
 
@@ -347,7 +422,7 @@ test("distinct cross product", () => {
         .select(["a", "b", "c", "d"], {
           name: "<>",
           predicate: (a, b, c, d) => b === a + 1 && c === b + 1 && d === c + 1,
-          parcial: (headers, ...args) => new Set(args).size === args.length
+          partial: (headers, ...args) => new Set(args).size === args.length
         });
 
       expect([...B.values()]).toEqual([[1,2,3,4],[2,3,4,5],[7,8,9,10]]);

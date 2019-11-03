@@ -9,8 +9,8 @@ Currently CSet support most normal set operation, including cartesian product.
 
 ## 2.0.0
   * Version schema is now based on Semantic Version System (https://semver.org/)
-  * Only support positive integers as elements.
-  * Select now supports partial testing.
+  * From now to the future CSet will only support positive integers as elements.
+  * Select now supports partial filtering.
 
 # Install
 
@@ -312,8 +312,17 @@ for normal sets it will return one alias (string).
 
 ## Select
 
-A select works as a filter on set elements, as other operators it creates a new set
+A select works as a filter on set elements, like other operators it creates a new set
 where all set elements must comply with provided constrains.
+
+Select(alias, {name, predicate, partial})
+
+  * alias, an array containing name header of the restrictions,
+  * name, the name of the constrain, it can be any string, useful for JSON serialization.
+  * predicate, its a function defining a constrain, it has as arguments a value and outputs a boolean. 
+  * partial, its similar to a constrain but it may be applied on partial values.
+
+  We must define at least a predicate or a partial function.
 
 ```javascript
   const a = new CSetArray([1, 3, 2]);
@@ -350,28 +359,51 @@ where all set elements must comply with provided constrains.
 
 ```
 
-Making a distinct cartesian/cross product with selects:
+Using a partial and a predicate:
+
 
 ```javascript
-  const notEqualPred = {
-    name: "<>",
-    predicate: (a, b) => a !== b
-  };
+      const A = new CSetArray([1, 2, 3, 4, 5, 7, 8, 9, 10]);
 
-  const A = new CSetArray([1, 2, 3]).as("a").crossProduct(
-    new CSetArray([1, 2]).as("b")
-  ).select(["a", "b"], notEqualPred);
+      const B = A.as("a").crossProduct(A.as("b")).crossProduct(
+        A.as("c").crossProduct(A.as("d"))
+      )
+        .select(["a", "b", "c", "d"], {
+          name: "<>",
+          predicate: (a, b, c, d) => b === a + 1 && c === b + 1 && d === c + 1,
 
-  console.log(JSON.stringfy([...A.values()]); // [[ 1, 2 ], [ 2, 1 ], [ 3, 1 ], [ 3, 2 ]]
+          // headers the partial header, value is the partial value.
+          // eg. headers=["a", "b"], values=[1, 2]
+          partial: (headers, value) => new Set(value).size === args.length
+        });
+
+      console.log([...B.values()]); // [[1,2,3,4],[2,3,4,5],[7,8,9,10]];
 ```
 
-Since 2.0.0 selects supports a partial testing function, witch makes it more efficient and 
-removes the need to split selects, for example:
+Same example with only partial definition:
 
+```javascript
+      const A = new CSetArray([1, 2, 3, 4, 5, 7, 8, 9, 10]);
+      const B = A.as("a").crossProduct(A.as("b")).crossProduct(
+        A.as("c").crossProduct(A.as("d"))
+      )
+        .select(["a", "b", "c", "d"], {
+          name: "<>",
+          partial: (headers, values) => {
+              const p = headers.map(h => ["a", "b", "c", "d"].indexOf(h));
+              const s = values[0];
+              for (let i=1; i<values.length; i++) {
+                if (values[i] !== s + p[i]) {
+                  return false;
+                }
+              }
 
+              return true;
+            }
+        });
 
-Note: Its better to make selects with less variables, for example one or two variables, 
-because they can be distributed and tested sooner on partial results.
+      console.log([...B.values()]); // [[1,2,3,4],[2,3,4,5],[7,8,9,10]];
+```
 
 ## Count
 
@@ -424,49 +456,42 @@ Some people discard M=0 solutions, but in this case I will consider all solution
 ```javascript
 
   const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const d = new CSet(digits);
+  const d = new CSetArray(digits);
   const letters = ["S", "E", "N", "D", "M", "O", "R", "Y"];
-  const notEqualPred = {
-    name: "<>",
-    predicate: (a, b) => a !== b
-  };
 
-  let s = d.as(letters[0]);
-  for (let i=1; i<letters.length; i++) {
-    const letter=letters[i];
-
-    s = s.crossProduct(d.as(letter));
-    
-    // make constrains to all variables be different.
-    for (let j=i-1; j>=0; j--) {
-      const a = letters[j];
-      s = s.select([a, letter], notEqualPred);
-    }
-  }
+  const s = letters.map(h => d.as(h)).reduce(
+    (s, e) => s?s.crossProduct(e):e
+  );
 
   // S E N D M O R Y
   const sendMoreMoney = s.select(
-      ["S", "E", "N", "D", "M", "O", "R", "Y"],
-      {
-        name: "add",
-        predicate: (S, E, N, D, M, O, R, Y) => 
-            S * 1000 + E * 100 + N * 10 + D 
-          + M * 1000 + O * 100 + R * 10  + E  
-            === 
-            M * 10000 + O * 1000 + N * 100 + E * 10 + Y
-      }
-    );
+    ["S", "E", "N", "D", "M", "O", "R", "Y"],
+    {
+      name: "add",
+      predicate: (S, E, N, D, M, O, R, Y) => 
+          S * 1000 + E * 100 + N * 10 + D 
+        + M * 1000 + O * 100 + R * 10  + E  
+          === 
+          M * 10000 + O * 1000 + N * 100 + E * 10 + Y,
+      partial: (headers, values) => new Set(values).size === values.length
+    }
+  );
 
   for (let [S, E, N, D, M, O, R, Y] of sendMoreMoney.values()) {
-    console.log(`${S * 1000 + E * 100 + N * 10 + D} + ${M * 1000 + O * 100 + R * 10 + E} = ${M * 10000 + O * 1000 + N * 100 + E * 10 + Y}`);
+    const send = S * 1000 + E * 100 + N * 10 + D;
+    const more = M * 1000 + O * 100 + R * 10  + E;
+    const money = M * 10000 + O * 1000 + N * 100 + E * 10 + Y;
+    console.log(`${send} + ${more} = ${money}`);
   }
-
 ```
+
+With the use of partial filter, the problem is much more clean and optimized since we 
+are filtering all values that are distinct.
 
 # Motivation
 
 I created CSet to try to find a way to handle domain combinatorial explosion.
-The main design concept of CSet is to be lazzy, do as little as possible and only do it on demand,
+The main design concept of CSet is to be lazy, do as little as possible and only do it on demand,
 by delaying evaluation and by failing sooner than later we can save processing time and memory.
 
 While memory and processing time is a concern of CSet design, not all combinatorial problems are

@@ -4,7 +4,7 @@ class Select extends CSet {
     constructor (
         a, name, alias, 
         test, 
-        parcial
+        partial
     ) {
         super();
 
@@ -36,7 +36,7 @@ class Select extends CSet {
                 }
             }
 
-            if (!parcial || parcial(hs, vs)) {
+            if (!partial || partial(hs, vs)) {
                 if (hs.length === alias.length) {
                     const r = test(...vs);
 
@@ -86,13 +86,13 @@ class Select extends CSet {
     }
 }
 
-CSet.prototype.select = function (alias, {name, predicate, parcial}) {
+CSet.prototype.select = function (alias, {name, predicate, partial}) {
     return new Select (
         this,
         name,
         alias,
-        predicate || ((...values) => parcial(this.header, values)),
-        parcial
+        predicate || ((...values) => partial(this.header, values)),
+        partial
     );
 };
 
