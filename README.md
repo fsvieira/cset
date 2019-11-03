@@ -7,7 +7,7 @@ Currently CSet support most normal set operation, including cartesian product.
 
 # Changes
 
-## 2.0.0
+## 3.0.0
   * Version schema is now based on Semantic Version System (https://semver.org/)
   * From now to the future CSet will only support positive integers as elements.
   * Select now supports partial filtering.
