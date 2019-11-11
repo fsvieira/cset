@@ -552,6 +552,43 @@ test("projection set extraction", () => {
 
 });
 
+test("intersection => projection", () => {
+
+  const a = new CSetArray([1, 2, 3]).as("a");
+
+  const A = a.crossProduct(a.as("b")).crossProduct(a.as("c"));
+  const B = a.crossProduct(a.as("b")).crossProduct(a.as("c"));
+
+  const abc = A.intersect(B);
+  const ac = abc.projection("a", "c");
+
+  expect(ac.header).toEqual(["a", "c"]);
+  expect([...ac.values()]).toEqual([
+    [1,1],[1,2],[1,3],
+    [2,1],[2,2],[2,3],
+    [3,1],[3,2],[3,3]
+  ]);
+
+});
+
+test("projection => intersection", () => {
+
+  const a = new CSetArray([1, 2, 3]).as("a");
+
+  const abc = a.crossProduct(a.as("b")).crossProduct(a.as("c"));
+  const ac = abc.projection("a", "c");
+  const acac = ac.intersect(ac);
+
+  expect(acac.header).toEqual(["a", "c"]);
+  expect([...acac.values()]).toEqual([
+    [1,1],[1,2],[1,3],
+    [2,1],[2,2],[2,3],
+    [3,1],[3,2],[3,3]
+  ]);
+
+});
+
+
 test("is equal", () => {
   const s = new CSetArray([0, 1]);
   const zero = new CSetArray([0]);

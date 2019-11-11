@@ -86,32 +86,6 @@ class Intersect extends CSet {
         return counter;
     }
 
-    /*
-    *values (min, max) {
-        const grid = this.calcGrid();
-
-        const aHeader = this.a.header;
-        const bHeader = this.b.header;
-
-        for (let i=0; i<grid.positions.length; i++) {
-            const position = grid.positions[i];
-            const cell = this.grid.cells[position];
-
-            if (
-                (min === undefined || this.compare(min, cell.max) <= 0) && 
-                (max === undefined || this.compare(max, cell.min) >= 0)
-            ) {
-                for (let e of this.a.values(min, max)) {
-                    const be = reorder(bHeader, aHeader, e);
-
-                    if (this.b.has(be)) {
-                        yield e;
-                    }
-                }
-            }
-        }
-    }*/
-
     *values (min, max, selector) {
         const grid = this.calcGrid();
 
