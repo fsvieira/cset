@@ -36,7 +36,7 @@ class Difference extends CSet {
         if (!this.grid) {
             // There is no way to know if intersect cells has different elements, so 
             // we need to make a union grid.
-            this.grid = this.a.union(b).getGrid();
+            this.grid = this.a.union(this.b).getGrid();
         }
         
         return this.grid;
