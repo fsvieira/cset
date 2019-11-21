@@ -29,20 +29,25 @@ class Union extends CSet {
 
     calcGrid () {
         if (!this.grid) {
+            const aHeader = this.a.header;
+            const bHeader = this.b.header;
+
             const aGrid = this.a.getGrid();
             const bGrid = this.b.getGrid();
+
             const dups = {};
+            const allPositions = bGrid.positions.map(p => reorder(aHeader, bHeader, p)).concat(aGrid.positions);
             const positions = [];
 
-            for (let i=0; i<aGrid.positions.length; i++) {
-                const p = aGrid.positions[i];
+            for (let i=0; i<allPositions.length; i++) {
+                const p = allPositions[i];
 
                 if (!dups[p]) {
                     dups[p] = true;
                     positions.push(p);
                 }
             }
-            
+
             positions.sort((a, b) => this.compare(a, b));
 
             const grid = this.grid = {
@@ -52,16 +57,17 @@ class Union extends CSet {
     
             for (let i=0; i<grid.positions.length; i++) {
                 const position = grid.positions[i];
+                const bPosition = reorder(bHeader, aHeader, position);
 
                 const aCell = aGrid.cells[position];
-                const bCell = bGrid.cells[position];
+                const bCell = bGrid.cells[bPosition];
 
                 let cell;
                 if (aCell && bCell) {
                     cell = {
                         count: aCell.count + bCell.count,
-                        min: aCell.min > bCell.min?bCell.min:aCell.min,
-                        max: aCell.max > bCell.max?aCell.max:bCell.max,
+                        min: this.min(aCell.min, reorder(aHeader, bHeader, bCell.min)),
+                        max: this.max(aCell.max, reorder(aHeader, bHeader, bCell.max)),
                         sets: "ab"
                     };
                 }
@@ -80,7 +86,7 @@ class Union extends CSet {
                 }
     
                 this.grid.cells[position] = cell;
-            }    
+            }
         }
 
         return this.grid;

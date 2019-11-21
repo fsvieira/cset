@@ -19,7 +19,7 @@ class CrossProduct extends CSet {
         if (!this.grid) {
             const aGrid = this.a.getGrid();
             const bGrid = this.b.getGrid();
-    
+
             this.grid = {
                 cells: {},
                 positions: []

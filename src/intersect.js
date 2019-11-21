@@ -29,18 +29,20 @@ class Intersect extends CSet {
         if (!this.grid) {
             const aGrid = this.a.getGrid();
             const bGrid = this.b.getGrid();
-    
+            
+            const aHeader = this.a.header;
+            const bHeader = this.b.header;
+
             this.grid = {
                 cells: {},
                 positions: []
             };
-    
-            const aHeader = this.a.header;
-            const bHeader = this.b.header;
 
             for (let i=0; i<aGrid.positions.length; i++) {
                 const aPosition = aGrid.positions[i];
-                const bCell = bGrid.cells[aPosition];
+
+                const bPosition = reorder(aHeader, bHeader, aPosition);
+                const bCell = bGrid.cells[bPosition];
     
                 if (bCell) {
                     const aCell = aGrid.cells[aPosition];
@@ -65,7 +67,7 @@ class Intersect extends CSet {
                         this.grid.positions.push(aPosition);
                     }
                 }
-            }    
+            }
         }
 
         return this.grid;

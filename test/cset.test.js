@@ -588,7 +588,6 @@ test("projection => intersection", () => {
 
 });
 
-
 test("is equal", () => {
   const s = new CSetArray([0, 1]);
   const zero = new CSetArray([0]);
@@ -646,4 +645,3 @@ test("Select has(x)", () => {
 
 });
 
-// TODO: test cross product for duplicated values (for self, union, ...)
