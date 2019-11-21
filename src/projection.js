@@ -42,7 +42,7 @@ class Projection extends CSet {
             for (let i=0; i<aGrid.positions.length; i++) {
                 const aPosition = aGrid.positions[i];
                 const aCell = aGrid.cells[aPosition];
-
+                
                 // we need to extract only projection values.
                 const r = indexes.map(i => aPosition[i]); 
 

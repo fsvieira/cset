@@ -28,12 +28,12 @@ class CrossProduct extends CSet {
             for (let i=0; i<aGrid.positions.length; i++) {
                 const aPosition = aGrid.positions[i];
                 const aCell = aGrid.cells[aPosition];
-                const ap = aPosition instanceof Array?aPosition:[aPosition];
+                const ap = aPosition;
 
                 for (let i=0; i<bGrid.positions.length; i++) {
                     const bPosition = bGrid.positions[i];
                     const bCell = bGrid.cells[bPosition];
-                    const bp = bPosition instanceof Array?bPosition:[bPosition];
+                    const bp = bPosition;
 
                     const abPosition = ap.concat(bp);
                     const abCell = this.grid.cells[abPosition] = this.grid.cells[abPosition] || {};
@@ -80,19 +80,6 @@ class CrossProduct extends CSet {
 
         return ah.concat(bh);
     }
-
-    /*
-    *values (min, max) {
-        for (let a of this.a.values(min, max)) {
-            a = a instanceof Array?a:[a];
-
-            for (let b of this.b.values(min, max)) {
-                b = b instanceof Array?b:[b];
-
-                yield a.concat(b);
-            }
-        }
-    }*/
 
     *values (min, max, selector) {
         const aHeader = this.a.header;

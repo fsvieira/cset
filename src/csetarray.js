@@ -16,21 +16,26 @@ class CSetArray extends CSet {
                 positions: []
             };
 
+            const dups = [];
+
             for (let i=0; i<values.length; i++) {
                 const value = values[i];
-                const position = Math.floor(value/this.cellSize);
+                const p = Math.floor(value/this.cellSize);
+                const position = [p];
+                
                 const cell = this.grid.cells[position] = this.grid.cells[position] || {count: 0, min: Infinity, max: 0};
 
                 cell.min = value < cell.min?value:cell.min;
                 cell.max = value > cell.max?value:cell.max;
                 cell.count++;
 
-                if (!this.grid.positions.includes(position)) {
+                if (!dups.includes(p)) {
+                    dups.push(p);
                     this.grid.positions.push(position);
                 }
             }
 
-            this.grid.positions.sort();
+            this.grid.positions.sort((a, b) => this.compare(a, b));
         }
 
         return this.grid;
