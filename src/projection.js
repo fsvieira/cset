@@ -101,23 +101,47 @@ class Projection extends CSet {
             const dup = {};
             const indexes = this._header.map(h => aHeader.indexOf(h));
 
-            /**
-             * TODO:
-             *  - we need to return r as value,
-             *   1. make for of values and recalc r, OR
-             *   2. start returning value on select or false.
-             */
+            for (let e of this.a.values(min, max, selector)) {
+                const r = indexes.map(i => e[i]);
+
+                if (!dup[r]) {
+                    dup[r] = true;
+
+                    if (r.length === 1) {
+                        yield r[0];
+                    }
+                    else {
+                        yield r;
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+    *values (min, max, selector) {
+        const aHeader = this.a.header;
+
+        if (aHeader.length === 1) {
+            yield *this.a.values(min, max, selector);
+        }
+        else {
+            const dup = {};
+            const indexes = this._header.map(h => aHeader.indexOf(h));
+
             for (let e of this.a.values(min, max, (header, values) => {
-                if (!selector || selector(header, values)) {
-
-                    if (header.length === aHeader.length) {
-                        const r = indexes.map(i => values[i]);
-
+                if (selector || selector(header, values)) {
+                    const hs = header.filter(h => this._header.includes(h));
+                    if (hs.length === this._header.length) {
+                        const r = this._header.map(h => values[header.indexOf(h)]);
+    
                         if (!dup[r]) {
                             dup[r] = true;
+
+                            console.log("=> " + JSON.stringify(r));
                             return true;
                         }
-
+    
                         return false;
                     }
 
@@ -128,6 +152,10 @@ class Projection extends CSet {
             })) {
                 const r = indexes.map(i => e[i]);
 
+                if (this.id === 87) {
+                    console.log("Values => " + JSON.stringify(e), "Proj => " + JSON.stringify(r));
+                }
+
                 if (r.length === 1) {
                     yield r[0];
                 }
@@ -136,7 +164,7 @@ class Projection extends CSet {
                 }
             }
         }
-    }
+    }*/
 
     count () {
         return [...this.values()].length;

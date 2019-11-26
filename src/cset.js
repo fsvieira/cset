@@ -110,7 +110,7 @@ class CSet {
 
             if (this.b) {
                 this.b._toJSON(json);
-                j.b = this.a.id;
+                j.b = this.b.id;
             }
         }
     }

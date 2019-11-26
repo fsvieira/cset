@@ -563,6 +563,7 @@ test("intersection => projection", () => {
   const ac = abc.projection("a", "c");
 
   expect(ac.header).toEqual(["a", "c"]);
+
   expect([...ac.values()]).toEqual([
     [1,1],[1,2],[1,3],
     [2,1],[2,2],[2,3],

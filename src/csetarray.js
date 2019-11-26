@@ -75,6 +75,16 @@ class CSetArray extends CSet {
             }
         }
     }
+
+    _toJSON (json) {
+        if (!json.sets[this.id]) {
+            json.sets[this.id] = {
+                name: this.constructor.name,
+                header: this.header,
+                values: this.sValues.slice()
+            };
+        }
+    }
 }
 
 module.exports = CSetArray;
