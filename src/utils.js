@@ -1,4 +1,5 @@
 
+// reoder values with aHeader to values with bHeader.
 function reorder (aHeader, bHeader, values) {
 
     if (values instanceof Array) {
@@ -6,7 +7,8 @@ function reorder (aHeader, bHeader, values) {
             const r = [];
             for (let i=0; i<bHeader.length; i++) {
                 const label = bHeader[i];
-                r[aHeader.indexOf(label)] = values[i];
+                const index = aHeader.indexOf(label);
+                r[i] = values[index];
             }
 
             return r;
