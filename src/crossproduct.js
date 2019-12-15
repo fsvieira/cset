@@ -15,43 +15,6 @@ class CrossProduct extends CSet {
         }
     }
 
-    calcGrid () {
-        if (!this.grid) {
-            const aGrid = this.a.getGrid();
-            const bGrid = this.b.getGrid();
-
-            this.grid = {
-                cells: {},
-                positions: []
-            };
-    
-            for (let i=0; i<aGrid.positions.length; i++) {
-                const aPosition = aGrid.positions[i];
-                const aCell = aGrid.cells[aPosition];
-                const ap = aPosition;
-
-                for (let i=0; i<bGrid.positions.length; i++) {
-                    const bPosition = bGrid.positions[i];
-                    const bCell = bGrid.cells[bPosition];
-                    const bp = bPosition;
-
-                    const abPosition = ap.concat(bp);
-                    const abCell = this.grid.cells[abPosition] = this.grid.cells[abPosition] || {};
-
-                    abCell.count = aCell.count * bCell.count;
-                    abCell.min = this.min(aCell.min, bCell.min);
-                    abCell.max = this.max(aCell.max, bCell.max);
-
-                    this.grid.positions.push(abPosition);
-                }
-            }
-
-            this.grid.positions.sort((a, b) => this.compare(a, b));
-        }
-
-        return this.grid;
-    }
-
     has (x) {
         if (x instanceof Array) {
             const aLength = this.a.header.length;

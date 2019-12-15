@@ -32,32 +32,9 @@ class Difference extends CSet {
         );
     }
 
-    calcGrid () {
-        if (!this.grid) {
-            // There is no way to know if intersect cells has different elements, so 
-            // we need to make a union grid.
-            this.grid = this.a.union(this.b).getGrid();
-        }
-        
-        return this.grid;
-    }
-
     count () {
         return this.a.count() - this.a.intersect(this.b).count();
     }
-
-    /*
-    *values (min, max, selector) {
-        const aHeader = this.a.header;
-        const bHeader = this.b.header;
-
-        for (let e of this.a.values(min, max, selector)) {
-            const be = reorder(aHeader, bHeader, e);
-            if (!this.b.has(be)) {
-                yield e;
-            }
-        }
-    }*/
 
     *values (min, max, selector) {
         const aHeader = this.a.header;

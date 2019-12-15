@@ -26,10 +26,6 @@ class Alias extends CSet {
         }
     }
 
-    calcGrid () {
-        return this.a.calcGrid();
-    }
-
     get header () {
         return this._header;
     }

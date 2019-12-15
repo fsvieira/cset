@@ -58,10 +58,6 @@ class Select extends CSet {
 
         return counter;
     }
-
-    getGrid () {
-        return this.a.getGrid();
-    }
     
     has (x) {
         // return this.test(this.a.header, x) && this.a.has(x);

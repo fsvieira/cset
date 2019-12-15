@@ -7,11 +7,6 @@ class CSet {
         this.cellSize = 10;
     }
 
-    // -- Grid utils start,
-    getGrid () {
-        return this.calcGrid();
-    }
-
     compare (a, b) {
         const ar = a instanceof Array?a:[a];
         const br = b instanceof Array?b:[b];
