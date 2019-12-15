@@ -89,6 +89,29 @@ class Intersect extends CSet {
     }
 
     *values (min, max, selector) {
+        const aHeader = this.a.header;
+        const bHeader = this.b.header;
+
+        yield *this.a.values(
+            min, max, (header, values) => {
+                if (!selector || selector(header, values)) {
+                    
+                    const hs = aHeader.filter(h => header.includes(h));
+
+                    if (hs.length === aHeader.length) {
+                        const be = reorder(aHeader, bHeader, values);
+                        return this.b.has(be);
+                    }
+
+                    return true;
+                }
+    
+                return false;
+            }
+        );
+    }
+    /*
+    *values (min, max, selector) {
         const grid = this.calcGrid();
 
         const aHeader = this.a.header;
@@ -102,17 +125,39 @@ class Intersect extends CSet {
                 (min === undefined || this.compare(min, cell.max) <= 0) && 
                 (max === undefined || this.compare(max, cell.min) >= 0)
             ) {
+                console.log(cell.min, cell.max, JSON.stringify(
+                    [
+                        ...this.a.values(
+                            cell.min, cell.max, (header, values) => {
+                                if (!selector || selector(header, values)) {
+                    
+                                    const hs = aHeader.filter(h => header.includes(h));
+        
+                                    if (hs.length === aHeader.length) {
+                                        const be = reorder(aHeader, bHeader, values);
+                                        return this.b.has(be);
+                                    }
+        
+                                    return true;
+                                }
+                    
+                                return false;
+                            }
+                        )
+                    ]
+                ))
                 yield *this.a.values(
-                    min, max, (header, values) => {
+                    cell.min, cell.max, (header, values) => {
                         if (!selector || selector(header, values)) {
             
-                            if (header.length === aHeader.length) {
+                            const hs = aHeader.filter(h => header.includes(h));
+
+                            if (hs.length === aHeader.length) {
                                 const be = reorder(aHeader, bHeader, values);
                                 return this.b.has(be);
                             }
-                            else {
-                                return true;
-                            }
+
+                            return true;
                         }
             
                         return false;
@@ -120,7 +165,7 @@ class Intersect extends CSet {
                 );
             }
         }
-    }
+    }*/
 
     get header () {
         return this.a.header;

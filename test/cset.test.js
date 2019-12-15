@@ -1,4 +1,4 @@
-const {CSetArray, CSet} = require('../src');
+const {CSetArray, CSet, fromJSON} = require('../src');
 
 test('Create a set of 3 elements', () => {
   const a = new CSetArray([1, 2, 3]);
@@ -646,3 +646,594 @@ test("Select has(x)", () => {
 
 });
 
+test("Intersect > 10 Values", () => {
+  const a = new CSetArray([13, 23, 19]);
+  const ab = a.crossProduct(a.as("b"));
+
+  const aIb = ab.intersect(ab);
+
+  console.log([...aIb.values()]);
+});
+
+/*
+
+// ---- JSON test,
+
+test("JSON CSetArray", () => {
+  const a = new CSetArray([1, 2, 3]);
+
+  const aJSON = a.toJSON();
+
+  const aj = fromJSON(aJSON);
+
+  expect([...a.values()]).toEqual([...aj.values()]);
+}); 
+
+test("JSON Intersect", () => {
+  const a = new CSetArray([1, 2, 3]);
+  const b = new CSetArray([2, 3, 4]);
+  const ab = a.intersect(b);
+
+  const abJSON = ab.toJSON();
+
+  const abj = fromJSON(abJSON);
+
+  console.log(
+    JSON.stringify([...ab.values()]), 
+    JSON.stringify([...abj.values()]), 
+  );
+
+  expect([...ab.values()]).toEqual([...abj.values()]);
+}); 
+
+test("JSON Union", () => {
+  const a = new CSetArray([1, 2, 3]);
+  const b = new CSetArray([2, 3, 4]);
+  const ab = a.union(b);
+
+  const abJSON = ab.toJSON();
+
+  const abj = fromJSON(abJSON);
+
+  console.log(
+    JSON.stringify([...ab.values()]), 
+    JSON.stringify([...abj.values()]), 
+  );
+
+  expect([...ab.values()]).toEqual([...abj.values()]);
+}); 
+*/
+
+/*
+test("JSON test", () => {
+  const a = fromJSON(
+    {
+      "sets": {
+        "1": {
+          "className": "CSetArray",
+          "header": [
+            "set_1"
+          ],
+          "values": [
+            13
+          ],
+          "id": 1
+        },
+        "2": {
+          "className": "Alias",
+          "name": "set_2",
+          "id": 2,
+          "args": {
+            "rename": "id$13"
+          },
+          "a": 1
+        },
+        "3": {
+          "className": "CSetArray",
+          "header": [
+            "set_3"
+          ],
+          "values": [
+            19
+          ],
+          "id": 3
+        },
+        "4": {
+          "className": "Alias",
+          "name": "set_4",
+          "id": 4,
+          "args": {
+            "rename": "id$13"
+          },
+          "a": 3
+        },
+        "5": {
+          "className": "Union",
+          "name": "set_5",
+          "id": 5,
+          "a": 2,
+          "b": 4
+        },
+        "6": {
+          "className": "CSetArray",
+          "header": [
+            "set_6"
+          ],
+          "values": [
+            23
+          ],
+          "id": 6
+        },
+        "7": {
+          "className": "Alias",
+          "name": "set_7",
+          "id": 7,
+          "args": {
+            "rename": "id$13"
+          },
+          "a": 6
+        },
+        "8": {
+          "className": "Union",
+          "name": "set_8",
+          "id": 8,
+          "a": 5,
+          "b": 7
+        },
+        "23": {
+          "className": "CSetArray",
+          "header": [
+            "set_23"
+          ],
+          "values": [
+            13
+          ],
+          "id": 23
+        },
+        "24": {
+          "className": "Alias",
+          "name": "set_24",
+          "id": 24,
+          "args": {
+            "rename": "4$2"
+          },
+          "a": 23
+        },
+        "25": {
+          "className": "CrossProduct",
+          "name": "set_25",
+          "id": 25,
+          "a": 8,
+          "b": 24
+        },
+        "26": {
+          "className": "CSetArray",
+          "header": [
+            "set_26"
+          ],
+          "values": [
+            19
+          ],
+          "id": 26
+        },
+        "27": {
+          "className": "Alias",
+          "name": "set_27",
+          "id": 27,
+          "args": {
+            "rename": "4$2"
+          },
+          "a": 26
+        },
+        "28": {
+          "className": "CrossProduct",
+          "name": "set_28",
+          "id": 28,
+          "a": 8,
+          "b": 27
+        },
+        "29": {
+          "className": "Union",
+          "name": "set_29",
+          "id": 29,
+          "a": 25,
+          "b": 28
+        },
+        "30": {
+          "className": "CSetArray",
+          "header": [
+            "set_30"
+          ],
+          "values": [
+            23
+          ],
+          "id": 30
+        },
+        "31": {
+          "className": "Alias",
+          "name": "set_31",
+          "id": 31,
+          "args": {
+            "rename": "4$2"
+          },
+          "a": 30
+        },
+        "32": {
+          "className": "CrossProduct",
+          "name": "set_32",
+          "id": 32,
+          "a": 8,
+          "b": 31
+        },
+        "33": {
+          "className": "Union",
+          "name": "set_33",
+          "id": 33,
+          "a": 29,
+          "b": 32
+        },
+        "96": {
+          "className": "Intersect",
+          "name": "set_96",
+          "id": 96,
+          "a": 33,
+          // "b": 33
+          "b": 33
+        }
+      },
+      "start": 96
+    }
+  );
+
+  console.log(JSON.stringify([...a.values()]));
+
+});
+*/
+
+/*
+test("JSON test", () => {
+  const a = fromJSON(
+    {
+      "sets": {
+        "1": {
+          "className": "CSetArray",
+          "header": [
+            "set_1"
+          ],
+          "values": [
+            13
+          ],
+          "id": 1
+        },
+        "2": {
+          "className": "Alias",
+          "name": "set_2",
+          "id": 2,
+          "args": {
+            "rename": "id$13"
+          },
+          "a": 1
+        },
+        "3": {
+          "className": "CSetArray",
+          "header": [
+            "set_3"
+          ],
+          "values": [
+            19
+          ],
+          "id": 3
+        },
+        "4": {
+          "className": "Alias",
+          "name": "set_4",
+          "id": 4,
+          "args": {
+            "rename": "id$13"
+          },
+          "a": 3
+        },
+        "5": {
+          "className": "Union",
+          "name": "set_5",
+          "id": 5,
+          "a": 2,
+          "b": 4
+        },
+        "6": {
+          "className": "CSetArray",
+          "header": [
+            "set_6"
+          ],
+          "values": [
+            23
+          ],
+          "id": 6
+        },
+        "7": {
+          "className": "Alias",
+          "name": "set_7",
+          "id": 7,
+          "args": {
+            "rename": "id$13"
+          },
+          "a": 6
+        },
+        "8": {
+          "className": "Union",
+          "name": "set_8",
+          "id": 8,
+          "a": 5,
+          "b": 7
+        },
+        "23": {
+          "className": "CSetArray",
+          "header": [
+            "set_23"
+          ],
+          "values": [
+            13
+          ],
+          "id": 23
+        },
+        "24": {
+          "className": "Alias",
+          "name": "set_24",
+          "id": 24,
+          "args": {
+            "rename": "4$2"
+          },
+          "a": 23
+        },
+        "25": {
+          "className": "CrossProduct",
+          "name": "set_25",
+          "id": 25,
+          "a": 8,
+          "b": 24
+        },
+        "26": {
+          "className": "CSetArray",
+          "header": [
+            "set_26"
+          ],
+          "values": [
+            19
+          ],
+          "id": 26
+        },
+        "27": {
+          "className": "Alias",
+          "name": "set_27",
+          "id": 27,
+          "args": {
+            "rename": "4$2"
+          },
+          "a": 26
+        },
+        "28": {
+          "className": "CrossProduct",
+          "name": "set_28",
+          "id": 28,
+          "a": 8,
+          "b": 27
+        },
+        "29": {
+          "className": "Union",
+          "name": "set_29",
+          "id": 29,
+          "a": 25,
+          "b": 28
+        },
+        "30": {
+          "className": "CSetArray",
+          "header": [
+            "set_30"
+          ],
+          "values": [
+            23
+          ],
+          "id": 30
+        },
+        "31": {
+          "className": "Alias",
+          "name": "set_31",
+          "id": 31,
+          "args": {
+            "rename": "4$2"
+          },
+          "a": 30
+        },
+        "32": {
+          "className": "CrossProduct",
+          "name": "set_32",
+          "id": 32,
+          "a": 8,
+          "b": 31
+        },
+        "33": {
+          "className": "Union",
+          "name": "set_33",
+          "id": 33,
+          "a": 29,
+          "b": 32
+        },
+        "76": {
+          "className": "Select",
+          "name": "set_76",
+          "id": 76,
+          "args": {
+            "name": "=",
+            "alias": [
+              "4$2",
+              "id$13"
+            ]
+          },
+          "a": 33
+        },
+        "77": {
+          "className": "Select",
+          "name": "set_77",
+          "id": 77,
+          "args": {
+            "name": "const",
+            "alias": [
+              "id$13"
+            ]
+          },
+          "a": 33
+        },
+        "78": {
+          "className": "Select",
+          "name": "set_78",
+          "id": 78,
+          "args": {
+            "name": "const",
+            "alias": [
+              "id$13"
+            ]
+          },
+          "a": 33
+        },
+        "79": {
+          "className": "Select",
+          "name": "set_79",
+          "id": 79,
+          "args": {
+            "name": "const",
+            "alias": [
+              "id$13"
+            ]
+          },
+          "a": 33
+        },
+        "80": {
+          "className": "Intersect",
+          "name": "set_80",
+          "id": 80,
+          "a": 76,
+          "b": 77
+        },
+        "88": {
+          "className": "Intersect",
+          "name": "set_88",
+          "id": 88,
+          "a": 76,
+          "b": 78
+        },
+        "96": {
+          "className": "Intersect",
+          "name": "set_96",
+          "id": 96,
+          "a": 76,
+          "b": 79
+        },
+        "104": {
+          "className": "Union",
+          "name": "set_104",
+          "id": 104,
+          "a": 80,
+          "b": 88
+        },
+        "105": {
+          "className": "Union",
+          "name": "set_105",
+          "id": 105,
+          "a": 104,
+          "b": 96
+        },
+        "106": {
+          "className": "Union",
+          "name": "set_106",
+          "id": 106,
+          "a": 33,
+          "b": 105
+        },
+        "107": {
+          "className": "Intersect",
+          "name": "set_107",
+          "id": 107,
+          "a": 33,
+          "b": 105
+        },
+        "108": {
+          "className": "Difference",
+          "name": "set_108",
+          "id": 108,
+          "a": 106,
+          "b": 107
+        },
+        "109": {
+          "className": "Projection",
+          "name": "set_109",
+          "id": 109,
+          "args": {
+            "h": [
+              "4$2"
+            ]
+          },
+          "a": 108
+        },
+        "110": {
+          "className": "CrossProduct",
+          "name": "set_110",
+          "id": 110,
+          "a": 8,
+          "b": 109
+        },
+        "111": {
+          "className": "Intersect",
+          "name": "set_111",
+          "id": 111,
+          "a": 108,
+          "b": 110
+        },
+        "134": {
+          "className": "Projection",
+          "name": "set_134",
+          "id": 134,
+          "args": {
+            "h": [
+              "4$2"
+            ]
+          },
+          "a": 111
+        },
+        "135": {
+          "className": "CrossProduct",
+          "name": "set_135",
+          "id": 135,
+          "a": 8,
+          "b": 134
+        },
+        "136": {
+          "className": "Intersect",
+          "name": "set_136",
+          "id": 136,
+          "a": 111,
+          "b": 135
+        }
+      },
+      // "start": 136
+      "start": 108
+    },
+    {
+      "const": {
+        name: "const",
+        predicate: (...x) => {
+          console.log("Select Const => " + JSON.stringify(x));
+          return true;
+        }        
+      },
+      "=": {
+        name: "=",
+        predicate: (...x) => new Set(x).size === 1,
+        partial: (hs, vs) => new Set(vs).size === 1
+      }
+    }
+  );
+
+  console.log(JSON.stringify([...a.values()]));
+
+});
+*/

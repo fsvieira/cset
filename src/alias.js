@@ -3,6 +3,11 @@ const CSet = require("./cset");
 class Alias extends CSet {
     constructor(a, rename, name, header) {
         super();
+
+        this.args = {
+            rename, name, header
+        };
+
         this.a = a;
         this._header = (header || this.a.header).slice();
 

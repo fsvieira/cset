@@ -66,7 +66,9 @@ class Difference extends CSet {
         yield *this.a.values(min, max, (header, values) => {
             if (!selector || selector(header, values)) {
 
-                if (header.length === aHeader.length) {
+                const hs = aHeader.filter(h => header.includes(h));
+
+                if (hs.length === aHeader.length) {
                     const be = reorder(aHeader, bHeader, values);
                     return !this.b.has(be);
                 }

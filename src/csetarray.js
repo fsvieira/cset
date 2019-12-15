@@ -79,9 +79,10 @@ class CSetArray extends CSet {
     _toJSON (json) {
         if (!json.sets[this.id]) {
             json.sets[this.id] = {
-                name: this.constructor.name,
+                className: this.constructor.name,
                 header: this.header,
-                values: this.sValues.slice()
+                values: this.sValues.slice(),
+                id: this.id
             };
         }
     }

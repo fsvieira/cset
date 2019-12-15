@@ -99,8 +99,10 @@ class CSet {
     _toJSON (json) {
         if (!json.sets[this.id]) {
             const j = json.sets[this.id] = {
-                name: this.constructor.name,
-                header: this.header
+                className: this.constructor.name,
+                name: this.name,
+                id: this.id,
+                args: this.args
             };
 
             if (this.a) {

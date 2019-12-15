@@ -106,9 +106,18 @@ class Union extends CSet {
     *values (min, max, selector) {
         const aHeader = this.a.header;
         const bHeader = this.b.header;
-
+        
         yield *this.a.values(min, max, selector);
         
+        for (let e of this.b.values(min, max, selector)) {
+            const r = reorder(aHeader, bHeader, e);
+
+            if (!this.a.has(r)) {
+                yield r;
+            }
+        }
+        
+        /*
         for (let e of this.b.values(min, max, (header, values) => {
             if (!selector || selector(header, values)) {
                 if (header.length === aHeader.length) {
@@ -122,8 +131,12 @@ class Union extends CSet {
 
             return false;
         })) {
-            yield reorder(aHeader, bHeader, e);
-        }
+            const r = reorder(aHeader, bHeader, e);
+
+            if (!this.a.has(r)) {
+                yield r;
+            }
+        }*/
     }
 
     get header () {

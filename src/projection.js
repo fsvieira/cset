@@ -10,6 +10,8 @@ class Projection extends CSet {
         super();
         this.a = a;
 
+        this.args = {h};
+
         this._header = h; // h.length === 1?h[0]:h;
 
         if (new Set(h) === h.length) {

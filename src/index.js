@@ -1,5 +1,7 @@
 const CSet = require("./cset");
 const CSetArray = require("./csetarray");
+const fromJSON = require("./fromjson");
+
 require("./select");
 require("./projection");
 require("./alias");
@@ -10,6 +12,7 @@ require("./difference");
 
 module.exports = {
     CSetArray,
-    CSet
+    CSet,
+    fromJSON
 };
 

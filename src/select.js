@@ -8,6 +8,10 @@ class Select extends CSet {
     ) {
         super();
 
+        this.args = {
+            name, alias
+        };
+
         const header = a.header;
 
         for (let i=0; i<alias.length; i++) {
@@ -18,7 +22,7 @@ class Select extends CSet {
         }
 
         this.a = a;
-        this.name = name;
+        this.predicateName = name;
         this.alias = alias;
 
         // this.test = test;
