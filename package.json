@@ -14,5 +14,7 @@
     "jest": "^24.9.0",
     "request": "^2.88.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "fast-check": "^1.25.1"
+  }
 }
