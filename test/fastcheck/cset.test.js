@@ -1,7 +1,7 @@
 const { CSetArray, CSet } = require('../../src');
 const fc = require('fast-check');
 
-test('Create a set of 3 elements', () => {
+test('Create a set of nat elements', () => {
   fc.assert(
     fc.property(fc.array(fc.nat()), a => {
       const cs = new CSetArray(a);
