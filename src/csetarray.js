@@ -2,39 +2,39 @@ const CSet = require("./cset");
 // const {errorHeaderNotFound} = require("./utils");
 
 class CSetArray extends CSet {
-    constructor (values) {
+    constructor(values) {
         super();
-        this.sValues = values.slice().sort();
+        this.sValues = [...new Set(values)].sort();
     }
 
-    has (x) {
-        x = x instanceof Array && x.length===1?x[0]:x;
+    has(x) {
+        x = x instanceof Array && x.length === 1 ? x[0] : x;
 
         return this.sValues.includes(x);
     }
 
-    count () {
+    count() {
         return this.sValues.length;
     }
 
-    get header () {
+    get header() {
         return [this.name];
     }
 
-    *values (min=0, max=Infinity, selector) {
+    *values(min = 0, max = Infinity, selector) {
         if (!selector) {
-            yield *this.sValues.filter(e => e >= min && e <=max);
+            yield* this.sValues.filter(e => e >= min && e <= max);
         }
         else {
             for (let e of this.sValues) {
-                if (e >= min && e <=max && selector(this.header, [e])) {
+                if (e >= min && e <= max && selector(this.header, [e])) {
                     yield e;
                 }
             }
         }
     }
 
-    _toJSON (json) {
+    _toJSON(json) {
         if (!json.sets[this.id]) {
             json.sets[this.id] = {
                 name: this.constructor.name,
