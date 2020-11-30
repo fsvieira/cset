@@ -1,18 +1,18 @@
 let aliasCounter = 1;
 
 class CSet {
-    constructor () {
+    constructor() {
         this.id = aliasCounter++;
         this.name = `set_${this.id}`;
         this.cellSize = 10;
     }
 
-    compare (a, b) {
-        const ar = a instanceof Array?a:[a];
-        const br = b instanceof Array?b:[b];
+    compare(a, b) {
+        const ar = a instanceof Array ? a : [a];
+        const br = b instanceof Array ? b : [b];
 
         if (ar.length === br.length) {
-            for (let i=0; i<ar.length; i++) {
+            for (let i = 0; i < ar.length; i++) {
                 const ae = ar[i];
                 const be = br[i];
 
@@ -27,7 +27,7 @@ class CSet {
         return ar.length - br.length;
     }
 
-    min (a, b) {
+    min(a, b) {
         const c = this.compare(a, b);
         if (c <= 0) {
             return a;
@@ -36,7 +36,7 @@ class CSet {
         return b;
     }
 
-    max (a, b) {
+    max(a, b) {
         const c = this.compare(a, b);
         if (c >= 0) {
             return a;
@@ -47,51 +47,58 @@ class CSet {
 
     // -- Grid utils end.
 
-    symmetricDifference (s) {
+    symmetricDifference(s) {
         return this.union(s).difference(this.intersect(s));
     }
 
     // test methods,
-    isEmpty () {
+    isEmpty() {
         return this.values().next().done;
     }
 
-    isSubset (x) {
-        return !this.intersect(x).isEmpty() && this.difference(x).isEmpty();
+    isSubset(x) {
+        // Empty set is the subset of all sets,
+        return this.isEmpty()
+            /*
+                If not then:
+                1. intersection can't be empty
+                2. the diference must be empty (all elements must be in the x set)
+            */
+            || (!this.intersect(x).isEmpty() && this.difference(x).isEmpty());
     }
 
-    isProperSubset (x) {
+    isProperSubset(x) {
         return this.isSubset(x) && !x.isSubset(this);
     }
 
-    isSuperset (x) {
+    isSuperset(x) {
         return x.isSubset(this);
     }
 
-    isProperSuperset (x) {
+    isProperSuperset(x) {
         return x.isProperSubset(this);
     }
 
-    isEqual (x) {
+    isEqual(x) {
         return this === x || (this.isSubset(x) && x.isSubset(this));
     }
 
-    count () {
+    count() {
         return this.a.count();
     }
 
-    get header () {
-        throw `'get header ()' method not implemented at '${this.constructor.name}' class`; 
+    get header() {
+        throw `'get header ()' method not implemented at '${this.constructor.name}' class`;
     }
 
-    toJSON () {
-        const json={sets: {}, start: this.id};
+    toJSON() {
+        const json = { sets: {}, start: this.id };
         this._toJSON(json);
 
         return json;
     }
 
-    _toJSON (json) {
+    _toJSON(json) {
         if (!json.sets[this.id]) {
             const j = json.sets[this.id] = {
                 name: this.constructor.name,
@@ -110,24 +117,24 @@ class CSet {
         }
     }
 
-    toDot () {
-        const dot = {states: [], transitions: ""};
+    toDot() {
+        const dot = { states: [], transitions: "" };
         this._toDot(dot);
         const g = 'digraph SetGraph {' +
             'rankdir=LR;' +
             'size="8,5"' +
             'node [shape = circle];\n' +
-                dot.transitions +
+            dot.transitions +
             '}';
 
         return g;
     }
 
-    stateName () {
+    stateName() {
         return `${this.constructor.name}_${this.id}__${this.header.join("_")}`;
     }
 
-    _toDot (dot) {
+    _toDot(dot) {
         const id = this.stateName();
 
         if (!dot.states.includes(id)) {
@@ -135,14 +142,14 @@ class CSet {
 
             if (this.a) {
                 const aid = this.a.stateName();
-                dot.transitions += `\t${id} -> ${aid};\n`; 
+                dot.transitions += `\t${id} -> ${aid};\n`;
                 this.a._toDot(dot);
-                
+
             }
 
             if (this.b) {
                 const bid = this.b.stateName();
-                dot.transitions += `\t${id} -> ${bid};\n`; 
+                dot.transitions += `\t${id} -> ${bid};\n`;
                 this.b._toDot(dot);
             }
         }

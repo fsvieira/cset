@@ -115,3 +115,34 @@ test('Set cartasian product', () => {
   )
 });
 
+/*
+test('Set cartasian product intersection', () => {
+  fc.assert(
+    fc.property(fc.array(fc.string()), fc.array(fc.nat()), fc.array(fc.nat()), fc.array(fc.nat()), (headers, aset, bset) => {
+
+      const [A, B] = headers;
+
+      const a = new CSetArray(aset).as(A);
+      const b = new CSetArray(bset).as(B);
+      const ab = a.crossProduct(b);
+
+      const cset = a.slice(0, Math.floor(Math.random() * aset.length) + 1)
+      const dset = b.slice(Math.floor(Math.random() * bset.length / 2), bset.length)
+
+      const c = new CSetArray(cset).as(A);
+      const d = new CSetArray(dset).as(B);
+      const cd = c.crossProduct(d);
+
+      expect(cd.header).toEqual([A, B]);
+
+      const abcd = ab.intersect(cd);
+
+      expect(abcd.header).toEqual([A, B]);
+
+      expect([...abcd.values()]).toEqual([[1, 4]]);
+      expect(abcd.has([1, 4])).toBeTruthy();
+    })
+  )
+});
+*/
+
