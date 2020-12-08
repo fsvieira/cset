@@ -4,7 +4,15 @@
   "description": "Combinatorial/Cartesian Lazzy Set",
   "homepage": "https://github.com/fsvieira/cset",
   "main": "src/index.js",
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/*.js"
+    ]
+  },
   "scripts": {
+    "__test": "node --prof node_modules/.bin/jest",
     "test": "jest"
   },
   "author": "Filipe Vieira",
